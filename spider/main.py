@@ -43,9 +43,7 @@ def main():
     print('Succeed to load driver')
     do_weixin_login(driver)
     return
-    # cookies = json.load(open('cookies.json', 'rb')
-    #                     ) if os.path.isfile('cookies.json') else []
-    # driver.get(Urls.index)
+
 
 # 微信首页的登陆
 def do_weixin_login(driver):
@@ -63,9 +61,17 @@ def do_weixin_login(driver):
         cookies = driver.get_cookies()
         open('caches/cookies.json', 'wb').write(json.dumps(cookies).encode('utf-8'))
     set_cookies(driver, cookies)
+    set_token(driver.current_url)
     return
 
-# 给driver设置cookie
+# 给Session设置token
+def set_token(url):
+    if 'token' not in url:
+        raise Exception(f"当前登录的https://mp.weixin.qq.com没有Token")
+    Session.token = re.findall(r'token=(\w+)', url)[0]
+
+
+# 给Session设置cookie
 def set_cookies(driver, cookies):
       Session.cookies = {}
       for item in cookies:
