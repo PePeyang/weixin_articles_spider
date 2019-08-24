@@ -1,0 +1,25 @@
+{
+  "name": "weixin_articles_spider",
+  "version": "0.0.1",
+  "description": "微信公众号文章爬虫",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sotyoyo/weixin_articles_spider.git"
+  },
+  "keywords": [
+    "微信",
+    "文章",
+    "爬虫",
+    "python"
+  ],
+  "author": "Sotyoyo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sotyoyo/weixin_articles_spider/issues"
+  },
+  "homepage": "https://github.com/Sotyoyo/weixin_articles_spider#readme"
+}
