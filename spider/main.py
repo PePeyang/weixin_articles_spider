@@ -5,10 +5,8 @@ import time
 from bs4 import BeautifulSoup
 import requests
 import re
-import shutil
 import os
 import json
-import argparse
 import traceback
 import random
 import math
@@ -33,11 +31,12 @@ class Urls:
 class Spider:
     def __init__(self):
         print('Spider init...')
-        time.sleep(1)
+        self.connect_mongodb()
+
 
     def __del__(self):
         print('Spider delete...')
-        time.sleep(1)
+        self.close_mongodb()
 
     def main(self):
         print('mian')
@@ -53,6 +52,7 @@ class Spider:
         driver = webdriver.Chrome(executable_path=chrome)
         print('Succeed to load driver')
         self.do_weixin_login(driver)
+        self.do_unfinish_work()
         return
 
     # 微信首页的登陆
@@ -74,6 +74,11 @@ class Spider:
         self.set_token(driver.current_url)
         return
 
+    # 进行上次未完成的任务
+    def do_unfinish_work(self):
+
+        pass
+
     # 给Session设置token
     def set_token(self, url):
         if 'token' not in url:
@@ -82,7 +87,6 @@ class Spider:
 
 
     # 给Session设置cookie
-
     def set_cookies(self, driver, cookies):
         Session.cookies = {}
         for item in cookies:
@@ -90,11 +94,59 @@ class Spider:
             Session.cookies[item['name']] = item['value']
 
     def connect_mongodb(self):
+        print('weixindb connecting...')
+        try:
+            client = pymongo.MongoClient("localhost", 27017)
+            self.client = client
+            self.db = client.weixindb
+            print('weixindb connected')
+        except Exception as err:
+            print('mongodb connect with error:')
+            print(err)
+
+
+    def close_mongodb(self):
+        print('mongodb closing...')
+        try:
+            self.client.close()
+            print('mongodb closed')
+        except Exception as err:
+            print('mongodb closed with error:')
+            print(err)
+
+
+# for test
+def initBizs():
+    try:
         client = pymongo.MongoClient("localhost", 27017)
         db = client.weixindb
+        fakenames = db.fakenames
+        base_dir = os.path.dirname(__file__)
+        ac = os.path.join(base_dir, 'fakes/fakenames.txt')
+        idx = 0
+        if os.path.isfile(ac):
+            with open(ac, 'rt') as fi:
+                line = fi.readline()
+                while line:
+                    idx += 1
+                    arr = line.strip().split(' ')
+                    fakename = {
+                        'fakename': arr[0],
+                        'chname': arr[1]
+                    }
+                    fakenames.insert_one(fakename)
+                    line = fi.readline()
+        else:
+            print('err')
+
+        client.close()
+    except Exception as err:
+        print('mongodb connect with error:')
+        print(err)
 
 
 # 主入口
 if __name__ == '__main__':
     print('__main__')
-    Spider().main()
+    initBizs()
+    # Spider().main()
