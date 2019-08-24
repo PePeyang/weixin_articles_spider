@@ -27,6 +27,32 @@ class Urls:
     query_biz = 'https://mp.weixin.qq.com/cgi-bin/searchbiz?action=search_biz&token={token}&lang=zh_CN&f=json&ajax=1&random={random}&query={query}&begin={begin}&count={count}'
     query_arti = 'https://mp.weixin.qq.com/cgi-bin/appmsg?token={token}&lang=zh_CN&f=json&%E2%80%A65&action=list_ex&begin={begin}&count={count}&query={query}&fakeid={fakeid}&type=9'
 
+class BaseResp:
+    def __init__(self, strjson):
+        self.data = json.loads(strjson)
+        self.base_resp = self.data['base_resp']
+
+    @property
+    def ret(self):
+        return self.base_resp['ret']
+
+    @property
+    def err_msg(self):
+        return self.base_resp['err_msg']
+
+    @property
+    def is_ok(self):
+        return self.base_resp['ret'] == 0
+
+
+class FakesResp(BaseResp):
+
+    def __init__(self, strjson):
+        super(FakesResp, self).__init__(strjson)
+        print(self.err_msg)
+        self.list = self.data['list'] if self.is_ok else []
+        # self.total = self.data['total']
+
 
 class Spider:
     def __init__(self):
@@ -84,14 +110,29 @@ class Spider:
         while fake_one:
             print(fake_one)
             self.pipe(fake_one['fakename'], fake_one['chname'])
+            time.sleep(6)
             fake_one = fakenames.find_one_and_delete(filter={})
 
     def pipe(self, fakename, chname):
         # TODO 不止一页，以后要把所有查询到的都添加进数据库
-        # 测试数据，这里找了13个公众号后就不行了，{"base_resp":{"ret":200013,"err_msg":"freq control"}}
+        # time.sleep(0) 13个公众号 {"base_resp":{"ret":200013,"err_msg":"freq control"}}
+        # time.sleep(3) 23个
+        # 大概访问一百个后，账号直接给我ban了。。。 -..=
         rep = requests.get(Urls.query_biz.format(random=random.random(), token=Session.token,
                                                  query=fakename, begin=0, count=5), cookies=Session.cookies, headers=Session.headers)
-        print(rep.text)
+
+        response = FakesResp(rep.text)
+        print(response.list)
+        if not response.is_ok:
+            return
+        else:
+            bizs = self.db.bizs
+            try:
+                bizs.find_one_and_update(filter={}, update=response, upsert=True)
+            except Exception as dberr:
+                print(dberr)
+
+
 
     # 给Session设置token
     def set_token(self, url):
