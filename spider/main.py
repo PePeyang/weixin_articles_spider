@@ -18,14 +18,16 @@ import pymongo
 class Session:
     token = ''
     cookies = []
+
     # TODO headers User-Agent 定期自动替换
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'}
 
 class Urls:
     index = 'https://mp.weixin.qq.com'
-    # editor = 'https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit&action=edit&type=10&isMul=1&isNew=1&share=1&lang=zh_CN&token={token}'
+    editor = 'https://mp.weixin.qq.com/cgi-bin/appmsg?t=media/appmsg_edit&action=edit&type=10&isMul=1&isNew=1&share=1&lang=zh_CN&token={token}'
     query_biz = 'https://mp.weixin.qq.com/cgi-bin/searchbiz?action=search_biz&token={token}&lang=zh_CN&f=json&ajax=1&random={random}&query={query}&begin={begin}&count={count}'
     query_arti = 'https://mp.weixin.qq.com/cgi-bin/appmsg?token={token}&lang=zh_CN&f=json&%E2%80%A65&action=list_ex&begin={begin}&count={count}&query={query}&fakeid={fakeid}&type=9'
+    query_comment = 'https://mp.weixin.qq.com/mp/appmsg_comment?action=getcomment&scene=0&__biz={fakeid}&appmsgid={appmsgid}&idx=1&comment_id={comment_id}&offset={offset}&limit=100&uin=MTcxNzk4OTQwNQ%253D%253D&key={key}&pass_ticket={pass_ticket}&wxtoken=777&devicetype={devicetype}&clientversion=12031a12&appmsg_token={appmsg_token}&x5=0&f=json'
 
 class BaseResp:
     def __init__(self, strjson):
@@ -51,7 +53,8 @@ class FakesResp(BaseResp):
         super(FakesResp, self).__init__(strjson)
         print(self.err_msg)
         self.list = self.data['list'] if self.is_ok else []
-        # self.total = self.data['total']
+        self.total = self.total = self.data['total'] if self.is_ok else []
+
 
 
 class Spider:
@@ -65,7 +68,6 @@ class Spider:
         self.close_mongodb()
 
     def main(self):
-        print('mian')
         # /usr/bin/chromedriver
         chrome = input('请输入chromedriver路径 (注意要和自己的chrome版本匹配):').strip()
         if not chrome:
@@ -117,18 +119,31 @@ class Spider:
         # TODO 不止一页，以后要把所有查询到的都添加进数据库
         # time.sleep(0) 13个公众号 {"base_resp":{"ret":200013,"err_msg":"freq control"}}
         # time.sleep(3) 23个
-        # 大概访问一百个后，账号直接给我ban了。。。 -..=
+        # 大概访问一百个后，账号直接给我ban了。。。 -..= 目前看来是三个小时左右
         rep = requests.get(Urls.query_biz.format(random=random.random(), token=Session.token,
-                                                 query=fakename, begin=0, count=5), cookies=Session.cookies, headers=Session.headers)
+                                                 query=fakename, begin=0, count=5),
+                                                 cookies=Session.cookies, headers=Session.headers)
 
         response = FakesResp(rep.text)
-        print(response.list)
+
+        item = {
+            'list': response.list,
+            'total': response.total,
+            'fakename': fakename,
+            'chname': chname
+        }
+
+        print(item)
         if not response.is_ok:
             return
         else:
             bizs = self.db.bizs
             try:
-                bizs.find_one_and_update(filter={}, update=response, upsert=True)
+                bizs.update_one(
+                    filter={'fakename': item['fakename']},
+                    update={"$set": item},
+                    upsert=True
+                )
             except Exception as dberr:
                 print(dberr)
 
@@ -139,6 +154,11 @@ class Spider:
         if 'token' not in url:
             raise Exception(f"当前登录的https://mp.weixin.qq.com没有Token")
         Session.token = re.findall(r'token=(\w+)', url)[0]
+        Session.headers['Referer'] = Urls.editor.format(token=Session.token)
+        Session.headers['Host'] = "mp.weixin.qq.com"
+        Session.headers['X-Requested-With'] = "XMLHttpRequest"
+        Session.headers['Connection'] = "keep-alive"
+
 
 
     # 给Session设置cookie
@@ -193,8 +213,10 @@ def initBizs():
                         'chname': arr[1].encode('utf-8').decode('utf-8-sig').strip()
                     }
                     fakenames.update_one(
-                        {'fakename': fakename['fakename']},
-                        {"$set": fakename }, True)
+                        filter={'fakename': fakename['fakename']},
+                        update={"$set": fakename },
+                        upsert=True
+                    )
 
                     line = fi.readline()
         else:
