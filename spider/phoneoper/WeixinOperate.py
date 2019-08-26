@@ -1,9 +1,10 @@
 from phoneoper.config import BTN, CROP_RANGE, UI_WORDS
 from phoneoper.config import KEY
-import time
-from random import randint
 from phoneoper.PhoneControl import OperateAllPhone
 from phoneoper.VC import VC
+# ANCHOR
+import time
+from random import randint
 from instance import redis_instance
 from crawler_assist.tidy_req_data import TidyReqData
 
