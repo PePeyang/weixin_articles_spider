@@ -1,5 +1,3 @@
-import json
-
 
 """
 1. 出错return原样
@@ -7,10 +5,8 @@ import json
 3. list无内容return原样
 4. 成功有内容的return load_list
 """
-
-
 def list_parse(load_res_dict):
-    print(load_res_dict['ret'])
+    # print(load_res_dict['ret'])
     if not load_res_dict['ret'] == 0:
         return load_res_dict
     elif not type(load_res_dict['general_msg_list']) == type(str('s')):
@@ -27,10 +23,10 @@ def list_parse(load_res_dict):
 
 """
 return list
-具体结构见items/list.json
+具体结构见items/list_items2.json
+
+TODO 存入biz 公众号名字 发表时间
 """
-
-
 def list_into_dbdata(obj):
     list_lo = obj['list']
     list_db = list()
@@ -40,7 +36,7 @@ def list_into_dbdata(obj):
             for b_key, b_value in big_li['app_msg_ext_info'].items():
                 if b_key == 'content_url' or b_key == 'cover' or b_key == 'source_url':
                     b_value = b_value.replace('\\', '')
-                if b_key == 'multi_app_msg_item_list' and len(b_value) > 0:
+                if (b_key == 'multi_app_msg_item_list') and (len(b_value) > 0):
                     for small_li in b_value:
                         # print(small_li)
                         small_item = {}
@@ -52,5 +48,5 @@ def list_into_dbdata(obj):
                 else:
                     big_item[b_key] = b_value
             list_db.append(big_item)
-        print(list_db)
+        # print(len(list_db))
         return list_db

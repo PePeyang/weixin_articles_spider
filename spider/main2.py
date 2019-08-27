@@ -2,7 +2,7 @@
 # 构造分页请求
 #
 from new_tools.load_list_parse import list_into_dbdata, list_parse
-from instance import redis_instance
+from instance import redis_instance, db_instance, db_loadlist
 import json
 import re
 from time import time
@@ -78,7 +78,7 @@ class Fakeloadparams:
         ('action', 'getmsg'),
         ('__biz', 'MzUyMzkwNTQzNQ=='),
         ('f', 'json'),
-        ('offset', '14'),
+        ('offset', '0'),
         ('count', '10'),
         ('is_ok', '1'),
         ('scene', ''),
@@ -136,7 +136,6 @@ def build_home_request_2(data):
     Fakehomeparams.headers['x-wechat-uin'] = data['REQUEST_HEADERS']['X-WECHAT-UIN']
     Fakehomeparams.headers['x-wechat-key'] = data['REQUEST_HEADERS']['X-WECHAT-KEY']
     biz = urlparse.parse_qs(data['REQUEST_DATA'])['__biz'][0]
-    # print(biz)
     Fakehomeparams.params = replace_at_index(
         Fakehomeparams.params, 1, ('__biz', biz))
 
@@ -156,43 +155,52 @@ def build_load_request(appmsg_token):
     # print(Fakeloadparams.params)
 
 
+def save_list_to_db(list_db):
+    # TODO fix
+    db_loadlist.insert_many(list_db)
+    pass
 
 def loop_request_load():
     import time
     print(d.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
     idx=0
-    # while True:
-    response = requests.get(
-        'https://mp.weixin.qq.com/mp/profile_ext',
-        headers=Fakeloadparams.headers,
-        params=Fakeloadparams.params,
-        cookies=Fakeloadparams.cookies
-    )
-    try:
-        idx+=1
-        # print(type(json.loads(response.text)['general_msg_list']))
-        test = list_parse(eval(response.text))
-        list_into_dbdata(test)
-        print(idx)
-        time.sleep(2)
-        return
-    except Exception as identifier:
-        print(identifier)
-        print(idx)
-        print(d.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    offset=0
+    # 循环机制改变一下 需要捕捉到所有的真实错误
+    while True:
+        try:
+            response = requests.get(
+                'https://mp.weixin.qq.com/mp/profile_ext',
+                headers=Fakeloadparams.headers,
+                params=Fakeloadparams.params,
+                cookies=Fakeloadparams.cookies
+            )
+            Fakeloadparams.params = replace_at_index(
+                Fakeloadparams.params, 3, ('offset', offset))
+            idx+=1
+            offset+=10
+            test = list_parse(eval(response.text))
+            list_db_data = list_into_dbdata(test)
+            if not list_db_data:
+                raise Exception('后面无数据了')
+            save_list_to_db(list_db_data)
+            print('现在正在处理第 {} 个load请求，每次请求10条，当前 offset= {}'.format(idx, offset))
+            time.sleep(2)
+        except Exception as err:
+            print('发现异常，当前一共处理了 {} 个load请求'.format(idx) )
+            print(err)
+            print(d.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
 
 
 
 
 if __name__ == '__main__':
-    print('__main__')
-    # MzIzNjMzMTgyNw==_REQUEST
+    # print('__main__')
     # 一组一组拿出来
     keys = redis_instance.keys('*_REQUEST')
+    # 1.json
     geticon_key = str(keys[0], encoding="utf-8")
+    # 2.json
     getappmsgext_key = str(keys[1], encoding="utf-8")
-    # print(geticon_key)
-    # print(getappmsgext_key)
     geticon_value = redis_instance.get(geticon_key)
     getappmsgext_value = redis_instance.get(getappmsgext_key)
     geticon_value = json.loads(geticon_value.decode())
@@ -201,7 +209,6 @@ if __name__ == '__main__':
     # print(getappmsgext_value
     build_home_request_1(geticon_value)
     build_home_request_2(getappmsgext_value)
-    # print(str(time()))
     content = send_request()
     if not content:
         content = ''

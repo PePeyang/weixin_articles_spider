@@ -9,6 +9,7 @@ from pymongo import MongoClient
 from configs.auth import MONGODB_PORT, MONGODB_HOST, MONGODB_NAME
 db_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
 db_instance = db_client[MONGODB_NAME]
+db_loadlist = db_instance.loads
 
 # # elastic search
 # from elasticsearch import Elasticsearch
