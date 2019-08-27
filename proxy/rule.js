@@ -28,32 +28,57 @@ function sendToRedis(key, value) {
   client.quit();
 };
 
+const FAKE_PREFIX = '__fake_'
+const NORMAL_PREFIX = '__normal_'
+
 const rule = {
   // 模块介绍
   summary: '微信公众号爬虫',
   // 发送请求前拦截处理
   *beforeSendRequest(requestDetail) {
-    // 每一请求的关键信息
-    var data_needed = {}
-    data_needed['protocol'] = requestDetail.protocol
-    data_needed['url'] = requestDetail.url
-    data_needed['requestOptions'] = requestDetail.requestOptions
-    // data_needed['requestData'] = requestDetail.requestData
-    // 请求的url感兴趣就保存本次请求的信息到文件中
-    // console.log(`- 详情 ${data_needed['url']}`)
+    const REQUEST_URL = requestDetail.url
+    const REQUEST_PROTOCOL = requestDetail.protocol
+    const REQUEST_HEADERS = requestDetail.requestOptions.headers
+    const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
 
-    let signArr = Object.keys(interest_url).map((urlName) => {
-      if (data_needed['url'].includes(interest_url[urlName])) {
-        console.log(`- 代理https成功 ${data_needed['url']}`)
-        cookie = requestDetail.requestOptions.headers.Cookie
-        console.log(cookie)
+    let timestamp = Date.now().toString()
+
+    let signArr = Object.keys(fake_url).map((urlName) => {
+      if (REQUEST_URL.includes(fake_url[urlName])) {
         let rd_buf = Buffer(requestDetail.requestData)
         let rd_str = rd_buf.toString('utf8')
-        data_needed['requestData'] = rd_str
-        let timestamp = Date.now().toString()
-        let key = timestamp + '.' + interest_url[urlName] + '.req'
-        let value = JSON.stringify(data_needed)
-        sendToRedis(key, value)
+
+        console.log(`- 开始采集请求信息 ${data_needed['url']}`)
+        console.log(`- url TYPE INFO: ${urlName}`)
+
+        if (urlName === 'geticon') {
+          let url = new URL(REQUEST_URL);
+          let biz = url.searchParams.get("__biz");
+          let key = FAKE_PREFIX + urlName + '_' + timestamp + '_biz=' + biz + '_REQUEST'
+          let value = {
+            REQUEST_URL,
+            REQUEST_PROTOCOL,
+            REQUEST_COOKIE,
+            REQUEST_HEADERS
+          }
+          sendToRedis(key, JSON.stringify(value))
+        }
+
+        if (urlName === 'getappmsgext') {
+          let url = new URL(REQUEST_URL);
+          let pass_ticket = url.searchParams.get("pass_ticket");
+          let key = FAKE_PREFIX + urlName + '_' + timestamp + '_REQUEST'
+          let value = {
+            REQUEST_URL,
+            REQUEST_PROTOCOL,
+            REQUEST_HEADERS,
+            REQUEST_COOKIE,
+            REQUEST_DATA: rd_str,
+            pass_ticket
+          }
+          sendToRedis(key, JSON.stringify(value))
+        }
+
         return true
       }
     })
@@ -63,44 +88,21 @@ const rule = {
   },
   // 发送响应前处理
   *beforeSendResponse(requestDetail, responseDetail) {
-    if (requestDetail.url.includes(interest_url.getappmsgext)) {
-      var body_str = responseDetail.response.body.toString('utf8')
-      body_json = JSON.parse(body_str)
-      // console.log(body_json)
-      // console.log(requestDetail)
-
-      // 这是我的昵称。。。搞了半天
-      var nick_name = body_json.nick_name
-      var wxuin = undefined
-      // console.log(`NODE_INFO: ${requestDetail.requestOptions.headers}`)
-      cookie = requestDetail.requestOptions.headers.Cookie
-      // console.log(' --- cookie --- ')
-      // console.log(cookie)
-      cookie_arr = cookie.split('; ')
-      for (item in cookie_arr) {
-        if (cookie_arr[item].includes("wxuin")) {
-          wxuin = cookie_arr[item].split('=')[1]
-          break
-        }
-      }
-      // console.log(`NODE_INFO: nick_name=${nick_name} wxuin=${wxuin}`)
-      if (wxuin != undefined) {
-        sendToRedis(nick_name + '.nick_name', wxuin)
-      }
-    }
-    if (requestDetail.url.includes("https://mp.weixin.qq.com/mp/profile_ext?action=home")) {
-      var body_str = responseDetail.response.body.toString('utf8')
-      if (body_str.includes('操作频繁')) {
-        console.log('NODE_INFO: 操作频繁 限制24小时 请更换微信')
-        body_str = body_str.replace('NODE_INFO: 操作频繁，请稍后再试', 'AII提示：操作频繁 限制24小时 请更换微信')
-        responseDetail.response.body = Buffer(body_str)
-      }
-      else {
-        var data = body_str.split('var nickname = "')
-        var current_nickname = data[1].split('" || ""')[0]
-        sendToRedis('current_nickname', current_nickname)
-      }
-    }
+    // ANCHOR  不通过anyproxy了
+    // if (requestDetail.url.includes("https://mp.weixin.qq.com/mp/profile_ext?action=home")) {
+    //   var body_str = responseDetail.response.body.toString('utf8')
+    //   if (body_str.includes('操作频繁')) {
+    //     console.log('NODE_INFO: 操作频繁 限制24小时 请更换微信')
+    //     body_str = body_str.replace('操作频繁，请稍后再试', 'Sotyoyo 提示：操作频繁 限制24小时 请更换微信')
+    //     responseDetail.response.body = Buffer(body_str)
+    //   }
+    //   else {
+    //     // TODO fix appmsg_token 的提取方法，太low了
+    //     var data = body_str.split('window.appmsg_token = "')
+    //     var appmsg_token = data[1].split('"')[0]
+    //     sendToRedis(NORMAL_PREFIX + 'appmsg_token', appmsg_token)
+    //   }
+    // }
   },
   *beforeDealHttpsRequest(requestDetail) {
     return true
