@@ -1,7 +1,7 @@
 # 构造home请求获取 appmsg_token
 # 构造分页请求
 #
-# from new_tools.data_queue import RQ
+from new_tools.load_list_parse import list_into_dbdata, list_parse
 from instance import redis_instance
 import json
 import re
@@ -100,13 +100,6 @@ def replace_at_index(tup, ix, val):
     lst[ix] = val
     return tuple(lst)
 
-def tup_to_query(url, tup):
-    # lst = list(tup)
-    for i in range(len(tup)):
-        pass
-        # key_and_value = tup[0] + '=' + str(tup[1])
-        # print(key_and_value)
-
 
 def send_request():
     response = requests.get('https://mp.weixin.qq.com/mp/profile_ext',
@@ -122,7 +115,6 @@ def send_request():
         Fakeloadparams.params = replace_at_index(
             Fakeloadparams.params, 9, ('pass_ticket', login_cookies['pass_ticket']))
         return response.content.decode()
-
 
 
 
@@ -160,7 +152,7 @@ def build_load_request(appmsg_token):
         Fakeloadparams.params, 11, ('appmsg_token', appmsg_token))
 
     # print(Fakeloadparams.headers)
-    print(Fakeloadparams.cookies)
+    # print(Fakeloadparams.cookies)
     # print(Fakeloadparams.params)
 
 
@@ -169,22 +161,25 @@ def loop_request_load():
     import time
     print(d.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
     idx=0
-    while True:
-        response = requests.get(
-            'https://mp.weixin.qq.com/mp/profile_ext',
-            headers=Fakeloadparams.headers,
-            params=Fakeloadparams.params,
-            cookies=Fakeloadparams.cookies
-        )
-        try:
-            idx+=1
-            print(json.loads(response.text))
-            print(idx)
-            time.sleep(2)
-        except Exception as identifier:
-            print(identifier)
-            print(idx)
-            print(d.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
+    # while True:
+    response = requests.get(
+        'https://mp.weixin.qq.com/mp/profile_ext',
+        headers=Fakeloadparams.headers,
+        params=Fakeloadparams.params,
+        cookies=Fakeloadparams.cookies
+    )
+    try:
+        idx+=1
+        # print(type(json.loads(response.text)['general_msg_list']))
+        test = list_parse(eval(response.text))
+        list_into_dbdata(test)
+        print(idx)
+        time.sleep(2)
+        return
+    except Exception as identifier:
+        print(identifier)
+        print(idx)
+        print(d.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
 
 
 
