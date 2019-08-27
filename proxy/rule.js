@@ -58,7 +58,7 @@ const rule = {
           let temp_url = url.parse(REQUEST_URL);
           let params = querystring.parse(temp_url.query)
           let biz = params.__biz;
-          let key = FAKE_PREFIX + urlName + '_' + timestamp + '_biz=' + biz + '_REQUEST'
+          let key = FAKE_PREFIX + urlName + '_biz=' + biz + '_REQUEST'
           let value = {
             REQUEST_URL,
             REQUEST_PROTOCOL,
@@ -73,7 +73,7 @@ const rule = {
           let params = querystring.parse(temp_url.query)
           let biz = querystring.parse(rd_str).__biz
           let pass_ticket = params.pass_ticket;
-          let key = FAKE_PREFIX + urlName + '_' + timestamp + '_biz=' + biz + '_REQUEST'
+          let key = FAKE_PREFIX + urlName  + '_biz=' + biz + '_REQUEST'
           let value = {
             REQUEST_URL,
             REQUEST_PROTOCOL,
