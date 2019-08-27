@@ -1,3 +1,6 @@
+const url = require('url')
+const querystring = require('querystring');
+
 var interest_url = {
   "load_more": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",        //更多历史消息
   "getappmsgext": "https://mp.weixin.qq.com/mp/getappmsgext?",                //阅读消息
@@ -48,12 +51,13 @@ const rule = {
         let rd_buf = Buffer(requestDetail.requestData)
         let rd_str = rd_buf.toString('utf8')
 
-        console.log(`- 开始采集请求信息 ${data_needed['url']}`)
+        console.log(`- 开始采集请求信息 ${REQUEST_URL}`)
         console.log(`- url TYPE INFO: ${urlName}`)
 
         if (urlName === 'geticon') {
-          let url = new URL(REQUEST_URL);
-          let biz = url.searchParams.get("__biz");
+          let temp_url = url.parse(REQUEST_URL);
+          let params = querystring.parse(temp_url.query)
+          let biz = params.__biz;
           let key = FAKE_PREFIX + urlName + '_' + timestamp + '_biz=' + biz + '_REQUEST'
           let value = {
             REQUEST_URL,
@@ -65,8 +69,9 @@ const rule = {
         }
 
         if (urlName === 'getappmsgext') {
-          let url = new URL(REQUEST_URL);
-          let pass_ticket = url.searchParams.get("pass_ticket");
+          let temp_url = url.parse(REQUEST_URL);
+          let params = querystring.parse(temp_url.query)
+          let pass_ticket = params.pass_ticket;
           let key = FAKE_PREFIX + urlName + '_' + timestamp + '_REQUEST'
           let value = {
             REQUEST_URL,
