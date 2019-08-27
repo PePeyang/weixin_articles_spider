@@ -71,8 +71,9 @@ const rule = {
         if (urlName === 'getappmsgext') {
           let temp_url = url.parse(REQUEST_URL);
           let params = querystring.parse(temp_url.query)
+          let biz = querystring.parse(rd_str).__biz
           let pass_ticket = params.pass_ticket;
-          let key = FAKE_PREFIX + urlName + '_' + timestamp + '_REQUEST'
+          let key = FAKE_PREFIX + urlName + '_' + timestamp + '_biz=' + biz + '_REQUEST'
           let value = {
             REQUEST_URL,
             REQUEST_PROTOCOL,

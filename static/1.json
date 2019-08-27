@@ -1,0 +1,16 @@
+{
+  "REQUEST_PROTOCOL": "https",
+  "REQUEST_HEADERS": {
+    "Referer": "https://mp.weixin.qq.com/s?__biz=MzIzNjMzMTgyNw==&mid=2247487686&idx=1&sn=0b96a803917c457f7504b440e0df6b94&chksm=e8d8269adfafaf8c182733616c336847616b8233ab6e6a05beb2ce243ca35d44b54a7e6e0d2f&sessionid=0&scene=126&clicktime=1566897611&ascene=3&devicetype=android-23&version=27000634&nettype=WIFI&abtest_cookie=BAABAAoACwASABMABAAjlx4AVpkeAMWZHgD3mR4AAAA%3D&lang=zh_CN&pass_ticket=%2FwVUpAEtgoBvTouSB3nRI5qyK6t2sGFiihU0qj8IjUsCRWbJixaNVyZ7%2FeO0iFjG&wx_header=1",
+    "Host": "mp.weixin.qq.com",
+    "X-Requested-With": "com.tencent.mm",
+    "Cookie": "rewardsn=; wxuin=3604431997; devicetype=android-23; version=27000634; lang=zh_CN; pass_ticket=/wVUpAEtgoBvTouSB3nRI5qyK6t2sGFiihU0qj8IjUsCRWbJixaNVyZ7/eO0iFjG; wap_sid2=CP2I3bYNElwydnNHdHhrWGd6U1RQc2JPXzc4TVlRWFZ5V3QyVksxTzZfd09xNVQyczFaVG5RN1hicnRXM1VzUDdSdUV1RFdneXVWM2xZSU1nXzN0TUdQOGxWOGotXzhEQUFBfjD5tpPrBTgNQAE=; wxtokenkey=777",
+    "Accept-Language": "zh-CN,en-US;q=0.8",
+    "Accept": "image/webp,image/*,*/*;q=0.8",
+    "Connection": "keep-alive",
+    "User-Agent": "Mozilla/5.0 (Linux; Android 6.0.1; MuMu Build/V417IR; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36 MMWEBID/736 MicroMessenger/7.0.6.1460(0x27000634) Process/toolsmp NetType/WIFI Language/zh_CN MicroMessenger/7.0.6.1460(0x27000634) Process/toolsmp NetType/WIFI Language/zh_CN",
+    "Accept-Encoding": "gzip, deflate"
+  },
+  "REQUEST_COOKIE": "rewardsn=; wxuin=3604431997; devicetype=android-23; version=27000634; lang=zh_CN; pass_ticket=/wVUpAEtgoBvTouSB3nRI5qyK6t2sGFiihU0qj8IjUsCRWbJixaNVyZ7/eO0iFjG; wap_sid2=CP2I3bYNElwydnNHdHhrWGd6U1RQc2JPXzc4TVlRWFZ5V3QyVksxTzZfd09xNVQyczFaVG5RN1hicnRXM1VzUDdSdUV1RFdneXVWM2xZSU1nXzN0TUdQOGxWOGotXzhEQUFBfjD5tpPrBTgNQAE=; wxtokenkey=777",
+  "REQUEST_URL": "https://mp.weixin.qq.com/mp/geticon?__biz=MzIzNjMzMTgyNw==&r=0.2906388956972712"
+}
