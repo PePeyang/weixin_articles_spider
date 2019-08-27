@@ -5,11 +5,23 @@ var interest_url = {
   "content": "https://mp.weixin.qq.com/s?",                                       //文章正文html
 }
 
+var fake_url = {
+  "geticon": "https://mp.weixin.qq.com/mp/geticon?",
+  "getappmsgext":"https://mp.weixin.qq.com/mp/getappmsgext?"
+}
+
+var normal_url = {
+  "home": "https://mp.weixin.qq.com/mp/profile_ext?action=home",
+  "getmsg": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",
+  "article": "https://mp.weixin.qq.com/s?"
+}
+
 function sendToRedis(key, value) {
   var redis = require("redis");
   client = redis.createClient(6379, 'localhost', {});
   client.on("error", function (err) {
-    console.log("NODE_INFO: error:" + err);
+    console.log("NODE_INFO: error:")
+    console.log(err)
     console.log("NODE_INFO: 有可能是redis尚未启动...")
   });
   client.set(key, value, 'EX', 60 * 60 * 24);
@@ -18,7 +30,7 @@ function sendToRedis(key, value) {
 
 const rule = {
   // 模块介绍
-  summary: 'my customized rule for AnyProxy',
+  summary: '微信公众号爬虫',
   // 发送请求前拦截处理
   *beforeSendRequest(requestDetail) {
     // 每一请求的关键信息
@@ -33,6 +45,8 @@ const rule = {
     let signArr = Object.keys(interest_url).map((urlName) => {
       if (data_needed['url'].includes(interest_url[urlName])) {
         console.log(`- 代理https成功 ${data_needed['url']}`)
+        cookie = requestDetail.requestOptions.headers.Cookie
+        console.log(cookie)
         let rd_buf = Buffer(requestDetail.requestData)
         let rd_str = rd_buf.toString('utf8')
         data_needed['requestData'] = rd_str
@@ -58,9 +72,10 @@ const rule = {
       // 这是我的昵称。。。搞了半天
       var nick_name = body_json.nick_name
       var wxuin = undefined
-      console.log(`NODE_INFO: ${requestDetail.requestOptions.headers}`)
+      // console.log(`NODE_INFO: ${requestDetail.requestOptions.headers}`)
       cookie = requestDetail.requestOptions.headers.Cookie
-      // console.log(`NODE_INFO: ${cookie}`)
+      // console.log(' --- cookie --- ')
+      // console.log(cookie)
       cookie_arr = cookie.split('; ')
       for (item in cookie_arr) {
         if (cookie_arr[item].includes("wxuin")) {
@@ -68,7 +83,7 @@ const rule = {
           break
         }
       }
-      console.log(`NODE_INFO: nick_name=${nick_name} wxuin=${wxuin}`)
+      // console.log(`NODE_INFO: nick_name=${nick_name} wxuin=${wxuin}`)
       if (wxuin != undefined) {
         sendToRedis(nick_name + '.nick_name', wxuin)
       }
