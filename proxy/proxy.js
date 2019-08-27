@@ -35,7 +35,7 @@ const options = {
     },
     throttle: 10000,
     forceProxyHttps: true,
-    wsIntercept: true, // 不开启websocket代理
+    wsIntercept: false, // 不开启websocket代理
     silent: false
 };
 const proxyServer = new AnyProxy.ProxyServer(options);
