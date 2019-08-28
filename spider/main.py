@@ -228,7 +228,12 @@ def operate_phone(client):
 
 if __name__ == '__main__':
     print('__main__')
-    client = Operate('苏州青舞舞蹈艺术')
+
+    from get_redis_data import get_data_from_redis
+    get_data_from_redis()
+
+
+    # client = Operate('苏州青舞舞蹈艺术')
     # operate_phone(client)
 
 
