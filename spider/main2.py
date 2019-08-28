@@ -221,10 +221,14 @@ def loop_request_load():
 
 def operate_phone(client):
     client.home_click()
+    client.search_text()
+    client.tab_click()
+    client.enter_into_gzh()
+
 
 if __name__ == '__main__':
     print('__main__')
-    client = Operate()
+    client = Operate('苏州青舞舞蹈艺术')
     operate_phone(client)
 
 
