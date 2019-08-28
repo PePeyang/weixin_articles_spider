@@ -2,6 +2,7 @@
 # 构造分页请求
 #
 from new_tools.load_list_parse import list_into_dbdata, list_parse
+from new_phone.operate import Operate
 from instance import redis_instance, db_instance, db_loadlist
 import json
 import re
@@ -28,7 +29,7 @@ class Fakehomeparams:
         'Host': 'mp.weixin.qq.com',
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0.1; MuMu Build/V417IR; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36 MMWEBID/736 MicroMessenger/7.0.6.1460(0x27000634) Process/toolsmp NetType/WIFI Language/zh_CN',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 8.1; PAR-AL00 Build/HUAWEIPAR-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/6.2 TBS/044304 Mobile Safari/537.36 MicroMessenger/6.7.3.1360(0x26070333) NetType/WIFI Language/zh_CN Process/tools',
         'x-wechat-uin': '',
         'x-wechat-key': '',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -66,7 +67,7 @@ class Fakeloadparams:
     headers = {
         'Host': 'mp.weixin.qq.com',
         'Connection': 'keep-alive',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0.1; MuMu Build/V417IR; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36 MMWEBID/736 MicroMessenger/7.0.6.1460(0x27000634) Process/toolsmp NetType/WIFI Language/zh_CN',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 8.1; PAR-AL00 Build/HUAWEIPAR-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 MQQBrowser/6.2 TBS/044304 Mobile Safari/537.36 MicroMessenger/6.7.3.1360(0x26070333) NetType/WIFI Language/zh_CN Process/tools',
         'X-Requested-With': 'XMLHttpRequest',
         'Accept': '*/*',
         # 'Referer': 'https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzUyMzkwNTQzNQ==&devicetype=android-23&version=27000634&lang=zh_CN&nettype=WIFI&a8scene=7&session_us=gh_9e26999263b5&pass_ticket=%2FwVUpAEtgoBvTouSB3nRI5qyK6t2sGFiihU0qj8IjUsCRWbJixaNVyZ7%2FeO0iFjG&wx_header=1',
@@ -218,40 +219,45 @@ def loop_request_load():
     print(d.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
 
 
-
+def operate_phone(client):
+    client.home_click()
 
 if __name__ == '__main__':
-    # print('__main__')
+    print('__main__')
+    client = Operate()
+    operate_phone(client)
+
+
     # 一组一组拿出来
-    keys = redis_instance.keys('*_REQUEST')
-    # 1.json
-    geticon_key = str(keys[0], encoding="utf-8")
-    # 2.json
-    getappmsgext_key = str(keys[1], encoding="utf-8")
-    geticon_value = redis_instance.get(geticon_key)
-    getappmsgext_value = redis_instance.get(getappmsgext_key)
-    geticon_value = json.loads(geticon_value.decode())
-    getappmsgext_value = json.loads(getappmsgext_value.decode())
-    # print(geticon_value)
-    # print(getappmsgext_value
-    build_home_request_1(geticon_value)
-    build_home_request_2(getappmsgext_value)
-    content = send_request()
-    if not content:
-        print('无效content')
-        content = ''
+    # keys = redis_instance.keys('*_REQUEST')
+    # # 1.json
+    # geticon_key = str(keys[0], encoding="utf-8")
+    # # 2.json
+    # getappmsgext_key = str(keys[1], encoding="utf-8")
+    # geticon_value = redis_instance.get(geticon_key)
+    # getappmsgext_value = redis_instance.get(getappmsgext_key)
+    # geticon_value = json.loads(geticon_value.decode())
+    # getappmsgext_value = json.loads(getappmsgext_value.decode())
+    # # print(geticon_value)
+    # # print(getappmsgext_value
+    # build_home_request_1(geticon_value)
+    # build_home_request_2(getappmsgext_value)
+    # content = send_request()
+    # if not content:
+    #     print('无效content')
+    #     content = ''
 
 
-    if content.find('操作频繁') > 0:
-        print('HUMAN_ERROR: 操作频繁 限制24小时 请更换微信')
+    # if content.find('操作频繁') > 0:
+    #     print('HUMAN_ERROR: 操作频繁 限制24小时 请更换微信')
 
 
-    pat = re.compile(r'window.appmsg_token = "(.*?)"')
-    appmsg_tokens = pat.findall(content, pos=0)
+    # pat = re.compile(r'window.appmsg_token = "(.*?)"')
+    # appmsg_tokens = pat.findall(content, pos=0)
 
-    for m in appmsg_tokens:
-        build_load_request(m)
-        loop_request_load()
+    # for m in appmsg_tokens:
+    #     build_load_request(m)
+    #     loop_request_load()
 
 
 
