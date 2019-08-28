@@ -1,7 +1,4 @@
-from instance import redis_instance
-import json
-
-# redis队列
+# redis任务的队列
 class RQ():
     """
     使用redis创建一个队列 FIFO 先进先出
@@ -9,77 +6,53 @@ class RQ():
 
     def __init__(self, q_name):
         """
-        :param q_name:创建一个队列 开头处插入一个__BEGIN
-        所有队列名称均以re__开头
+        :param q_name:创建一个队列
         """
         self.q_name = q_name
-        self.redis = redis_instance
+        self.queue = list()
 
-    def push(self, data):
+    def isEmpty(self):
         """
-        :param data:
-        :return:1表示插入成功 0表示对象已经存在
+        判断队列是否为空
+        :return:
         """
-        rq = self.get_rq_data()
-        if data not in rq:
-            self.redis.lpush(self.q_name, data)
-            return 1
-        return 0
+        return len(self.queue) == 0
 
-    def get(self, key):
-      return self.redis.get(key)
-
-    def pop(self):
+    def addItem(self, obj):
         """
-        :return:[]表示队列已经空了
+        将指定元素加入队列的尾部
+        :param obj:
+        :return: self.queue
         """
-        data = self.redis.rpop(self.q_name)
-        try:
-            rq_j_data = json.loads(data)
-        except:
-            if data:
-                rq_j_data = data.decode('utf8')
-            else:
-                rq_j_data = []
-        return rq_j_data
+        self.queue.append(obj)
+        return self.queue
 
-    def remove(self, data):
+    def peekItem(self):
         """
-        :param data:根据data删除指定的元素
-        :return:删除后的队列
+        查看队首的对象，但不移除
+        :return:
         """
-        rq_list = self.get_rq_data()
-        self.delete_rq()
-        for item in reversed(rq_list):
-            if item is not data:
-                self.push(item)
-        rq_list = self.get_rq_data()
-        return rq_list
+        if not self.isEmpty():
+            return self.queue[0]
+        return None
 
-    def delete_rq(self):
-        self.redis.delete(self.q_name)
-
-
-    def get_rq_data(self):
+    def popItem(self):
         """
-        :return:返回插入的数据
+        移除队首对象，并返回该对象的值
+        :return:
         """
-        rq_b_data_list = self.redis.lrange(self.q_name, 0, -1)
-        rq_j_data_list = []
-        for rq_b_data in rq_b_data_list:
-            try:
-                rq_j_data = json.loads(rq_b_data)
-            except:
-                rq_j_data = rq_b_data.decode('utf8')
-            rq_j_data_list.append(rq_j_data)
-        return rq_j_data_list
+        if not self.isEmpty():
+            return self.queue.pop(0)
+        return None
 
-    def get_rqs(self, key):
-        rqs = self.redis.keys( key + "*")
-        return rqs
 
-    def get_rqs_suffix(self, key):
-        rqs = self.redis.keys("*" + key)
-        return rqs
+    def empty(self):
+        """
+        清空队列
+        :return: 被清空的队列
+        """
+        self.queue = list()
+        return self.queue
+
 
 
