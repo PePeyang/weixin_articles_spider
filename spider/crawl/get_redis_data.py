@@ -51,9 +51,11 @@ def _build_home_request_1(data):
     cookie.load(data['REQUEST_COOKIE'])
     cookies = {}
     cookies = {i.key: i.value for i in cookie.values()}
-    print(cookies)
+    # 还要刷新一次才有cookie
+    # print(cookies)
+    # biz = urlparse.parse_qs(data['REQUEST_URL'].split('?')[1])['__biz'][0]
     FakeHomeParams.cookies['wxuin'] = cookies['wxuin']
-    # FakeHomeParams.cookies['version'] = cookies['version']
+    # FakeHomeParams.cookies['version'] = cookies['version'] # version 应该有但是cookie转换后就是没有
     FakeHomeParams.cookies['pass_ticket'] = cookies['pass_ticket']
     FakeHomeParams.cookies['wap_sid2'] = cookies['wap_sid2']
     FakeHomeParams.params = replace_at_index(
@@ -65,9 +67,10 @@ def _build_home_request_2(data):
     # print(data)
     FakeHomeParams.headers['x-wechat-uin'] = data['REQUEST_HEADERS']['X-WECHAT-UIN']
     FakeHomeParams.headers['x-wechat-key'] = data['REQUEST_HEADERS']['X-WECHAT-KEY']
-    biz = urlparse.parse_qs(data['REQUEST_DATA'])['__biz'][0]
-    print('X-WECHAT-UIN=' + data['REQUEST_HEADERS']['X-WECHAT-UIN'])
-    print('X-WECHAT-KEY=' + data['REQUEST_HEADERS']['X-WECHAT-KEY'])
+    req_data = urlparse.parse_qs(data['REQUEST_DATA'])
+    biz = req_data['__biz'][0]
+    # print('X-WECHAT-UIN=' + data['REQUEST_HEADERS']['X-WECHAT-UIN'])
+    # print('X-WECHAT-KEY=' + data['REQUEST_HEADERS']['X-WECHAT-KEY'])
     print('biz=' + biz)
     FakeHomeParams.params = replace_at_index(
         FakeHomeParams.params, 1, ('__biz', biz))

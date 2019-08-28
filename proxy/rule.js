@@ -73,7 +73,6 @@ const rule = {
                     let key = FAKE_PREFIX + urlName + '_biz=' + biz + '_REQUEST'
                     let value = {
                         REQUEST_URL,
-                        REQUEST_PROTOCOL,
                         REQUEST_COOKIE,
                         REQUEST_HEADERS
                     }
@@ -88,11 +87,10 @@ const rule = {
                     let key = FAKE_PREFIX + urlName + '_biz=' + biz + '_REQUEST'
                     let value = {
                         REQUEST_URL,
-                        REQUEST_PROTOCOL,
                         REQUEST_HEADERS,
                         REQUEST_COOKIE,
                         REQUEST_DATA: rd_str,
-                        pass_ticket
+                        // pass_ticket
                     }
                     sendToRedis(key, JSON.stringify(value))
                 }
