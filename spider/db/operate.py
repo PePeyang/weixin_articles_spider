@@ -1,14 +1,19 @@
 
 class Operate():
-    def insert_l_in_mongo(self):
+    def __init__(self, name):
+        # self.connect()
+        self.name = name
         pass
 
-    def get_l_in_mongo(self):
+    def insert_l_in_mongo(self, biz):
         pass
 
-    def remove_l_in_mongo(self):
+    def get_l_in_mongo(self, biz):
         pass
 
-    def update_l_in_mongo(self):
+    def remove_l_in_mongo(self, biz):
+        pass
+
+    def update_l_in_mongo(self, biz):
         pass
 
