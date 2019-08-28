@@ -221,9 +221,9 @@ def loop_request_load():
 
 def operate_phone(client):
     client.home_click()
-    client.search_text()
-    client.tab_click()
-    client.enter_into_gzh()
+    # client.search_text()
+    # client.tab_click()
+    # client.enter_into_gzh()
 
 
 if __name__ == '__main__':

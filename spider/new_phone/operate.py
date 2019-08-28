@@ -1,4 +1,5 @@
 import random
+import subprocess
 import time
 import os
 from os import system
@@ -34,16 +35,20 @@ class Operate():
         time.sleep(3)
 
     def home_click(self):
-        x = self.gen_randomint(
-            HOME_SEARCH_BUTTON['x'][0], HOME_SEARCH_BUTTON['x'][1])
-        y = self.gen_randomint(
-            HOME_SEARCH_BUTTON['y'][0], HOME_SEARCH_BUTTON['y'][1])
-        self.send_tap(x, y, 0.5)
-        self.send_fake_swipe((150, 300), (150, 599), 500)
+        # x = self.gen_randomint(
+        #     HOME_SEARCH_BUTTON['x'][0], HOME_SEARCH_BUTTON['x'][1])
+        # y = self.gen_randomint(
+        #     HOME_SEARCH_BUTTON['y'][0], HOME_SEARCH_BUTTON['y'][1])
+        # self.send_tap(x, y, 0.5)
+        # self.send_fake_swipe((150, 300), (150, 599), 500)
 
-        # base_dir = os.path.dirname(__file__)
-        # shellpath = os.path.join(base_dir, 'adbrecord.py')
-        # system(shellpath + ' -p click_search.log')
+        base_dir = os.path.dirname(__file__)
+        shellpath = os.path.join(base_dir, 'adbrecord.py')
+        # system(b'shellpath')
+        # system('adbdo')
+        # system('click_search.log')
+        # subprocess.call('adbdo', shell=True)
+
 
     def search_text(self):
         self.send_name_text(self.name)
