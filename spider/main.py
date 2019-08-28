@@ -1,8 +1,8 @@
 # 构造home请求获取 appmsg_token
 # 构造分页请求
 #
-from new_tools.load_list_parse import list_into_dbdata, list_parse
-from new_phone.operate import Operate
+from tools.load_list_parse import list_into_dbdata, list_parse
+from phone.operate import Operate
 from instance import redis_instance, db_instance, db_loadlist
 import json
 import re
