@@ -83,7 +83,7 @@ def tidy_data(data):
 
     for biz, obj in data.items():
         l_in_db = tidy_data_operate.get_l_in_mongo(biz) or {}
-        l_in_db['update_time'] = now_time_str
+
         icon_data = obj['geticon']
         msg_data = obj['getappmsgext']
         # print(icon_data)
@@ -93,11 +93,25 @@ def tidy_data(data):
 
         if not l_in_db:
             # 如果这是一个新的公众号
+            l_in_db['update_time'] = now_time_str
             l_in_db['create_time'] = now_time_str
+            l_in_db['Host'] = FakeHomeParams.headers['Host']
+            l_in_db['User-Agent'] = FakeHomeParams.headers['User-Agent']
+            l_in_db['biz'] = biz
+            # TODO bizname
+            # l_in_db['bizname'] = bizname
+            l_in_db['offset'] = 0
+            l_in_db['total_processed'] = 0
+
             tidy_data_operate.insert_l_in_mongo(biz)
             pass
         else:
             # 如果数据库中已经有了这个公众号
+            l_in_db['update_time'] = now_time_str
+            l_in_db['User-Agent'] = FakeHomeParams.headers['User-Agent']
+            # TODO calc
+            l_in_db['offset'] = 0
+            l_in_db['total_processed'] = 0
             tidy_data_operate.update_l_in_mongo(biz)
 
     return None
