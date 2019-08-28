@@ -4,15 +4,15 @@ import json
 # redis队列
 class RQ():
     """
-    使用redis创建一个队列FIFO
+    使用redis创建一个队列 FIFO 先进先出
     """
 
-    def __init__(self, key_name):
+    def __init__(self, q_name):
         """
         :param q_name:创建一个队列 开头处插入一个__BEGIN
         所有队列名称均以re__开头
         """
-        self.q_name = key_name
+        self.q_name = q_name
         self.redis = redis_instance
 
     def push(self, data):

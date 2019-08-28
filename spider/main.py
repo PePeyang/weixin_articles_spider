@@ -229,7 +229,7 @@ def operate_phone(client):
 if __name__ == '__main__':
     print('__main__')
     client = Operate('苏州青舞舞蹈艺术')
-    operate_phone(client)
+    # operate_phone(client)
 
 
     # 一组一组拿出来
