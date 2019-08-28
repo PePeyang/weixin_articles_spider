@@ -3,8 +3,8 @@ import logging
 import datetime
 from tools.data_queue import RQ
 from instance import redis_instance, db_instance
-from db.operate import insert_l_in_mongo, get_l_in_mongo, update_l_in_mongo
-
+from db.operate import Operate as DB_OPERATE
+# DB_OPERATE insert_l_in_mongo, get_l_in_mongo, update_l_in_mongo
 def get_data_from_redis():
     icons = redis_instance.keys('__fake_geticon*_REQUEST')
     msgs = redis_instance.keys('__fake_getappmsgext*_REQUEST')
