@@ -28,7 +28,7 @@ function sendToRedis(key, value) {
         console.log("NODE_INFO: 有可能是redis尚未启动...")
     });
     // 设置十分钟的有效期 因为geticon有效期差不多就这么多
-    client.set(key, value, 'EX', 60 * 10);
+    client.set(key, value, 'EX', 60 * 10 * 60);
     client.quit();
 };
 

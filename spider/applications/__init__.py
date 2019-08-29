@@ -2,17 +2,15 @@ import logging
 import time
 from crawl.get_redis_data import drop_data_from_redis, tidy_data
 from crawl.process_spider import listSpider
-from phone.process_operate import phoneOperator
+# from phone.process_operate import phoneOperator
+from phone.operate import Operate as phoneOperator
 from db.operate import BizsOperate
-BizsOperate
 from configs.crawler import CRAWL_MODE, CRAWL_COUNT, CRAWL_MIN
-from phone.operate import Operate
-# client = Operate('苏州青舞舞蹈艺术')
-# operate_phone(client)
+
+
 
 
 def proxy_listener(rqlist):
-    # client = Operate('苏州青舞舞蹈艺术')
     pass
 
 
@@ -41,12 +39,16 @@ def phone_operator():
 
     for bizobj in biznames:
         # print(bizobj)
-        phone_operate = phoneOperator(bizobj.fakename, bizobj.chname)
+        phone_operate = phoneOperator(bizobj['fakename'], bizobj['chname'])
         phone_operate.home_click()
+        phone_operate.search_text()
+        phone_operate.tab_click()
+        phone_operate.enter_into_gzh()
 
-        # print('休息十秒')
-        # time.sleep(10)
-        pass
+        break
+        print('休息十秒')
+        time.sleep(10)
+
 
     # client.home_click()
     # client.search_text()
