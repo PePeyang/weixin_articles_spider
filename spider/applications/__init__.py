@@ -2,8 +2,11 @@ import logging
 import time
 from crawl.get_redis_data import drop_data_from_redis, tidy_data
 from crawl.process_spider import listSpider
-from phone.operate import Operate
+from phone.process_operate import phoneOperator
+from db.operate import BizsOperate
+BizsOperate
 from configs.crawler import CRAWL_MODE, CRAWL_COUNT, CRAWL_MIN
+from phone.operate import Operate
 # client = Operate('苏州青舞舞蹈艺术')
 # operate_phone(client)
 
@@ -16,7 +19,7 @@ def proxy_listener(rqlist):
 def data_crawler(rqlist):
     while True:
         print('loop redis-server中的数据...')
-        time.sleep(6)
+        time.sleep(10)
         data = drop_data_from_redis()
         tidy_data(rqlist, data)
 
@@ -32,8 +35,19 @@ def data_crawler(rqlist):
     # TODO SSL ERROR
 
 
-def phone_operator(client):
-    pass
+def phone_operator():
+    bizname_operator = BizsOperate('bizname_operator')
+    biznames = bizname_operator.find_all_biznames()
+
+    for bizobj in biznames:
+        # print(bizobj)
+        phone_operate = phoneOperator(bizobj.fakename, bizobj.chname)
+        phone_operate.home_click()
+
+        # print('休息十秒')
+        # time.sleep(10)
+        pass
+
     # client.home_click()
     # client.search_text()
     # client.tab_click()

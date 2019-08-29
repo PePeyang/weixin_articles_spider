@@ -58,3 +58,13 @@ class LoadsOperate():
     def save_list_to_db(self, list_db):
         # TODO fix
         return db_instance.loads.insert_many(list_db)
+
+
+class BizsOperate():
+    def __init__(self, name):
+        # self.connect()
+        self.name = name
+        pass
+
+    def find_all_biznames(self):
+        return db_instance.biznames.find()

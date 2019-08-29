@@ -5,7 +5,6 @@ import os
 from os import system
 from phone.config import HOME_SEARCH_BUTTON, TOP_BACK_BUTTON_POS, KEY, TOP_DEL_BUTTON_POS, SOU_YI_SOU, GZH_TAB, GZH_ENTRY
 
-
 class Operate():
     def __init__(self, name):
         # self.connect()

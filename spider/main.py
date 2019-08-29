@@ -23,19 +23,19 @@ class Thread_2 (Thread):
 
 
 class Thread_3 (Thread):
-    def __init__(self, rqlist):
+    def __init__(self):
         Thread.__init__(self)
-        self.rqlist = rqlist
+
 
     def run(self):
-        phone_operator(self.rqlist)
+        phone_operator()
 
 
 if __name__ == '__main__':
     rqlist = RQ('_redis_queue_')
     # t1 = Thread_1(rqlist).start()
-    t2 = Thread_2(rqlist).start()
-    t3 = Thread_3(rqlist).start()
+    # t2 = Thread_2(rqlist).start()
+    t3 = Thread_3().start()
 
 
 
