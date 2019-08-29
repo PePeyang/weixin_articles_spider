@@ -79,9 +79,8 @@ class listSpider():
         while True :
             cur_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             print('当前时间: ' + cur_time)
-            # try:
             list_db_data = self.send_load_request()
-            print(list_db_data)
+            print('list_db_data的长度是 ' + str(len(list_db_data)))
             recently_processed += 10
             crawled_len += len(list_db_data)
             crawled_times += 1
@@ -120,11 +119,6 @@ class listSpider():
             print(db_err)
             raise Exception('save_list_to_db 数据库插入出错了')
 
-            # except Exception as err:
-            #     print('失败处理第 {} 个load请求，当前 offset= {} 一共爬取了{}个article'.format(
-            #         crawled_times, self.offset, crawled_len))
-            #     if str(err).find('无数据') > 0:
-            #         break
 
         l_in_db['start_article'] = ss
         l_in_db['end_article'] = self.end_article
@@ -219,15 +213,19 @@ class listSpider():
             # 转一步，变成 { list : []} 结构
             list_parse_res = list_parse(eval(response.text))
 
-        self.offset += len(list_parse_res['list'])
         print(' --- list_parse_res ---')
-        # print(list_parse_res['list'])
+        print('list_parse_res的数据为')
+        print(str(list_parse_res)[0:100])
+        self.offset += len(list_parse_res['list'])
 
         # 转两步，变成 [] 结构 并且取出里面还有可能有的 multiply list
         list_db_data = list_into_dbdata(list_parse_res)
         if not list_db_data:
             raise Exception('list_into_dbdata 后面无数据了')
 
+        print(' --- list_parse_res ---')
+        print('list_db_data的数据为')
+        print(str(list_db_data)[0:100])
         return list_db_data
 
 

@@ -6,7 +6,7 @@
 4. 成功有内容的return load_list
 """
 def list_parse(load_res_dict):
-    print(type(load_res_dict['general_msg_list']))
+    # print(type(load_res_dict['general_msg_list']))
     load_list = {
         'list': []
     }
@@ -33,18 +33,20 @@ return list
 TODO 存入biz 公众号名字 发表时间
 """
 def list_into_dbdata(obj):
-    try:
-        list_lo = obj['list']
-        list_db = list()
-        if not isinstance(list_lo, list):
-            print('list_lo 不是list类型')
-            print(list_lo)
-            return
+    list_lo = obj['list']
+    list_db = list()
+    if not isinstance(list_lo, list):
+        print('list_lo 不是list类型')
+        print(list_lo)
+        return
 
-        if len(list_lo) > 0:
-            for big_li in list_lo:
-                big_item = {}
-                big_item['is_multi_app_msg_item_list'] = 'NO'
+    if len(list_lo) > 0:
+        for big_li in list_lo:
+            big_item = {}
+            big_item['is_multi_app_msg_item_list'] = 'NO'
+            # 可能没有app_msg_ext_info
+            if 'app_msg_ext_info' in big_li.keys():
+                print('有app_msg_ext_info')
                 for b_key, b_value in big_li['app_msg_ext_info'].items():
                     if b_key == 'content_url' or b_key == 'cover' or b_key == 'source_url':
                         b_value = b_value.replace('\\', '')
@@ -61,10 +63,7 @@ def list_into_dbdata(obj):
                     else:
                         big_item[b_key] = b_value
                 list_db.append(big_item)
-            # print(len(list_db))
-            return list_db
-        else:
-            return None
-    except Exception as err:
-        print(err)
-        print('list_into_dbdata错误')
+        # print(len(list_db))
+        return list_db
+    else:
+        return None

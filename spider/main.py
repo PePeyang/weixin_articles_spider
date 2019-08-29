@@ -46,5 +46,5 @@ if __name__ == '__main__':
     rqlist = RQ('_redis_queue_')
     # t1 = Thread_1(rqlist).start()
     t2 = Thread_2(rqlist).start()
-    t3 = Thread_3().start()
+    # t3 = Thread_3().start()
 
