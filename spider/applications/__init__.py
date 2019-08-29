@@ -18,7 +18,7 @@ def proxy_listener(rqlist):
 def data_crawler(rqlist):
     while True:
         print('loop redis-server中的数据...')
-        time.sleep(20)
+
         data = drop_data_from_redis()
         tidy_data(rqlist, data)
 
@@ -30,6 +30,7 @@ def data_crawler(rqlist):
             lspider.prepare()
             lspider.run()
 
+        time.sleep(20)
     # TODO 可能会有错误的公众号数据
     # TODO 可能有的公众号不给key
     # TODO SSL ERROR
@@ -44,13 +45,13 @@ def phone_operator():
         phone_operate = phoneOperator(bizobj['fakename'], bizobj['chname'])
         phone_operate.home_click()
         phone_operate.search_text()
-        phone_operate.tab_click()
-        phone_operate.tab_click()
+        # phone_operate.tab_click()
+        # phone_operate.tab_click()
         phone_operate.enter_into_gzh()
         phone_operate.enter_into_article()
-        phone_operate.click_more_button()
-        phone_operate.click_refresh_button()
-        phone_operate.click_back_button()
+        # phone_operate.click_more_button()
+        # phone_operate.click_refresh_button()
+        # phone_operate.click_back_button()
         phone_operate.click_back_button()
         phone_operate.click_back_button()
         phone_operate.click_back_button()

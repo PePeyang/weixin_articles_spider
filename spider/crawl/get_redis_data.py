@@ -18,32 +18,27 @@ def drop_data_from_redis():
     pat1 = re.compile("__fake_geticon_biz=(.*?)_REQUEST")
     pat2 = re.compile("__fake_getappmsgext_biz=(.*?)_REQUEST")
 
-    try:
-        for icon in icons:
-            # print(icon)
-            biz = pat1.findall(icon.decode(), pos=0)[0]
-            # print(biz)
-            # continue
-            data[biz] = {}
-            data[biz]['geticon'] = redis_instance.get(icon).decode()
-            redis_instance.delete(icon)
+    for icon in icons:
+        # print(icon)
+        biz = pat1.findall(icon.decode(), pos=0)[0]
+        # print(biz)
+        # continue
+        data[biz] = {}
+        data[biz]['geticon'] = redis_instance.get(icon).decode()
+        redis_instance.delete(icon)
 
-        for msg in msgs:
-            # print(msg)
-            biz = pat2.findall(msg.decode(), pos=0)[0]
-            # print(biz)
-            # continue
-            if data[biz]['geticon']:
-                data[biz]['getappmsgext'] = redis_instance.get(msg).decode()
-            else:
-                data[biz] = {}
-                data[biz]['getappmsgext'] = redis_instance.get(msg).decode()
+    for msg in msgs:
+        # print(msg)
+        biz = pat2.findall(msg.decode(), pos=0)[0]
+        # print(biz)
+        # continue
+        if 'geticon' in data[biz]:
+            data[biz]['getappmsgext'] = redis_instance.get(msg).decode()
             redis_instance.delete(msg)
-
-    except Exception as err:
-        logging.error(err)
-        logging.info('请检查redis数据')
-
+        else:
+            data[biz] = {}
+            data[biz]['getappmsgext'] = redis_instance.get(msg).decode()
+            redis_instance.delete(msg)
     # print(data)
     return data
 
@@ -116,12 +111,8 @@ def tidy_data(rqlist, data):
     for biz, obj in data.items():
         # print(biz)
         l_in_db = tidy_data_operate.get_l_in_mongo(biz) or {}
-        # print(type(l_in_db)) dict
-        # print(l_in_db)
         icon_data = obj['geticon']
         msg_data = obj['getappmsgext']
-        # print(icon_data)
-        # print(msg_data)
         _build_home_request_1(eval(icon_data))
         _build_home_request_2(eval(msg_data))
 
