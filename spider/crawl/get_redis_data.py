@@ -78,9 +78,8 @@ def _build_home_request_2(data):
 
 def tidy_data(data):
     tidy_data_operate = DB_OPERATE('tidy_data_operate')
-    l = list()
     now_time_str = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-
+    rqlist = RQ('redis_queue_one' + now_time_str)
     for biz, obj in data.items():
         l_in_db = tidy_data_operate.get_l_in_mongo(biz) or {}
 
@@ -98,12 +97,14 @@ def tidy_data(data):
             l_in_db['Host'] = FakeHomeParams.headers['Host']
             l_in_db['User-Agent'] = FakeHomeParams.headers['User-Agent']
             l_in_db['biz'] = biz
+            l_in_db['update_count'] = 1
             # TODO bizname
             # l_in_db['bizname'] = bizname
             l_in_db['offset'] = 0
             l_in_db['total_processed'] = 0
-
-            tidy_data_operate.insert_l_in_mongo(biz)
+            # l_in_db['start_link_id'] = 0
+            # l_in_db['end_link_id'] = 0
+            tidy_data_operate.insert_l_in_mongo(l_in_db)
             pass
         else:
             # 如果数据库中已经有了这个公众号
@@ -112,6 +113,7 @@ def tidy_data(data):
             # TODO calc
             l_in_db['offset'] = 0
             l_in_db['total_processed'] = 0
-            tidy_data_operate.update_l_in_mongo(biz)
+            tidy_data_operate.update_l_in_mongo(biz, l_in_db)
 
-    return None
+        rqlist.addItem(l_in_db)
+    return rqlist
