@@ -71,7 +71,7 @@ def _build_home_request_2(data):
     biz = req_data['__biz'][0]
     # print('X-WECHAT-UIN=' + data['REQUEST_HEADERS']['X-WECHAT-UIN'])
     # print('X-WECHAT-KEY=' + data['REQUEST_HEADERS']['X-WECHAT-KEY'])
-    print('biz=' + biz)
+    # print('biz=' + biz)
     FakeHomeParams.params = replace_at_index(
         FakeHomeParams.params, 1, ('__biz', biz))
 
@@ -81,8 +81,10 @@ def tidy_data(data):
     now_time_str = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     rqlist = RQ('redis_queue_one' + now_time_str)
     for biz, obj in data.items():
+        # print(biz)
         l_in_db = tidy_data_operate.get_l_in_mongo(biz) or {}
-
+        # print(type(l_in_db)) dict
+        # print(l_in_db)
         icon_data = obj['geticon']
         msg_data = obj['getappmsgext']
         # print(icon_data)

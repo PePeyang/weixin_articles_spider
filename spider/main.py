@@ -150,9 +150,13 @@ if __name__ == '__main__':
 
     from crawl.get_redis_data import get_data_from_redis, tidy_data
     data = get_data_from_redis()
-    tidy_data(data)
+    rqlist = tidy_data(data)
+    print(' --- rqlist --- ')
+    print(rqlist)
 
-
+    while not rqlist.isEmpty():
+        rq = rqlist.popItem()
+        print(rq)
     # client = Operate('苏州青舞舞蹈艺术')
     # operate_phone(client)
 
