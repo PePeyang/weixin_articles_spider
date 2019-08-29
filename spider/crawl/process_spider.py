@@ -25,11 +25,12 @@ class listSpider():
     all_articles. [最新的, 到所有] offset=0 注意覆盖而已
     """
     # count 是10的倍数
-    def __init__(self, rq, mode, count):
+    def __init__(self, rq, mode, count, crawl_min):
         self.rq = rq
         self.biz = rq['biz']
         # TODO
         self.title = ''
+        self.end_article = {}
         if rq['start_article']:
             self.title = rq['start_article']['title']
         if rq['end_article']:
@@ -39,6 +40,7 @@ class listSpider():
 
         self.mode = mode
         self.count = count
+        self.crawl_min = crawl_min
 
     def prepare(self):
         print(' --- listSpider prepare ---')
@@ -97,14 +99,18 @@ class listSpider():
 
             start_articles = list_db_data
 
-            for idx, article in enumerate(start_articles):
-                if self.title == article['title']:
-                    stop_idx = idx
-                    print('找到了:  stop_idx {}'.format(stop_idx))
-                    break
+            if self.title != '':
+                for idx, article in enumerate(start_articles):
+                    if self.title == article['title']:
+                        stop_idx = idx
+                        print('找到了:  stop_idx {}'.format(stop_idx))
+                        break
+                else:
+                    continue
+                break
             else:
-                continue
-            break
+                if crawled_times == self.crawl_min / 10:
+                    break
 
         # 数据入库
         try:

@@ -1,2 +1,4 @@
-# adb_ports = ['127.0.0.1:62001','127.0.0.1:62025','127.0.0.1:62026']
-adb_ports = []
+# count_articles
+CRAWL_MODE = 'new_articles'
+CRAWL_MIN = 10
+CRAWL_COUNT = 20

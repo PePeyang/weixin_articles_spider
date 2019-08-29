@@ -1,46 +1,43 @@
-# 构造home请求获取 appmsg_token
-# 构造分页请求
-#
-from tools.load_list_parse import list_into_dbdata, list_parse
-from phone.operate import Operate
-from instance import redis_instance, db_instance, db_loadlist
-import json
-import re
+from tools.data_queue import RQ
+from threading import Thread
+from applications import proxy_listener, data_crawler, phone_operator
+import datetime
 
 
+class Thread_1 (Thread):
+    def __init__(self, rqlist):
+        Thread.__init__(self)
+        self.rqlist = rqlist
 
-def operate_phone(client):
-    client.home_click()
-    # client.search_text()
-    # client.tab_click()
-    # client.enter_into_gzh()
+    def run(self):
+        proxy_listener(self.rqlist)
+
+
+class Thread_2 (Thread):
+    def __init__(self, rqlist):
+        Thread.__init__(self)
+        self.rqlist = rqlist
+
+    def run(self):
+        data_crawler(self.rqlist)
+
+
+class Thread_3 (Thread):
+    def __init__(self, rqlist):
+        Thread.__init__(self)
+        self.rqlist = rqlist
+
+    def run(self):
+        phone_operator(self.rqlist)
 
 
 if __name__ == '__main__':
-    print('__main__')
-    bizname = '东朗国际教育'
-    from crawl.get_redis_data import get_data_from_redis, tidy_data
-    from crawl.process_spider import listSpider
-
-    data = get_data_from_redis()
-    rqlist = tidy_data(data, bizname)
-    # print(' --- rqlist --- ')
-    # print(rqlist)
-
-    # TODO 可能会有错误的公众号数据
-    # TODO 可能有的公众号不给key
-    # TODO SSL ERROR
-
-    while not rqlist.isEmpty():
-        rq = rqlist.popItem()
-        # lspider = listSpider(rq, 'count_articles', 20)
-        lspider = listSpider(rq, 'new_articles', 0)
-        lspider.prepare()
-        lspider.run()
+    rqlist = RQ('_redis_queue_')
+    # t1 = Thread_1(rqlist).start()
+    t2 = Thread_2(rqlist).start()
+    t3 = Thread_3(rqlist).start()
 
 
-    # client = Operate('苏州青舞舞蹈艺术')
-    # operate_phone(client)
 
 
 
