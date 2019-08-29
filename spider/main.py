@@ -12,6 +12,10 @@ class Thread_1 (Thread):
     def run(self):
         proxy_listener(self.rqlist)
 
+    def join(self):
+        Thread.join(self)
+
+
 
 class Thread_2 (Thread):
     def __init__(self, rqlist):
@@ -19,7 +23,14 @@ class Thread_2 (Thread):
         self.rqlist = rqlist
 
     def run(self):
-        data_crawler(self.rqlist)
+        try:
+            data_crawler(self.rqlist)
+        except BaseException as e:
+            print(e)
+            self.run()
+
+    def join(self):
+        Thread.join(self)
 
 
 class Thread_3 (Thread):
@@ -34,16 +45,6 @@ class Thread_3 (Thread):
 if __name__ == '__main__':
     rqlist = RQ('_redis_queue_')
     # t1 = Thread_1(rqlist).start()
-    # t2 = Thread_2(rqlist).start()
+    t2 = Thread_2(rqlist).start()
     t3 = Thread_3().start()
-
-
-
-
-
-
-
-
-
-
 

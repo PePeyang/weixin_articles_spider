@@ -81,7 +81,7 @@ class listSpider():
             print('当前时间: ' + cur_time)
             # try:
             list_db_data = self.send_load_request()
-            # print(list_db_data)
+            print(list_db_data)
             recently_processed += 10
             crawled_len += len(list_db_data)
             crawled_times += 1

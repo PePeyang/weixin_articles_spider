@@ -77,13 +77,17 @@ def _build_home_request_2(data):
 
     req_data = urlparse.parse_qs(data['REQUEST_DATA'])
     biz = req_data['__biz'][0]
+    FakeHomeParams.params = replace_at_index(
+        FakeHomeParams.params, 1, ('__biz', biz))
+
     # 不放心 再弄一次
     if req_data['pass_ticket']:
         print('这里果然有！')
         print(req_data['pass_ticket'])
         FakeHomeParams.cookies['pass_ticket'] = req_data['pass_ticket'][0]
-    FakeHomeParams.params = replace_at_index(
-        FakeHomeParams.params, 1, ('__biz', biz))
+        FakeLoadParams.cookies['pass_ticket'] = req_data['pass_ticket'][0]
+        FakeLoadParams.params = replace_at_index(
+            FakeLoadParams.params, 9, ('pass_ticket', req_data['pass_ticket'][0]))
 
     cookie = SimpleCookie()
     cookie.load(data['REQUEST_COOKIE'])
@@ -91,13 +95,18 @@ def _build_home_request_2(data):
     cookies = {i.key: i.value for i in cookie.values()}
     print(' --- _build_home_request_2 ---')
     print(cookies)
-    if not FakeLoadParams.cookies['pass_ticket']:
+
+    try:
+        cookies['wap_sid2']
+        cookies['pass_ticket']
+        FakeLoadParams.cookies['wap_sid2'] = cookies['wap_sid2']
         FakeLoadParams.cookies['pass_ticket'] = cookies['pass_ticket']
         FakeLoadParams.params = replace_at_index(
             FakeLoadParams.params, 9, ('pass_ticket', cookies['pass_ticket']))
+    except Exception as err:
+        pass
 
-    if not FakeLoadParams.cookies['wap_sid2']:
-        FakeLoadParams.cookies['wap_sid2'] = cookies['wap_sid2']
+
 
 
 def tidy_data(rqlist, data):
