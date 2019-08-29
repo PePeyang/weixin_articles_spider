@@ -65,8 +65,12 @@ def _build_home_request_1(data):
 
 def _build_home_request_2(data):
     # print(data)
-    FakeHomeParams.headers['x-wechat-uin'] = data['REQUEST_HEADERS']['X-WECHAT-UIN']
-    FakeHomeParams.headers['x-wechat-key'] = data['REQUEST_HEADERS']['X-WECHAT-KEY']
+    try:
+        FakeHomeParams.headers['x-wechat-uin'] = data['REQUEST_HEADERS']['X-WECHAT-UIN']
+        FakeHomeParams.headers['x-wechat-key'] = data['REQUEST_HEADERS']['X-WECHAT-KEY']
+    except Exception as err:
+        print('无 x-wechat-key 和 x-wechat-uin')
+        print(err)
 
 
     req_data = urlparse.parse_qs(data['REQUEST_DATA'])
@@ -76,10 +80,19 @@ def _build_home_request_2(data):
         print('这里果然有！')
         print(req_data['pass_ticket'])
         FakeHomeParams.cookies['pass_ticket'] = req_data['pass_ticket'][0]
-    # print('X-WECHAT-KEY=' + data['REQUEST_HEADERS']['X-WECHAT-KEY'])
-    # print('biz=' + biz)
     FakeHomeParams.params = replace_at_index(
         FakeHomeParams.params, 1, ('__biz', biz))
+
+    cookie = SimpleCookie()
+    cookie.load(data['REQUEST_COOKIE'])
+    cookies = {}
+    cookies = {i.key: i.value for i in cookie.values()}
+    print(' --- _build_home_request_2 ---')
+    print(cookies)
+    FakeLoadParams.cookies['pass_ticket'] = cookies['pass_ticket']
+    FakeLoadParams.params = replace_at_index(
+        FakeLoadParams.params, 9, ('pass_ticket', cookies['pass_ticket']))
+    FakeLoadParams.cookies['wap_sid2'] = cookies['wap_sid2']
 
 
 def tidy_data(data):
@@ -108,7 +121,8 @@ def tidy_data(data):
             l_in_db['update_count'] = 1
             # TODO bizname
             # l_in_db['bizname'] = bizname
-            l_in_db['offset'] = 0
+            l_in_db['start_index'] = 0
+            l_in_db['end_index'] = 0
             l_in_db['total_processed'] = 0
             # l_in_db['start_link_id'] = 0
             # l_in_db['end_link_id'] = 0
@@ -119,7 +133,8 @@ def tidy_data(data):
             l_in_db['update_time'] = now_time_str
             l_in_db['User-Agent'] = FakeHomeParams.headers['User-Agent']
             # TODO calc
-            l_in_db['offset'] = 0
+            l_in_db['start_index'] = 0
+            l_in_db['end_index'] = 0
             l_in_db['total_processed'] = 0
             tidy_data_operate.update_l_in_mongo(biz, l_in_db)
 

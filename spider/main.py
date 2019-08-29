@@ -33,8 +33,9 @@ if __name__ == '__main__':
     while not rqlist.isEmpty():
         rq = rqlist.popItem()
         # print(rq)
-        lspider = listSpider(rq)
-        lspider.start()
+        lspider = listSpider(rq, 'count_articles', 20)
+        lspider.prepare()
+        lspider.run()
 
 
     # client = Operate('苏州青舞舞蹈艺术')

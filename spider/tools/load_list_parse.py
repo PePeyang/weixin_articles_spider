@@ -11,18 +11,19 @@ def list_parse(load_res_dict):
         'list': []
     }
     if not load_res_dict['ret'] == 0:
-        return load_res_dict
-    elif not type(load_res_dict['general_msg_list']) == type(str('s')):
-        return load_res_dict
+        return load_list
+    elif not type(load_res_dict['general_msg_list']) == type('s'):
+        return load_list
     else:
         load_list = eval(load_res_dict['general_msg_list'])
-        if (not isinstance(load_list['list'], list)) or (len(load_list['list']) == 0):
-            return load_res_dict
-        else:
-            print('Success')
-            # print(load_list)
+        return load_list
+        # if (not isinstance(load_list['list'], list)) or (len(load_list['list']) == 0):
+        #     return load_list
+        # else:
+        #     print('Success')
+        #     return load_list
 
-    return load_list
+
 
 
 """
