@@ -1,6 +1,6 @@
 from instance import db_instance
 import json
-class Operate():
+class TaskOperate():
     def __init__(self, name):
         # self.connect()
         self.name = name
@@ -32,4 +32,12 @@ class Operate():
             }
         )
 
+class LoadsOperate():
+    def __init__(self, name):
+        # self.connect()
+        self.name = name
+        pass
 
+    def save_list_to_db(self, list_db):
+        # TODO fix
+        return db_instance.loads.insert_many(list_db)

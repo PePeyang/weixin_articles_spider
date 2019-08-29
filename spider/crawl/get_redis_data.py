@@ -7,7 +7,7 @@ import urllib.parse as urlparse
 from tools import replace_at_index
 from tools.data_queue import RQ
 from instance import redis_instance, db_instance
-from db.operate import Operate as DB_OPERATE
+from db.operate import TaskOperate
 # DB_OPERATE insert_l_in_mongo, get_l_in_mongo, update_l_in_mongo
 from items.home_request import FakeHomeParams
 from items.list_request import FakeLoadParams
@@ -56,7 +56,7 @@ def _build_home_request_1(data):
     # biz = urlparse.parse_qs(data['REQUEST_URL'].split('?')[1])['__biz'][0]
     FakeHomeParams.cookies['wxuin'] = cookies['wxuin']
     # FakeHomeParams.cookies['version'] = cookies['version'] # version 应该有但是cookie转换后就是没有
-    FakeHomeParams.cookies['pass_ticket'] = cookies['pass_ticket']
+    FakeHomeParams.cookies['pass_ticket'] = cookies['pass_ticket'] or ''
     FakeHomeParams.cookies['wap_sid2'] = cookies['wap_sid2']
     FakeHomeParams.params = replace_at_index(
         FakeHomeParams.params, 8, ('pass_ticket', cookies['pass_ticket']))
@@ -67,9 +67,15 @@ def _build_home_request_2(data):
     # print(data)
     FakeHomeParams.headers['x-wechat-uin'] = data['REQUEST_HEADERS']['X-WECHAT-UIN']
     FakeHomeParams.headers['x-wechat-key'] = data['REQUEST_HEADERS']['X-WECHAT-KEY']
+
+
     req_data = urlparse.parse_qs(data['REQUEST_DATA'])
     biz = req_data['__biz'][0]
-    # print('X-WECHAT-UIN=' + data['REQUEST_HEADERS']['X-WECHAT-UIN'])
+    # 不放心 再弄一次
+    if req_data['pass_ticket']:
+        print('这里果然有！')
+        print(req_data['pass_ticket'])
+        FakeHomeParams.cookies['pass_ticket'] = req_data['pass_ticket'][0]
     # print('X-WECHAT-KEY=' + data['REQUEST_HEADERS']['X-WECHAT-KEY'])
     # print('biz=' + biz)
     FakeHomeParams.params = replace_at_index(
@@ -77,7 +83,7 @@ def _build_home_request_2(data):
 
 
 def tidy_data(data):
-    tidy_data_operate = DB_OPERATE('tidy_data_operate')
+    tidy_data_operate = TaskOperate('tidy_data_operate')
     now_time_str = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     rqlist = RQ('redis_queue_one' + now_time_str)
     for biz, obj in data.items():
