@@ -80,23 +80,24 @@ class listSpider():
             crawled_times += 1
 
             crawl_operate = TaskOperate('crawl_operate')
-            # if crawled_times == 1:
-            #     for item in list_db_data:
-            #         if item['is_multi_app_msg_item_list'] == 'NO':
-            #             ss = json.dumps(item)
-            #             break
-            #         else:
-            #             continue
-            #     # TODO 万一不再这一次的爬取里面怎么办。。也就是crawled_times!=1
-            #     # print(ss)
+            if crawled_times == 1:
+                for item in list_db_data:
+                    if item['is_multi_app_msg_item_list'] == 'NO':
+                        # print(item)
+                        ss = item
+                        break
+                    else:
+                        continue
+                # TODO 万一不再这一次的爬取里面怎么办。。也就是crawled_times!=1
+                # print(ss)
 
-            # if crawled_times == self.count / 10:
-            #     for item in reversed(list_db_data):
-            #         if item['is_multi_app_msg_item_list'] == 'NO':
-            #             ee = json.dumps(item)
-            #             break
-            #         else:
-            #             continue
+            if crawled_times == self.count / 10:
+                for item in reversed(list_db_data):
+                    if item['is_multi_app_msg_item_list'] == 'NO':
+                        ee = item
+                        break
+                    else:
+                        continue
                 # print(ee)
 
             # except Exception as err:
