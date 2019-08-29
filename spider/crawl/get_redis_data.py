@@ -95,7 +95,7 @@ def _build_home_request_2(data):
     FakeLoadParams.cookies['wap_sid2'] = cookies['wap_sid2']
 
 
-def tidy_data(data):
+def tidy_data(data, bizname):
     tidy_data_operate = TaskOperate('tidy_data_operate')
     now_time_str = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     rqlist = RQ('redis_queue_one' + now_time_str)
@@ -119,24 +119,21 @@ def tidy_data(data):
             l_in_db['User-Agent'] = FakeHomeParams.headers['User-Agent']
             l_in_db['biz'] = biz
             l_in_db['update_count'] = 1
-            # TODO bizname
-            # l_in_db['bizname'] = bizname
+            l_in_db['bizname'] = bizname
+            l_in_db['total_processed'] = 0
+
             l_in_db['start_index'] = 0
             l_in_db['end_index'] = 0
-            l_in_db['total_processed'] = 0
-            # l_in_db['start_link_id'] = 0
-            # l_in_db['end_link_id'] = 0
+            l_in_db['start_article'] = ''
+            l_in_db['end_article'] = ''
             tidy_data_operate.insert_l_in_mongo(l_in_db)
             pass
         else:
             # 如果数据库中已经有了这个公众号
             l_in_db['update_time'] = now_time_str
             l_in_db['User-Agent'] = FakeHomeParams.headers['User-Agent']
-            # TODO calc
-            l_in_db['start_index'] = 0
-            l_in_db['end_index'] = 0
-            l_in_db['total_processed'] = 0
-            tidy_data_operate.update_l_in_mongo(biz, l_in_db)
+
+
 
         rqlist.addItem(l_in_db)
     return rqlist

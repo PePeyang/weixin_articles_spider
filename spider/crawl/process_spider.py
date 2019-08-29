@@ -1,4 +1,7 @@
+import logging
 import re
+import urllib3
+import json
 import requests
 import time
 import datetime
@@ -7,6 +10,7 @@ from items.list_request import FakeLoadParams
 from tools import replace_at_index
 from tools.load_list_parse import list_into_dbdata, list_parse
 from db.operate import LoadsOperate
+from db.operate import TaskOperate
 
 class NORMAL_URLS:
     home = "https://mp.weixin.qq.com/mp/profile_ext"
@@ -23,6 +27,7 @@ class listSpider():
     # count 是10的倍数
     def __init__(self, rq, mode, count):
         self.rq = rq
+        self.biz = rq['biz']
         # self.start_id = rq['start_index']
         self.offset = 0
 
@@ -60,20 +65,49 @@ class listSpider():
         # return
         crawled_times = 0
         crawled_len = 0
+        ss = 'ss'
+        ee = 'ee'
+        total_processed = 0
+        l_in_db = {}
         while crawled_times < self.count / 10:
             cur_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             print('当前时间: ' + cur_time)
-            try:
-                list_db_data = self.send_load_request()
-                print(list_db_data)
-                crawled_len += len(list_db_data)
-                crawled_times += 1
+            # try:
+            list_db_data = self.send_load_request()
+            # print(list_db_data)
+            total_processed += 10
+            crawled_len += len(list_db_data)
+            crawled_times += 1
 
-            except Exception as err:
-                print('失败处理第 {} 个load请求，当前 offset= {} 一共爬取了{}个article'.format(
-                    crawled_times, self.offset, crawled_len))
-                if str(err).find('无数据') > 0:
-                    break
+            crawl_operate = TaskOperate('crawl_operate')
+            # if crawled_times == 1:
+            #     for item in list_db_data:
+            #         if item['is_multi_app_msg_item_list'] == 'NO':
+            #             ss = json.dumps(item)
+            #             break
+            #         else:
+            #             continue
+            #     # TODO 万一不再这一次的爬取里面怎么办。。也就是crawled_times!=1
+            #     # print(ss)
+
+            # if crawled_times == self.count / 10:
+            #     for item in reversed(list_db_data):
+            #         if item['is_multi_app_msg_item_list'] == 'NO':
+            #             ee = json.dumps(item)
+            #             break
+            #         else:
+            #             continue
+                # print(ee)
+
+            # except Exception as err:
+            #     print('失败处理第 {} 个load请求，当前 offset= {} 一共爬取了{}个article'.format(
+            #         crawled_times, self.offset, crawled_len))
+            #     if str(err).find('无数据') > 0:
+            #         break
+        l_in_db['start_article'] = ss
+        l_in_db['end_article'] = ee
+        l_in_db['total_processed'] = 0
+        crawl_operate.update_crawldata_in_mongo(self.biz, l_in_db)
 
 
 
@@ -81,18 +115,20 @@ class listSpider():
         pass
 
     def send_load_request(self):
+        time.sleep(3)
         load_operate = LoadsOperate('load_operate')
         # 循环机制改变一下 需要捕捉到所有的真实错误
         # ANCHOR 测试结果 一天最多请求 1000次
         list_parse_res = {}
         FakeLoadParams.params = replace_at_index(
             FakeLoadParams.params, 3, ('offset', self.offset))
-
+        urllib3.disable_warnings()
         response = requests.get(
             NORMAL_URLS.load,
             headers=FakeLoadParams.headers,
             params=FakeLoadParams.params,
-            cookies=FakeLoadParams.cookies
+            cookies=FakeLoadParams.cookies,
+            verify=False
         )
 
         if response.content.decode().find('操作频繁') > 0:
@@ -117,7 +153,7 @@ class listSpider():
         except Exception as db_err:
             print(db_err)
             raise Exception('save_list_to_db 数据库插入出错了')
-        time.sleep(3)
+
         return list_db_data
 
 
@@ -136,8 +172,14 @@ class listSpider():
 
     def send_home_request(self):
         # response网络请求是同步
-        response = requests.get(NORMAL_URLS.home,
-                                headers=FakeHomeParams.headers, params=FakeHomeParams.params, cookies=FakeHomeParams.cookies)
+        urllib3.disable_warnings()
+        response = requests.get(
+            NORMAL_URLS.home,
+            headers=FakeHomeParams.headers,
+            params=FakeHomeParams.params,
+            cookies=FakeHomeParams.cookies,
+            verify=False
+        )
         if response.content.decode().find('失效的验证页面') > 0:
             print('失效的验证页面')
             return

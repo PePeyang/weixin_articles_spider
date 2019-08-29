@@ -44,6 +44,7 @@ def list_into_dbdata(obj):
         if len(list_lo) > 0:
             for big_li in list_lo:
                 big_item = {}
+                big_item['is_multi_app_msg_item_list'] = 'NO'
                 for b_key, b_value in big_li['app_msg_ext_info'].items():
                     if b_key == 'content_url' or b_key == 'cover' or b_key == 'source_url':
                         b_value = b_value.replace('\\', '')
@@ -51,6 +52,7 @@ def list_into_dbdata(obj):
                         for small_li in b_value:
                             # print(small_li)
                             small_item = {}
+                            small_item['is_multi_app_msg_item_list'] = 'YES'
                             for s_key, s_value in small_li.items():
                                 if s_key == 'content_url' or s_key == 'cover' or s_key == 'source_url':
                                     s_value = s_value.replace('\\', '')

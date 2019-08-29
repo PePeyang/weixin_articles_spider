@@ -1,5 +1,7 @@
 from instance import db_instance
 import json
+import datetime
+
 class TaskOperate():
     def __init__(self, name):
         # self.connect()
@@ -19,7 +21,7 @@ class TaskOperate():
     def remove_l_in_mongo(self, biz):
         return db_instance.tasks.find_one_and_delete({'biz': biz})
 
-    # json
+
     def update_l_in_mongo(self, biz, update_dict):
         return db_instance.tasks.find_one_and_update(
             filter={'biz': biz},
@@ -31,6 +33,21 @@ class TaskOperate():
                 }
             }
         )
+
+    def update_crawldata_in_mongo(self, biz, update_dict):
+        return db_instance.tasks.find_one_and_update(
+            filter={'biz': biz},
+            update={
+                '$inc': {'update_count': 1},
+                '$set': {
+                    'start_article': update_dict['start_article'],
+                    'end_article': update_dict['end_article'],
+                    'total_processed': update_dict['total_processed'],
+                    'update_time': datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+                }
+            }
+        )
+
 
 class LoadsOperate():
     def __init__(self, name):
