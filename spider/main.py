@@ -13,70 +13,6 @@ from http.cookies import SimpleCookie
 from http import cookiejar
 import urllib.parse as urlparse
 
-class NORMAL_URLS:
-    home = "https://mp.weixin.qq.com/mp/profile_ext?action=home"
-    getmsg = "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg"
-    article = "https://mp.weixin.qq.com/s?"
-
-
-
-
-# def send_request():
-#     response = requests.get('https://mp.weixin.qq.com/mp/profile_ext',
-#                         headers=Fakehomeparams.headers, params=Fakehomeparams.params, cookies=Fakehomeparams.cookies)
-#     if response.content.decode().find('失效的验证页面') > 0:
-#         print('失效的验证页面')
-#     else:
-#         login_cookies = requests.utils.dict_from_cookiejar(response.cookies)
-#         print('第二次的wap_sid2=' + login_cookies['wap_sid2'])
-#         print('pass_ticket=' + login_cookies['pass_ticket'])
-#         Fakeloadparams.cookies['pass_ticket'] = login_cookies['pass_ticket']
-#         Fakeloadparams.cookies['wap_sid2'] = login_cookies['wap_sid2']
-#         Fakeloadparams.params = replace_at_index(
-#             Fakeloadparams.params, 9, ('pass_ticket', login_cookies['pass_ticket']))
-#         return response.content.decode()
-
-
-
-# def build_home_request_1(data):
-#     # print(data)
-#     cookie = SimpleCookie()
-#     cookie.load(data['REQUEST_COOKIE'])
-#     cookies = {}
-#     cookies = {i.key: i.value for i in cookie.values()}
-#     Fakehomeparams.cookies['wxuin'] = cookies['wxuin']
-#     # Fakehomeparams.cookies['version'] = cookies['version']
-#     Fakehomeparams.cookies['pass_ticket'] = cookies['pass_ticket']
-#     Fakehomeparams.cookies['wap_sid2'] = cookies['wap_sid2']
-#     Fakehomeparams.params = replace_at_index(
-#         Fakehomeparams.params, 8, ('pass_ticket', cookies['pass_ticket']))
-
-# def build_home_request_2(data):
-#     # print(data)
-#     Fakehomeparams.headers['x-wechat-uin'] = data['REQUEST_HEADERS']['X-WECHAT-UIN']
-#     Fakehomeparams.headers['x-wechat-key'] = data['REQUEST_HEADERS']['X-WECHAT-KEY']
-#     biz = urlparse.parse_qs(data['REQUEST_DATA'])['__biz'][0]
-#     print('X-WECHAT-UIN=' + data['REQUEST_HEADERS']['X-WECHAT-UIN'])
-#     print('X-WECHAT-KEY=' + data['REQUEST_HEADERS']['X-WECHAT-KEY'])
-#     print('biz=' + biz)
-#     Fakehomeparams.params = replace_at_index(
-#         Fakehomeparams.params, 1, ('__biz', biz))
-
-
-
-# def build_load_request(appmsg_token):
-#     print(appmsg_token)
-
-#     Fakeloadparams.params = replace_at_index(
-#         Fakeloadparams.params, 1, ('__biz', Fakehomeparams.params[1][1]))
-
-#     Fakeloadparams.params = replace_at_index(
-#         Fakeloadparams.params, 11, ('appmsg_token', appmsg_token))
-
-#     print(Fakeloadparams.headers)
-#     print(Fakeloadparams.cookies)
-#     print(Fakeloadparams.params)
-
 
 # def save_list_to_db(list_db):
 #     # TODO fix
@@ -149,32 +85,24 @@ if __name__ == '__main__':
     print('__main__')
 
     from crawl.get_redis_data import get_data_from_redis, tidy_data
+    from crawl.process_spider import listSpider
+
     data = get_data_from_redis()
     rqlist = tidy_data(data)
     print(' --- rqlist --- ')
     print(rqlist)
 
+
     while not rqlist.isEmpty():
         rq = rqlist.popItem()
-        print(rq)
+        # print(rq)
+        lspider = listSpider(rq)
+        lspider.start()
+
+
     # client = Operate('苏州青舞舞蹈艺术')
     # operate_phone(client)
 
-
-    # 一组一组拿出来
-    # keys = redis_instance.keys('*_REQUEST')
-    # # 1.json
-    # geticon_key = str(keys[0], encoding="utf-8")
-    # # 2.json
-    # getappmsgext_key = str(keys[1], encoding="utf-8")
-    # geticon_value = redis_instance.get(geticon_key)
-    # getappmsgext_value = redis_instance.get(getappmsgext_key)
-    # geticon_value = json.loads(geticon_value.decode())
-    # getappmsgext_value = json.loads(getappmsgext_value.decode())
-    # # print(geticon_value)
-    # # print(getappmsgext_value
-    # build_home_request_1(geticon_value)
-    # build_home_request_2(getappmsgext_value)
     # content = send_request()
     # if not content:
     #     print('无效content')
