@@ -29,9 +29,10 @@ HOME_SEARCH_BUTTON = {
     'y': [40, 110]
 }
 
+# FIXED
 TOP_BACK_BUTTON_POS = {
-    'x': [0, 60],
-    'y': [40, 110]
+    'x': [10, 50],
+    'y': [50, 100]
 }
 
 TOP_DEL_BUTTON_POS = {
@@ -39,17 +40,28 @@ TOP_DEL_BUTTON_POS = {
     'y': [65, 85]
 }
 
+# FIXED
 SOU_YI_SOU = {
-    'x': [0, 300],
-    'y': [115, 215]
+    'x': [20, 280],
+    'y': [100, 200]
 }
 
+# FIXED
 GZH_TAB = {
-    'x': [125, 205],
-    'y': [125, 190]
+    'x': [110, 190],
+    'y': [140, 180]
 }
 
+# FIXED
 GZH_ENTRY = {
-    'x': [0, 300],
-    'y': [275, 415]
+    'x': [20, 280],
+    'y': [260, 400]
 }
+
+# FIXED
+ENTER_INTO_ARTICLE = {
+    'x': [50, 550],
+    'y': [500, 700]
+}
+
+

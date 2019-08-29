@@ -3,7 +3,7 @@ import subprocess
 import time
 import os
 from os import system
-from phone.config import HOME_SEARCH_BUTTON, TOP_BACK_BUTTON_POS, KEY, TOP_DEL_BUTTON_POS, SOU_YI_SOU, GZH_TAB, GZH_ENTRY
+from phone.config import HOME_SEARCH_BUTTON, TOP_BACK_BUTTON_POS, KEY, TOP_DEL_BUTTON_POS, SOU_YI_SOU, GZH_TAB, GZH_ENTRY, ENTER_INTO_ARTICLE
 
 class Operate():
     def __init__(self, biz, name):
@@ -77,4 +77,20 @@ class Operate():
 
 
 
+    def enter_into_article(self):
+        x = self.gen_randomint(
+            ENTER_INTO_ARTICLE['x'][0], ENTER_INTO_ARTICLE['x'][1])
+        y = self.gen_randomint(
+            ENTER_INTO_ARTICLE['y'][0], ENTER_INTO_ARTICLE['y'][1])
 
+        self.send_tap(x, y, 5)
+        # self.send_fake_swipe((100,400), (140, 100), 520, 1)
+
+
+    def click_back_button(self):
+        x = self.gen_randomint(
+            TOP_BACK_BUTTON_POS['x'][0], TOP_BACK_BUTTON_POS['x'][1])
+        y = self.gen_randomint(
+            TOP_BACK_BUTTON_POS['y'][0], TOP_BACK_BUTTON_POS['y'][1])
+
+        self.send_tap(x, y, 3)

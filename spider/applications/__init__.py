@@ -44,6 +44,11 @@ def phone_operator():
         phone_operate.search_text()
         phone_operate.tab_click()
         phone_operate.enter_into_gzh()
+        phone_operate.enter_into_article()
+        phone_operate.click_back_button()
+        phone_operate.click_back_button()
+        phone_operate.click_back_button()
+        phone_operate.click_back_button()
 
         break
         print('休息十秒')
