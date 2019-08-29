@@ -28,7 +28,13 @@ class listSpider():
     def __init__(self, rq, mode, count):
         self.rq = rq
         self.biz = rq['biz']
-        # self.start_id = rq['start_index']
+        # TODO
+        self.title = ''
+        if rq['start_article']:
+            self.title = rq['start_article']['title']
+        if rq['end_article']:
+            self.end_article = rq['end_article']
+
         self.offset = 0
 
         self.mode = mode
@@ -57,29 +63,90 @@ class listSpider():
 
 
     def run_crawl_new(self):
-        # self.send_load_request()
-        pass
+        print(' --- run_crawl_new --- ')
+
+        crawled_times = 0
+        crawled_len = 0
+        ss = ''
+        recently_processed = 0
+        l_in_db = {}
+        start_articles = []
+        stop_idx = None
+        load_operate = LoadsOperate('load_operate')
+        crawl_operate = TaskOperate('crawl_operate')
+        while True :
+            cur_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+            print('当前时间: ' + cur_time)
+            # try:
+            list_db_data = self.send_load_request()
+            # print(list_db_data)
+            recently_processed += 10
+            crawled_len += len(list_db_data)
+            crawled_times += 1
+
+            if crawled_times == 1:
+                for item in list_db_data:
+                    if item['is_multi_app_msg_item_list'] == 'NO':
+                        # print(item)
+                        ss = item
+                        break
+                    else:
+                        continue
+                # TODO 万一不再这一次的爬取里面怎么办。。也就是crawled_times!=1
+                # print(ss)
+
+            start_articles = list_db_data
+
+            for idx, article in enumerate(start_articles):
+                if self.title == article['title']:
+                    stop_idx = idx
+                    print('找到了:  stop_idx {}'.format(stop_idx))
+                    break
+            else:
+                continue
+            break
+
+        # 数据入库
+        try:
+            if stop_idx != 0 :
+                load_operate.save_list_to_db(start_articles[0::stop_idx])
+        except Exception as db_err:
+            print(db_err)
+            raise Exception('save_list_to_db 数据库插入出错了')
+
+            # except Exception as err:
+            #     print('失败处理第 {} 个load请求，当前 offset= {} 一共爬取了{}个article'.format(
+            #         crawled_times, self.offset, crawled_len))
+            #     if str(err).find('无数据') > 0:
+            #         break
+
+        l_in_db['start_article'] = ss
+        l_in_db['end_article'] = self.end_article
+        l_in_db['recently_processed'] = recently_processed
+        crawl_operate.update_crawldata_in_mongo(self.biz, l_in_db)
+
 
     def run_crawl_count(self):
         print(' --- run_crawl_count --- ')
         # return
         crawled_times = 0
         crawled_len = 0
-        ss = 'ss'
-        ee = 'ee'
-        total_processed = 0
+        ss = ''
+        ee = ''
+        recently_processed = 0
         l_in_db = {}
+        load_operate = LoadsOperate('load_operate')
+        crawl_operate = TaskOperate('crawl_operate')
         while crawled_times < self.count / 10:
             cur_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             print('当前时间: ' + cur_time)
             # try:
             list_db_data = self.send_load_request()
             # print(list_db_data)
-            total_processed += 10
+            recently_processed += 10
             crawled_len += len(list_db_data)
             crawled_times += 1
 
-            crawl_operate = TaskOperate('crawl_operate')
             if crawled_times == 1:
                 for item in list_db_data:
                     if item['is_multi_app_msg_item_list'] == 'NO':
@@ -100,6 +167,13 @@ class listSpider():
                         continue
                 # print(ee)
 
+        # 数据入库
+        try:
+            load_operate.save_list_to_db(list_db_data)
+        except Exception as db_err:
+            print(db_err)
+            raise Exception('save_list_to_db 数据库插入出错了')
+
             # except Exception as err:
             #     print('失败处理第 {} 个load请求，当前 offset= {} 一共爬取了{}个article'.format(
             #         crawled_times, self.offset, crawled_len))
@@ -107,7 +181,7 @@ class listSpider():
             #         break
         l_in_db['start_article'] = ss
         l_in_db['end_article'] = ee
-        l_in_db['total_processed'] = 0
+        l_in_db['recently_processed'] = recently_processed
         crawl_operate.update_crawldata_in_mongo(self.biz, l_in_db)
 
 
@@ -117,7 +191,7 @@ class listSpider():
 
     def send_load_request(self):
         time.sleep(3)
-        load_operate = LoadsOperate('load_operate')
+
         # 循环机制改变一下 需要捕捉到所有的真实错误
         # ANCHOR 测试结果 一天最多请求 1000次
         list_parse_res = {}
@@ -147,13 +221,6 @@ class listSpider():
         list_db_data = list_into_dbdata(list_parse_res)
         if not list_db_data:
             raise Exception('list_into_dbdata 后面无数据了')
-
-        # 数据入库
-        try:
-            load_operate.save_list_to_db(list_db_data)
-        except Exception as db_err:
-            print(db_err)
-            raise Exception('save_list_to_db 数据库插入出错了')
 
         return list_db_data
 
@@ -209,10 +276,6 @@ class listSpider():
         #     print('无 pass_ticket 和 wap_sid2')
 
         return response.content.decode()
-
-
-    # def send_load_request(self):
-        # 每次请求十条
 
 
 

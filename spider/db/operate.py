@@ -42,7 +42,7 @@ class TaskOperate():
                 '$set': {
                     'start_article': update_dict['start_article'],
                     'end_article': update_dict['end_article'],
-                    'total_processed': update_dict['total_processed'],
+                    'recently_processed': update_dict['recently_processed'],
                     'update_time': datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
                 }
             }

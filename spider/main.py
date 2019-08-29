@@ -29,10 +29,12 @@ if __name__ == '__main__':
 
     # TODO 可能会有错误的公众号数据
     # TODO 可能有的公众号不给key
+    # TODO SSL ERROR
 
     while not rqlist.isEmpty():
         rq = rqlist.popItem()
-        lspider = listSpider(rq, 'count_articles', 20)
+        # lspider = listSpider(rq, 'count_articles', 20)
+        lspider = listSpider(rq, 'new_articles', 0)
         lspider.prepare()
         lspider.run()
 
