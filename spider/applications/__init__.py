@@ -40,31 +40,33 @@ def phone_operator():
     bizname_operator = BizsOperate('bizname_operator')
     biznames = bizname_operator.find_all_biznames()
 
-    for bizobj in biznames[16::]:
+    for bizobj in biznames[0::]:
         # print(bizobj)
-        phone_operate = phoneOperator(bizobj['fakename'], bizobj['chname'])
+        phone_operate = phoneOperator(bizobj['fakename'], bizobj['fakename'])
+
+        print(' --- home_click --- ')
         phone_operate.home_click()
+        print(' --- search_text --- ')
         phone_operate.search_text()
-        # phone_operate.tab_click()
-        # phone_operate.tab_click()
+        print(' --- click_souyisou --- ')
+        phone_operate.click_souyisou()
+        print(' --- enter_into_gzh --- ')
         phone_operate.enter_into_gzh()
+        print(' --- enter_into_article --- ')
         phone_operate.enter_into_article()
-        # phone_operate.click_more_button()
-        # phone_operate.click_refresh_button()
-        # phone_operate.click_back_button()
+
+
         phone_operate.click_back_button()
+        print(' --- click_back_button --- ')
         phone_operate.click_back_button()
+        print(' --- click_back_button --- ')
         phone_operate.click_back_button()
+        print(' --- click_back_button --- ')
         phone_operate.click_back_button()
+        print(' --- click_back_button --- ')
         phone_operate.click_back_button()
-        # phone_operate.clear_text()
-        # break
-        print('休息几秒')
+
+
         t = random.randint(3,4)
+        print('休息{}秒'.format(t))
         time.sleep(t)
-
-
-    # client.home_click()
-    # client.search_text()
-    # client.tab_click()
-    # client.enter_into_gzh()

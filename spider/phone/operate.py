@@ -3,7 +3,7 @@ import subprocess
 import time
 import os
 from os import system
-from phone.config import HOME_SEARCH_BUTTON, TOP_BACK_BUTTON_POS, KEY, TOP_DEL_BUTTON_POS, SOU_YI_SOU, GZH_TAB, GZH_ENTRY, ENTER_INTO_ARTICLE, REFRESH_BUTTON, MORE_BUTTON
+from phone.config import HOME_SEARCH_BUTTON, TOP_BACK_BUTTON_POS, KEY, TOP_DEL_BUTTON_POS, SOU_YI_SOU, GZH_ENTRY, ENTER_INTO_ARTICLE
 
 class Operate():
     def __init__(self, biz, name):
@@ -32,6 +32,10 @@ class Operate():
 
     def send_name_text(self, name):
         system(('adb shell am broadcast -a ADB_INPUT_TEXT --es msg {}'.format(name)))
+        time.sleep(5)
+
+    def send_en_text(self, en):
+        system('adb shell input text {}'.format(en))
         time.sleep(3)
 
     def home_click(self):
@@ -39,7 +43,7 @@ class Operate():
             HOME_SEARCH_BUTTON['x'][0], HOME_SEARCH_BUTTON['x'][1])
         y = self.gen_randomint(
             HOME_SEARCH_BUTTON['y'][0], HOME_SEARCH_BUTTON['y'][1])
-        self.send_tap(x, y, 1.2)
+        self.send_tap(x, y, 3)
 
         # self.send_fake_swipe((150, 300), (150, 599), 500)
         # base_dir = os.path.dirname(__file__)
@@ -51,21 +55,22 @@ class Operate():
 
 
     def search_text(self):
-        self.send_name_text(self.name)
-        # time.sleep(2)
+        self.send_en_text(self.name)
+
+    def click_souyisou(self):
         x = self.gen_randomint(
             SOU_YI_SOU['x'][0], SOU_YI_SOU['x'][1])
         y = self.gen_randomint(
-            SOU_YI_SOU['x'][0], SOU_YI_SOU['x'][1])
-        self.send_tap(x, y, 2)
+            SOU_YI_SOU['y'][0], SOU_YI_SOU['y'][1])
+        self.send_tap(x, y, 5)
 
 
-    def tab_click(self):
-        x = self.gen_randomint(
-            GZH_TAB['x'][0], GZH_TAB['x'][1])
-        y = self.gen_randomint(
-            GZH_TAB['y'][0], GZH_TAB['y'][1])
-        self.send_tap(x, y, 2)
+    # def tab_click(self):
+    #     x = self.gen_randomint(
+    #         GZH_TAB['x'][0], GZH_TAB['x'][1])
+    #     y = self.gen_randomint(
+    #         GZH_TAB['y'][0], GZH_TAB['y'][1])
+    #     self.send_tap(x, y, 2)
 
 
     def enter_into_gzh(self):
@@ -73,9 +78,7 @@ class Operate():
             GZH_ENTRY['x'][0], GZH_ENTRY['x'][1])
         y = self.gen_randomint(
             GZH_ENTRY['y'][0], GZH_ENTRY['y'][1])
-        self.send_tap(x, y, 3)
-
-
+        self.send_tap(x, y, 5)
 
     def enter_into_article(self):
         x = self.gen_randomint(
@@ -86,14 +89,13 @@ class Operate():
         self.send_tap(x, y, 6)
         # self.send_fake_swipe((100,400), (140, 100), 520, 1)
 
-
     def click_back_button(self):
         x = self.gen_randomint(
             TOP_BACK_BUTTON_POS['x'][0], TOP_BACK_BUTTON_POS['x'][1])
         y = self.gen_randomint(
             TOP_BACK_BUTTON_POS['y'][0], TOP_BACK_BUTTON_POS['y'][1])
 
-        self.send_tap(x, y, 3)
+        self.send_tap(x, y, 2)
 
     def clear_text(self):
         x = self.gen_randomint(
@@ -101,19 +103,4 @@ class Operate():
         y = self.gen_randomint(
             TOP_DEL_BUTTON_POS['y'][0], TOP_DEL_BUTTON_POS['y'][1])
 
-        self.send_tap(x, y, 3)
-
-
-    def click_more_button(self):
-        x = self.gen_randomint(
-            MORE_BUTTON['x'][0], MORE_BUTTON['x'][1])
-        y = self.gen_randomint(
-            MORE_BUTTON['y'][0], MORE_BUTTON['y'][1])
-        self.send_tap(x, y, 3)
-
-    def click_refresh_button(self):
-        x = self.gen_randomint(
-            REFRESH_BUTTON['x'][0], REFRESH_BUTTON['x'][1])
-        y = self.gen_randomint(
-            REFRESH_BUTTON['y'][0], REFRESH_BUTTON['y'][1])
-        self.send_tap(x, y, 6)
+        self.send_tap(x, y, 2)
