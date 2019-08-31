@@ -11,7 +11,7 @@ class BIZ_THREAD (Thread):
             entry()
         except BaseException as be:
             print(be)
-            self.run()
+            # self.run()
 
     def join(self):
         Thread.join(self)
@@ -21,6 +21,10 @@ if __name__ == '__main__':
     # 启动 BIZ_THREAD
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} BIZ_THREAD 启动中...'.format(bftime))
-    t = BIZ_THREAD().start()
+    t = BIZ_THREAD()
+    t.start()
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-    print('- {} BIZ_THREAD 已结束'.format(aftime))
+    print('- {} BIZ_THREAD 已启动'.format(aftime))
+    t.join()
+    fftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    print('- {} BIZ_THREAD 已结束'.format(fftime))

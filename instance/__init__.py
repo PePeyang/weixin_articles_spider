@@ -7,7 +7,7 @@ REDIS_DB = 0 # 第一个db
 # REDIS_DB = 0  # 第一个db
 
 MONGODB_PORT = 27017
-MONGODB_HOST = '127.0.0.1'
+MONGODB_HOST = 'localhost'
 MONGODB_NAME = 'weixindb'
 
 # redis
