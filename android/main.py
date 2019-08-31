@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import signal
 import sys
 sys.path.append("../")  # 为了引入Normal_queue
 from process_adb import adb_entry
@@ -50,8 +51,15 @@ class LITEN_TASK_THREAD (Thread):
         Thread.join(self)
 
 
+def quit(signum, frame):
+    print('----手动停止-----')
+    sys.exit()
 
 if __name__ == '__main__':
+
+    signal.signal(signal.SIGINT, quit)
+    signal.signal(signal.SIGTERM, quit)
+
     # 启动 LITEN_TASK_THREAD
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} LITEN_TASK_THREAD 启动中...'.format(bftime))

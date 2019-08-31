@@ -60,11 +60,13 @@ def set_task_running(task):
 
 def set_task_in_mongo(taskid):
     task_obj_id = ObjectId(taskid)
+    t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     mongo_instance.tasks.find_and_modify(
-        query={'_id': task_obj_id}, update={'$set': {'task_status': 'runnning'}})
+        query={'_id': task_obj_id}, update={'$set': {'task_status': 'runnning', 'task_updatetime': t}})
 
 def set_task_in_redis(taskid):
-    r.set('running_task', taskid, ex=10)
+    # redis的key过期事件在获返回结果时是 key的值，所以在做相关任务时，可以把key名写成需要执行的函数名等等
+    r.set('running_task_{}'.format(taskid), taskid, ex=10)
 
 def notify_http_proxy(taskid):
     r.publish('there_is_a_adb', '__taskid_' + str(taskid))
