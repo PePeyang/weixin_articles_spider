@@ -1,7 +1,7 @@
-# redis任务的队列
-class RQ():
+# 任务的队列
+class Normal_queue():
     """
-    使用redis创建一个队列 FIFO 先进先出
+    创建一个队列 FIFO 先进先出
     """
 
     def __init__(self, q_name):
@@ -18,6 +18,9 @@ class RQ():
         """
         return len(self.queue) == 0
 
+    def pickAll(self):
+        return self.queue
+
     def addItem(self, obj):
         """
         将指定元素加入队列的尾部
@@ -27,7 +30,7 @@ class RQ():
         self.queue.append(obj)
         return self.queue
 
-    def peekItem(self):
+    def pickItem(self):
         """
         查看队首的对象，但不移除
         :return:

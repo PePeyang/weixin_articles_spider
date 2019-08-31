@@ -47,7 +47,7 @@ def build_task(bizs, task_mode, task_crawlcount, task_depth):
         task['task_biz_chname'] = biz['chname']
         task['task_createtime'] = t
         task['task_updatetime'] = t
-        task['task_status'] = 'generate' #  generate running end_success end_fail
+        task['task_status'] = 'generate' #  generate running end_success end_fail null
         task['task_starttime'] = None
         task['task_endtime'] = None
         task['task_weight'] = 1
