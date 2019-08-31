@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import sys
 sys.path.append("../")  # 为了引入instance
 from  instance import mongo_instance  # weixindb
@@ -61,7 +62,7 @@ def build_task(bizs, task_mode, task_crawlcount, task_depth):
         # ANCHOR
         notify_android(taskid)
         tasks.append(taskid)
-        time.sleep(1)
+        time.sleep(10)
 
     return tasks
 
