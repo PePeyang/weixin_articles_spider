@@ -1,22 +1,16 @@
 const url = require('url')
 const querystring = require('querystring');
 
-
-var interest_url = {
-    "load_more": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",        //更多历史消息
-    "getappmsgext": "https://mp.weixin.qq.com/mp/getappmsgext?",                //阅读消息
-    "appmsg_comment": "https://mp.weixin.qq.com/mp/appmsg_comment?action=getcomment",//评论信息
-    "content": "https://mp.weixin.qq.com/s?",                                       //文章正文html
-}
-
-var fake_url = {
+const fake_url = {
     "geticon": "https://mp.weixin.qq.com/mp/geticon?",
     "getappmsgext": "https://mp.weixin.qq.com/mp/getappmsgext?"
 }
 
-var normal_url = {
+const normal_url = {
     "home": "https://mp.weixin.qq.com/mp/profile_ext?action=home",
+    // "load_more": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",      //更多历史消息
     "getmsg": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",
+    // "comment": "https://mp.weixin.qq.com/mp/appmsg_comment?action=getcomment", //评论信息
     "article": "https://mp.weixin.qq.com/s?"
 }
 
@@ -102,8 +96,6 @@ const rule = {
         if (signArr.indexOf(true) > -1) {
             doPublish()
         }
-
-
     },
     // 发送响应前处理
     *beforeSendResponse(requestDetail, responseDetail) { },
