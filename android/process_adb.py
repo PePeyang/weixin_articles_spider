@@ -30,7 +30,8 @@ def adb_entry(android_queue):
                     print('- {} 即将开始插入mongodb'.format(t))
                     set_task_in_mongo(str(tasks[0]['_id']))
                     print('- {} 即将开始插入redis'.format(t))
-                    set_task_in_redis(str(tasks[0]['_id']))
+                    set_task_in_redis(
+                        str(tasks[0]['_id']), str(tasks[0]['task_biz_enname']))
                     print('- {} 即将通知anyproxy'.format(t))
                     notify_http_proxy(str(tasks[0]['_id']))
                     print('- {} 即将开始做adb操作'.format(t))
@@ -65,9 +66,10 @@ def set_task_in_mongo(taskid):
     mongo_instance.tasks.find_and_modify(
         query={'_id': task_obj_id}, update={'$set': {'task_status': 'runnning', 'task_updatetime': t}})
 
-def set_task_in_redis(taskid):
+def set_task_in_redis(taskid, enname):
     # redis的key过期事件在获返回结果时是 key的值，所以在做相关任务时，可以把key名写成需要执行的函数名等等
-    r.set('running_task_{}'.format(taskid), taskid, ex=60*10)
+    r.set('__running_taskid_{}_bizenname_{}'.format(
+        taskid, enname), taskid, ex=60*10)
 
 def notify_http_proxy(taskid):
     r.publish('there_is_a_adb', '__taskid_' + str(taskid))

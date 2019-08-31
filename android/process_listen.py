@@ -11,7 +11,11 @@ def listen_task_entry():
     for item in suber.listen():
         if item['type'] == 'message':
             # running_task_
-            taskid = re.split('running_task_', item['data'])[1]
+            endfix = re.split('__running_taskid_', item['data'])[1]
+
+            taskid = endfix.split('_bizenname_', endfix)[0]
+            # biz_enname = endfix.split('_bizenname_', endfix)[1]
+
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             print(' {} 时间到了任务过期: {} '.format(t, taskid))
             # ANCHOR 设置task状态为过时
