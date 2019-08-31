@@ -4,7 +4,10 @@
   "description": "微信公众号文章爬虫",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "proxy": "node proxy/proxy.js",
+    "add": "/anaconda3/envs/py35/bin/python biz/main.py",
+    "android": "/anaconda3/envs/py35/bin/python android/main.py",
+    "dev": ""
   },
   "repository": {
     "type": "git",
