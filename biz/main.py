@@ -1,6 +1,8 @@
 from threading import Thread
 import datetime
 from process_genbizs import entry
+import redis
+r = redis.Redis()
 
 class BIZ_THREAD (Thread):
     def __init__(self):
@@ -28,3 +30,8 @@ if __name__ == '__main__':
     t.join()
     fftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} BIZ_THREAD 已结束'.format(fftime))
+
+    suber = r.pubsub()
+    suber.subscribe('__keyevent@0__:expired')
+    for item in suber.listen():
+        print(item)

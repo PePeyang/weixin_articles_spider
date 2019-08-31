@@ -39,26 +39,26 @@ const { rule } = require('./rule')
 //     pub.quit()
 // }
 
-function keyExpired(e, r) {
-    // 如果key过期 那就把那个task status 设置为失败
-    sub = redis.createClient()
-    const expired_subKey = `__keyevent@0__:expired`
-    sub.subscribe(expired_subKey, function () {
-        console.log(' - Subscribed to "' + expired_subKey + '" event channel : ' + r)
-        sub.on('message', function (channel, msg) {
-            console.log(` - ${channel} [expired] ${msg} `)
-        })
-        // TestKey()
-    })
-}
+// function keyExpired(e, r) {
+//     // 如果key过期 那就把那个task status 设置为失败
+//     sub = redis.createClient()
+//     const expired_subKey = `__keyevent@0__:expired`
+//     sub.subscribe(expired_subKey, function () {
+//         console.log(' - Subscribed to "' + expired_subKey + '" event channel : ' + r)
+//         sub.on('message', function (channel, msg) {
+//             console.log(` - ${channel} [expired] ${msg} `)
+//         })
+//         // TestKey()
+//     })
+// }
 
-function pubServer()  {
-    pub = redis.createClient()
-    pub.send_command('config', ['set', 'notify-keyspace-events', 'Ex'], keyExpired)
-    pub.quit();
-}
+// function pubServer()  {
+//     pub = redis.createClient()
+//     pub.send_command('config', ['set', 'notify-keyspace-events', 'Ex'], keyExpired)
+//     pub.quit();
+// }
 
-pubServer()
+// pubServer()
 
 const options = {
     port: 8001,
