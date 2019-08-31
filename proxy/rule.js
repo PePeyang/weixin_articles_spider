@@ -26,6 +26,11 @@ function sendToRedis(key, value) {
     client.quit();
 };
 
+function sendToMongodb(key, value) {
+    var mongodb = require("mongodb");
+
+};
+
 function doPublish(){
     var redis = require("redis");
     client = redis.createClient(6379, 'localhost', {});

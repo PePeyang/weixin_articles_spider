@@ -15,6 +15,14 @@
 > 抓取到的最终清洗过得数据存入mongodb
 4.
 ### QUICK START
+
+1. 先运行proxy线程
+
+2. 再运行android线程
+
+3. 再运行biz线程
+
+
 ### 联系方式
 > wechat: 18921966826
 ### 项目架构TODO

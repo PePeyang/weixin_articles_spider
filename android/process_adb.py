@@ -6,7 +6,7 @@ import time
 import sys
 sys.path.append("../")  # 为了引入instance
 from instance import mongo_instance  # weixindb
-r = redis.Redis()
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 def adb_entry(android_queue):
     # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成runnning
@@ -26,9 +26,14 @@ def adb_entry(android_queue):
                 try:
                     print('- {} 即将开始安卓任务'.format(t))
                     set_task_running(tasks[0])
+                    print('- {} 即将开始插入mongodb'.format(t))
+                    set_task_in_mongo(str(tasks[0]['_id']))
+                    print('- {} 即将开始插入redis'.format(t))
+                    set_task_in_redis(str(tasks[0]['_id']))
                     print('- {} 即将通知anyproxy'.format(t))
                     notify_http_proxy(str(tasks[0]['_id']))
                     print('- {} 即将开始做adb操作'.format(t))
+
                     # TODO adb操作
 
                 except Exception as e:
@@ -37,7 +42,7 @@ def adb_entry(android_queue):
             else:
                 print('- {} 已经有运行中的任务了哦 _id是 {}'.format(t, str(runnning_tasks[0]['_id'])))
 
-        time.sleep(60)
+        time.sleep(20)
 
 
 def pick_running(tasks):
@@ -52,9 +57,17 @@ def pick_running(tasks):
 
 def set_task_running(task):
     task['task_status'] = 'running'
-    mongo_instance.tasks.find_and_modify(
-        query={'_id': task['_id']}, update={'$set': {'task_status': 'runnning'}})
 
+def set_task_in_mongo(taskid):
+    task_obj_id = ObjectId(taskid)
+    mongo_instance.tasks.find_and_modify(
+        query={'_id': task_obj_id}, update={'$set': {'task_status': 'runnning'}})
+
+def set_task_in_redis(taskid):
+    r.set('running_task', taskid, ex=10)
 
 def notify_http_proxy(taskid):
-    r.publish('there_is_a_http', '__taskid_' + str(taskid))
+    r.publish('there_is_a_adb', '__taskid_' + str(taskid))
+
+
+

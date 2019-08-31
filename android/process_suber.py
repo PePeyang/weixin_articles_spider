@@ -43,5 +43,5 @@ def suber(android_queue):
             if task['task_status'] == 'generate':
                 # ANCHOR 加入队列
                 android_queue.addItem(task)
-                print('- {} 任务添加成功: '.format(t))
+                print('- {} 任务添加成功!'.format(t))
 
