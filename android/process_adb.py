@@ -28,14 +28,16 @@ def adb_entry(android_queue):
                     set_task_running(tasks[0])
                     print('- {} 即将通知anyproxy'.format(t))
                     notify_http_proxy(str(tasks[0]['_id']))
+                    print('- {} 即将开始做adb操作'.format(t))
+                    # TODO adb操作
+
                 except Exception as e:
                     print(' - 31行 这里出错了')
                     print(e)
             else:
                 print('- {} 已经有运行中的任务了哦 _id是 {}'.format(t, str(runnning_tasks[0]['_id'])))
 
-
-        time.sleep(10)
+        time.sleep(60)
 
 
 def pick_running(tasks):
