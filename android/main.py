@@ -50,10 +50,4 @@ if __name__ == '__main__':
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 已启动'.format(aftime))
 
-    t1.join()
-    fftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-    print('- {} SUBER_THREAD 已结束'.format(fftime))
 
-    t2.join()
-    fftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-    print('- {} ADB_THREAD 已结束'.format(fftime))
