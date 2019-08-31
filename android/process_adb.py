@@ -13,6 +13,7 @@ def adb_entry(android_queue):
 
     while True:
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+        # TODO 这里貌似有点问题 但又不是逻辑问题 tasks
         tasks = android_queue.pickAll()
         if not tasks:
             print('- {} 没有任何任务，安卓adb啥事也不用干'.format(t))
@@ -66,7 +67,7 @@ def set_task_in_mongo(taskid):
 
 def set_task_in_redis(taskid):
     # redis的key过期事件在获返回结果时是 key的值，所以在做相关任务时，可以把key名写成需要执行的函数名等等
-    r.set('running_task_{}'.format(taskid), taskid, ex=10)
+    r.set('running_task_{}'.format(taskid), taskid, ex=60*10)
 
 def notify_http_proxy(taskid):
     r.publish('there_is_a_adb', '__taskid_' + str(taskid))

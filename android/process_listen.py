@@ -12,8 +12,10 @@ def listen_task_entry():
         if item['type'] == 'message':
             # running_task_
             taskid = re.split('running_task_', item['data'])[1]
+            t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+            print(' {} 时间到了任务过期: {} '.format(t, taskid))
             # ANCHOR 设置task状态为过时
-            # set_task_in_mongodb(ObjectId(taskid))
+            set_task_in_mongodb(ObjectId(taskid))
 
 
 def set_task_in_mongodb(task_obj_id):
