@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
 import sys
 sys.path.append("../")  # 为了引入Normal_queue
+from process_adb import adb_entry
+from process_suber import suber_entry
+from process_listen import listen_task_entry
 from threading import Thread
 import datetime
-from process_suber import suber_entry
-from process_adb import adb_entry
 from tools.data_queue import Normal_queue
 android_queue = Normal_queue('ANDROID队列')
 
@@ -38,8 +39,27 @@ class ADB_THREAD (Thread):
     def join(self):
         Thread.join(self)
 
+class LITEN_TASK_THREAD (Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def run(self):
+        listen_task_entry()
+
+    def join(self):
+        Thread.join(self)
+
+
 
 if __name__ == '__main__':
+    # 启动 LITEN_TASK_THREAD
+    bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    print('- {} LITEN_TASK_THREAD 启动中...'.format(bftime))
+    t_listen = LITEN_TASK_THREAD()
+    t_listen.start()
+    aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    print('- {} LITEN_TASK_THREAD 已启动'.format(aftime))
+
     # 启动 SUBER_THREAD
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} SUBER_THREAD 启动中...'.format(bftime))
