@@ -68,6 +68,10 @@ def set_task_in_mongo(taskid):
 
 def set_task_in_redis(taskid, enname):
     # redis的key过期事件在获返回结果时是 key的值，所以在做相关任务时，可以把key名写成需要执行的函数名等等
+    # 先清空
+    for key in r.scan_iter("__running_taskid*"):
+        r.delete(key)
+
     r.set('__running_taskid_{}_bizenname_{}'.format(
         taskid, enname), taskid, ex=60*10)
 
