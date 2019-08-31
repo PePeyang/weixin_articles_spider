@@ -2,10 +2,6 @@ from threading import Thread
 import datetime
 from process_genbizs import entry
 
-# 一次性从fakenames取出所有的biz
-# 构造task数据
-# 存入mongodb 发往android
-
 class BIZ_THREAD (Thread):
     def __init__(self):
         Thread.__init__(self)
@@ -22,4 +18,9 @@ class BIZ_THREAD (Thread):
 
 
 if __name__ == '__main__':
+    # 启动 BIZ_THREAD
+    bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    print('- {} BIZ_THREAD 启动中...'.format(bftime))
     t = BIZ_THREAD().start()
+    aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    print('- {} BIZ_THREAD 已结束'.format(aftime))
