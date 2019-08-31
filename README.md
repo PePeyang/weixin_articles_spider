@@ -3,7 +3,7 @@
 ### 技术支持
 ### 运行原理
 
-![](/Users/sotyoyo/Desktop)
+![运行原理](./assets/运行机制.png)
 
 1. proxy.js监控api信息，抓取两条api的数据进入redis
 2. run main 守护进程，
