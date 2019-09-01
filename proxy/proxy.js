@@ -1,7 +1,7 @@
 const AnyProxy = require('anyproxy');
 const redis = require('redis')
 const { rule } = require('./rule')
-
+const client = redis.createClient();
 
 // function sendToRedis(key, value) {
 //     client = redis.createClient();

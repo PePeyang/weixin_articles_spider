@@ -9,12 +9,12 @@ def listen_task_entry():
     suber = r.pubsub()
     suber.subscribe('__keyevent@0__:expired')
     for item in suber.listen():
-        if item['type'] == 'message':
+        if item['type'] == 'message' and '__running_' in item['data']:
             # running_task_
-            endfix = re.split('__running_taskid_', item['data'])[1]
 
-            taskid = endfix.split('_bizenname_', endfix)[0]
-            # biz_enname = endfix.split('_bizenname_', endfix)[1]
+            value = r.get(item['data'])
+            taskid = value.split('_between_')[0]
+            # biz_enname = value.split('_between_')[1]
 
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             print(' {} 时间到了任务过期: {} '.format(t, taskid))

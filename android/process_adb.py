@@ -20,11 +20,12 @@ def adb_entry(android_queue):
         if is_empty_tasks:
             print('- {} 没有任何可用任务'.format(t))
         else:
-            for key in r.scan_iter("__running_taskid_*"):
-                runnning_taskid = key.split(
-                    '__running_taskid_')[1].split('_bizenname_')[0]
-                runnning_bizenname = key.split(
-                    '__running_taskid_')[1].split('_bizenname_')[1]
+            for key in r.scan_iter("__running_task_"):
+                value = r.get(key)
+                runnning_taskid = value.split(
+                    '_between_')[0]
+                runnning_bizenname = value.split(
+                    '_between_')[1]
                 # 从数据库取得任务
                 # runnning_task = get_task_in_mongodb(ObjectId(runnning_taskid))
                 print('- {} 已经有运行中的任务了哦 _id是 {} bizename是 {} '.format(t,
@@ -82,11 +83,10 @@ def set_task_in_mongo(taskid):
 def set_task_in_redis(taskid, enname):
     # redis的key过期事件在获返回结果时是 key的值，所以在做相关任务时，可以把key名写成需要执行的函数名等等
     # 先清空
-    for key in r.scan_iter("__running_taskid_*"):
+    for key in r.scan_iter("__running_task_"):
         r.delete(key)
 
-    r.set('__running_taskid_{}_bizenname_{}'.format(
-        taskid, enname), taskid, ex=60*10)
+    r.set('__running_task_', '{}_between_{}'.format(taskid, enname), ex=60*10)
 
 # def notify_http_proxy(taskid):
 #     r.publish('there_is_a_adb', '__taskid_' + str(taskid))

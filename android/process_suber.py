@@ -32,7 +32,7 @@ def suber(android_queue):
             print('- {} 根据 {} 查询到了该任务: '.format(t, str_id))
             print(task)
             tasks = android_queue.pickAll()
-            print(tasks)
+            # print(tasks)
             # ANCHOR 检测重复
             # 如果公众号没有被添加过才需要添加
             for task_item in tasks:
