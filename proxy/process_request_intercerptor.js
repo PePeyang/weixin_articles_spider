@@ -1,8 +1,10 @@
 const url = require('url')
 const querystring = require('querystring')
+const { ObjectId } = require('mongodb')
 const MongoClient = require("mongodb").MongoClient
 const mogoUrl = 'mongodb://localhost:27017'
 const mongoClient = new MongoClient(mogoUrl)
+
 const assert = require('assert')
 const redis = require("redis")
 const redisClient = redis.createClient()
@@ -18,6 +20,8 @@ var inter_geticon_request = async function (requestDetail) {
     const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
 
     const taskValue = await redisGetAsync('__running_task_') || ''
+    if (!taskValue) return
+
     let taskid = taskValue.split('_between_')[0]
     let enname = taskValue.split('_between_')[1]
     console.log(`- taskid: ${taskid} enname: ${enname}`)
@@ -25,12 +29,12 @@ var inter_geticon_request = async function (requestDetail) {
     let rd_str = rd_buf.toString('utf8')
 
     console.log(`- 开始采集请求信息 ${REQUEST_URL}`)
-    console.log(`- url TYPE INFO: ${urlName}`)
+    console.log(`- url TYPE INFO: geticon`)
 
     let temp_url = url.parse(REQUEST_URL);
     let params = querystring.parse(temp_url.query)
     let biz = params.__biz;
-    let key = FAKE_PREFIX + urlName + '_biz=' + biz + '_REQUEST'
+    let key = FAKE_PREFIX + 'geticon_biz=' + biz + '_REQUEST'
     let value = {
         REQUEST_URL,
         REQUEST_COOKIE,
@@ -38,7 +42,18 @@ var inter_geticon_request = async function (requestDetail) {
         REQUEST_DATA: rd_str
     }
 
-    let httpid = sendToMongodb(value)
+    const httpValue = await redisGetAsync('__running_http_') || ''
+    if (!httpValue || !ObjectId.isValid(httpValue)) {
+        let http = await insert_or_update_a_http(null, value, 'geticon')
+        console.log(`- http: `)
+        console.log(`- httpid: ${http.insertedId}`)
+        await redisClient.set('__running_http_', http.insertedId)
+    } else {
+        console.log(`- httpValue ${httpValue}`)
+        let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
+        await redisClient.del('__running_http_')
+    }
+
 }
 
 var inter_getmsg_request = async function (requestDetail) {
@@ -47,6 +62,8 @@ var inter_getmsg_request = async function (requestDetail) {
     const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
 
     const taskValue = await redisGetAsync('__running_task_') || ''
+    if (!taskValue) return
+
     let taskid = taskValue.split('_between_')[0]
     let enname = taskValue.split('_between_')[1]
     console.log(`- taskid: ${taskid} enname: ${enname}`)
@@ -54,19 +71,30 @@ var inter_getmsg_request = async function (requestDetail) {
     let rd_str = rd_buf.toString('utf8')
 
     console.log(`- 开始采集请求信息 ${REQUEST_URL}`)
-    console.log(`- url TYPE INFO: ${urlName}`)
+    console.log(`- url TYPE INFO: getappmsgext`)
 
     let temp_url = url.parse(REQUEST_URL);
     let params = querystring.parse(temp_url.query)
     let biz = querystring.parse(rd_str).__biz
-    let key = FAKE_PREFIX + urlName + '_biz=' + biz + '_REQUEST'
+    let key = FAKE_PREFIX + 'getappmsgext_biz=' + biz + '_REQUEST'
     let value = {
         REQUEST_URL,
         REQUEST_HEADERS,
         REQUEST_COOKIE,
         REQUEST_DATA: rd_str,
     }
-    sendToMongodb(value)
+    const httpValue = await redisGetAsync('__running_http_') || ''
+    if (!httpValue || !ObjectId.isValid(httpValue)) {
+        let http = await insert_or_update_a_http(null, value, 'getappmsgext')
+        console.log(`- http: `)
+        console.log(http)
+        console.log(`- httpid: ${http.insertedId}`)
+        await redisClient.set('__running_http_', http.insertedId)
+    } else {
+        console.log(`- httpValue ${httpValue}`)
+        let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
+        await redisClient.del('__running_http_')
+    }
 
 }
 
@@ -87,25 +115,42 @@ function sendToRedis(key, value) {
     redisClient.set(key, value, 'EX', 60 * 10 * 60);
 };
 
-function sendToMongodb(value) {
+async function insert_or_update_a_http(http_obj_id, value, key) {
+    await mongoClient.connect()
+    const weixindb = mongoClient.db('weixindb');
 
+    let https = weixindb.collection('https')
+    if (!http_obj_id) {
+        return await https.insertOne({
+            [key]: value
+        })
+    } else {
+        return await https.findOneAndUpdate({
+            '_id': http_obj_id
+        }, {
+            '$set': {
+                [key]: value
+            }
+        }, {
+            upsert: true
+        })
+    }
 
 };
 
-function get_biz_by_name(name) {
-    mongoClient.connect(function (err) {
-        assert.equal(null, err);
-        console.log("Connected successfully to server");
-        const db = mongoClient.db('weixindb');
-        let biznames = db.collection('biznames')
+async function get_biz_by_name(name) {
 
-        biznames.findOne({ 'chname': name }, function (err, res) {
-            console.log(res)
+    console.log("Connected successfully to server");
+    const db = mongoClient.db('weixindb');
+    let biznames = db.collection('biznames')
 
-            return res
-        })
+    biznames.findOne({ 'chname': name }, function (err, res) {
+        console.log(res)
 
-    });
+        return res
+    })
+
+
 }
 
 module.exports = {
