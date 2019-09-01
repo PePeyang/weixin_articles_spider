@@ -20,7 +20,10 @@ var inter_geticon_request = async function (requestDetail) {
     const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
 
     const taskValue = await redisGetAsync('__running_task_') || ''
-    if (!taskValue) return
+    if (!taskValue) {
+        console.log('- redis中没有进行中的任务')
+        return
+    }
 
     let taskid = taskValue.split('_between_')[0]
     let enname = taskValue.split('_between_')[1]
@@ -43,11 +46,12 @@ var inter_geticon_request = async function (requestDetail) {
     }
 
     const httpValue = await redisGetAsync('__running_http_') || ''
-    if (!httpValue || !ObjectId.isValid(httpValue)) {
+    if (!httpValue) {
         let http = await insert_or_update_a_http(null, value, 'geticon')
-        console.log(`- http: `)
         console.log(`- httpid: ${http.insertedId}`)
-        await redisClient.set('__running_http_', http.insertedId)
+        if (!ObjectId.isValid(httpValue)) {
+            await redisClient.set('__running_http_', http.insertedId)
+        }
     } else {
         console.log(`- httpValue ${httpValue}`)
         let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
@@ -62,7 +66,10 @@ var inter_getmsg_request = async function (requestDetail) {
     const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
 
     const taskValue = await redisGetAsync('__running_task_') || ''
-    if (!taskValue) return
+    if (!taskValue) {
+        console.log('- redis中没有进行中的任务')
+        return
+    }
 
     let taskid = taskValue.split('_between_')[0]
     let enname = taskValue.split('_between_')[1]
@@ -84,12 +91,15 @@ var inter_getmsg_request = async function (requestDetail) {
         REQUEST_DATA: rd_str,
     }
     const httpValue = await redisGetAsync('__running_http_') || ''
-    if (!httpValue || !ObjectId.isValid(httpValue)) {
+    if (!httpValue) {
         let http = await insert_or_update_a_http(null, value, 'getappmsgext')
-        console.log(`- http: `)
-        console.log(http)
+        // console.log(`- http: `)
+        // console.log(http)
         console.log(`- httpid: ${http.insertedId}`)
-        await redisClient.set('__running_http_', http.insertedId)
+        if (!ObjectId.isValid(httpValue)) {
+            await redisClient.set('__running_http_', http.insertedId)
+        }
+
     } else {
         console.log(`- httpValue ${httpValue}`)
         let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')

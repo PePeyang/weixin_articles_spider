@@ -87,7 +87,9 @@ def set_task_in_redis(taskid, enname):
         r.delete(key)
 
     r.set('__running_task_', '{}_between_{}'.format(
-        taskid, enname), ex=30)  # TODO 重新整理下 那些redis的发布订阅监听
+        taskid, enname), ex=60*10)  # TODO 重新整理下 那些redis的发布订阅监听
+    # NOTE  !!! 我曹
+    r.set('which_task_should_be_timeout', taskid)
 
 # def notify_http_proxy(taskid):
 #     r.publish('there_is_a_adb', '__taskid_' + str(taskid))

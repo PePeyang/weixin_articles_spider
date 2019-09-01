@@ -20,6 +20,7 @@ def listen_http_entry():
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             httpid = r.get('__running_http_')
             print(' {} 发现http数据 {}'.format(t, httpid))
+            r.delete('__running_http_')
             # biz_enname = value.split('_between_')[1]
             # print(' {} 时间到了任务过期: {} '.format(t, taskid))
             # # ANCHOR 设置task状态为过时
