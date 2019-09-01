@@ -9,6 +9,7 @@ def listen_task_entry():
     suber = r.pubsub()
     suber.subscribe('__keyevent@0__:expired')
     for item in suber.listen():
+        print(item)
         if item['type'] == 'message' and '__running_task_' in item['data']:
             value = r.get(item['data'])
             taskid = value.split('_between_')[0]

@@ -2,7 +2,7 @@ import sys
 from threading import Thread
 import datetime
 import signal
-from process_listen import listen_task_entry
+from process_listen import listen_http_entry
 
 
 class LITEN_TASK_THREAD (Thread):
@@ -10,7 +10,7 @@ class LITEN_TASK_THREAD (Thread):
         Thread.__init__(self)
 
     def run(self):
-        listen_task_entry()
+        listen_http_entry()
 
     def join(self):
         Thread.join(self)
