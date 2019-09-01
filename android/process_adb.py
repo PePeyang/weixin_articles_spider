@@ -44,8 +44,8 @@ def adb_entry(android_queue):
                     print('- {} 即将开始插入redis'.format(t))
                     set_task_in_redis(
                         str(new_task['_id']), str(new_task['task_biz_enname']))
-                    print('- {} 即将通知anyproxy'.format(t))
-                    notify_http_proxy(str(new_task['_id']))
+                    # print('- {} 即将通知anyproxy'.format(t))
+                    # notify_http_proxy(str(new_task['_id']))
                     print('- {} 即将开始做adb操作'.format(t))
 
                     # TODO adb操作
@@ -88,8 +88,8 @@ def set_task_in_redis(taskid, enname):
     r.set('__running_taskid_{}_bizenname_{}'.format(
         taskid, enname), taskid, ex=60*10)
 
-def notify_http_proxy(taskid):
-    r.publish('there_is_a_adb', '__taskid_' + str(taskid))
+# def notify_http_proxy(taskid):
+#     r.publish('there_is_a_adb', '__taskid_' + str(taskid))
 
 
 
