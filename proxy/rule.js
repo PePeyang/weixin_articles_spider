@@ -1,9 +1,13 @@
 const url = require('url')
 const querystring = require('querystring');
+const cheerio = require('cheerio')
+const MongoClient = require("mongodb").MongoClient
+const mogoUrl = 'mongodb://localhost:27017'
+const mongoClient = new MongoClient(mogoUrl);
+const assert = require('assert');
+
 const redis = require("redis");
 const client = redis.createClient();
-const { promisify } = require('util');
-const getAsync = promisify(client.get).bind(client);
 
 const fake_url = {
     "geticon": "https://mp.weixin.qq.com/mp/geticon?",
@@ -27,10 +31,26 @@ function sendToRedis(key, value) {
     client.set(key, value, 'EX', 60 * 10 * 60);
 };
 
-function sendToMongodb(key, value) {
-    var mongodb = require("mongodb");
+function sendToMongodb(value) {
+
 
 };
+
+function get_biz_by_name(name) {
+    mongoClient.connect(function (err) {
+        assert.equal(null, err);
+        console.log("Connected successfully to server");
+        const db = mongoClient.db('weixindb');
+        let biznames = db.collection('biznames')
+
+        biznames.findOne({'chname': name}, function(err, res){
+            console.log(res)
+
+            return res
+        })
+
+    });
+}
 
 function doPublish(){
     client.on("error", function (err) {
@@ -55,8 +75,11 @@ const rule = {
         let timestamp = Date.now().toString()
 
         client.get('__running_task_', function (err, taskValue) {
+            if (err || !taskValue) return
             console.log(taskValue)
-
+            let taskid = taskValue.split('_between_')[0]
+            let enname = taskValue.split('_between_')[1]
+            let httpid = ''
             let signArr = Object.keys(fake_url).map((urlName) => {
                 if (REQUEST_URL.includes(fake_url[urlName])) {
                     let rd_buf = Buffer(requestDetail.requestData)
@@ -75,7 +98,7 @@ const rule = {
                             REQUEST_COOKIE,
                             REQUEST_HEADERS
                         }
-                        sendToRedis(key, JSON.stringify(value))
+                        sendToMongodb(value)
                     }
 
                     if (urlName === 'getappmsgext') {
@@ -91,21 +114,38 @@ const rule = {
                             REQUEST_DATA: rd_str,
                             // pass_ticket
                         }
-                        sendToRedis(key, JSON.stringify(value))
+                        sendToMongodb(value)
                     }
 
-                    return true
+
                 }
             })
 
-            if (signArr.indexOf(true) > -1) {
-                doPublish()
-            }
+            if (signArr.filter(e => e).length > 1) doPublish(taskid, httpid)
+
         })
 
     },
     // 发送响应前处理
-    *beforeSendResponse(requestDetail, responseDetail) { },
+    *beforeSendResponse(requestDetail, responseDetail) {
+        const REQUEST_URL = requestDetail.url
+
+        client.get('__running_task_', function (err, taskValue) {
+            if (err || !taskValue) return
+            let taskid = taskValue.split('_between_')[0]
+            let enname = taskValue.split('_between_')[1]
+            if (REQUEST_URL.includes(normal_url['article'])) {
+                console.log('- responseDetail： ')
+                if (responseDetail.response.statusCode != 200) return
+                let body_html = responseDetail.response.body.toString('utf8')
+                // console.log(body_html)
+                const $ = cheerio.load(body_html)
+                nickname = $('#js_name').text().trim()
+                console.log('- nickname' + nickname)
+
+            }
+        })
+    },
     *beforeDealHttpsRequest(requestDetail) {
         return true
     },
