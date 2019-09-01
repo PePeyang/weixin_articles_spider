@@ -45,18 +45,28 @@ var inter_geticon_request = async function (requestDetail) {
         REQUEST_DATA: rd_str
     }
 
-    const httpValue = await redisGetAsync('__running_http_')
-    if (!httpValue) {
-        let http = await insert_or_update_a_http(null, value, 'geticon')
-        console.log(`- httpid: ${http.insertedId}`)
-        if (!ObjectId.isValid(httpValue)) {
-            await redisClient.set('__running_http_', http.insertedId)
-        }
-    } else {
-        console.log(`- httpValue ${httpValue}`)
-        let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
-        await redisClient.del('__running_http_')
-    }
+    /**
+     * 有没有大神给我解决一个问题。。。 头都炸了
+     * 问题描述：
+     * 现在需要再proxy中抓取两条api 他们的先后顺序不确定，但是两条的数据都要拿到
+     * 数据库需要维护每一次任务对应的这两条http请求数据
+     * 另外 redis set数据好像不能同步执行
+     */
+
+    let http = await insert_or_update_a_http(ObjectId('111111111111'), value, 'geticon')
+
+    // const httpValue = await redisGetAsync('__running_http_')
+    // if (!httpValue) {
+    //     let http = await insert_or_update_a_http(null, value, 'geticon')
+    //     console.log(`- httpid: ${http.insertedId}`)
+    //     if (!ObjectId.isValid(httpValue)) {
+    //         await redisClient.set('__running_http_', http.insertedId)
+    //     }
+    // } else {
+    //     console.log(`- httpValue ${httpValue}`)
+    //     let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
+    //     await redisClient.del('__running_http_')
+    // }
 
 }
 
@@ -91,21 +101,23 @@ var inter_getmsg_request = async function (requestDetail) {
         REQUEST_COOKIE,
         REQUEST_DATA: rd_str,
     }
-    const httpValue = await redisGetAsync('__running_http_')
-    if (!httpValue) {
-        let http = await insert_or_update_a_http(null, value, 'getappmsgext')
-        // console.log(`- http: `)
-        // console.log(http)
-        console.log(`- httpid: ${http.insertedId}`)
-        if (!ObjectId.isValid(httpValue)) {
-            await redisClient.set('__running_http_', http.insertedId)
-        }
 
-    } else {
-        console.log(`- httpValue ${httpValue}`)
-        let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
-        await redisClient.del('__running_http_')
-    }
+    let http = await insert_or_update_a_http(ObjectId('111111111111'), value, 'getappmsgext')
+    // const httpValue = await redisGetAsync('__running_http_')
+    // if (!httpValue) {
+    //     let http = await insert_or_update_a_http(null, value, 'getappmsgext')
+    //     // console.log(`- http: `)
+    //     // console.log(http)
+    //     console.log(`- httpid: ${http.insertedId}`)
+    //     if (!ObjectId.isValid(httpValue)) {
+    //         await redisClient.set('__running_http_', http.insertedId)
+    //     }
+
+    // } else {
+    //     console.log(`- httpValue ${httpValue}`)
+    //     let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
+    //     await redisClient.del('__running_http_')
+    // }
 }
 
 // function sendToRedis(key, value) {

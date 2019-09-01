@@ -10,7 +10,11 @@ class LITEN_TASK_THREAD (Thread):
         Thread.__init__(self)
 
     def run(self):
-        listen_http_entry()
+        try:
+            listen_http_entry()
+        except Exception as e:
+            print(e)
+            self.run()
 
     def join(self):
         Thread.join(self)

@@ -21,7 +21,7 @@ def adb_entry(android_queue):
             print('- {} 没有任何可用任务'.format(t))
         else:
             for key in r.scan_iter("__running_task_"):
-                value = r.get(key)
+                value = r.get('__running_task_')
                 runnning_taskid = value.split(
                     '_between_')[0]
                 runnning_bizenname = value.split(
@@ -30,7 +30,7 @@ def adb_entry(android_queue):
                 # runnning_task = get_task_in_mongodb(ObjectId(runnning_taskid))
                 print('- {} 已经有运行中的任务了哦 _id是 {} bizename是 {} '.format(t,
                     runnning_taskid, runnning_bizenname))
-
+                break # NOTE 我曹!
             else:
                 print('- {} 即将添加任务至安卓运行队列'.format(t))
                 # 如果没有任何进行中的任务

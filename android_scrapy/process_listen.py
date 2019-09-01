@@ -1,11 +1,13 @@
+import sys
+sys.path.append("../")
+from tools import replace_at_index
 from config import FakeLoadParams
 from config import FakeHomeParams
-from tools import replace_at_index
+
 import urllib.parse as urlparse
 from http import cookiejar
 from http.cookies import SimpleCookie
-import sys
-sys.path.append("../")
+
 from instance import mongo_instance  # weixindb
 import redis
 import datetime
