@@ -1,3 +1,4 @@
+import datetime
 import scrapy
 from ..items import HomeItem
 
@@ -5,7 +6,8 @@ class HomeSpider(scrapy.Spider):
     name = 'HomeSpider'
     allowed_domains = ['mp.weixin.qq.com']
     start_urls = []
-
+    t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    print(' - {} HomeSpider开始爬取了..'.format(t))
     custom_settings = {
         # redis
         'REDIS_HOST': '127.0.0.1',

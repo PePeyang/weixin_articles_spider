@@ -16,7 +16,7 @@ from bson.objectid import ObjectId
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 
-def listen_http_entry():
+def listen_http_entryDUP():
     t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print(' {} 开始了对__keyspace@0__:__running_http_的订阅...'.format(t))
     suber = r.pubsub()
@@ -35,6 +35,14 @@ def listen_http_entry():
             print(http)
             set_home_params_config_N1(http['geticon'])
             set_home_params_config_N2(http['getappmsgext'])
+
+
+def listen_http_entry():
+    t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    http = find_a_http_in_mongodb('313131313131313131313131')
+    print(http)
+    set_home_params_config_N1(http['geticon'])
+    set_home_params_config_N2(http['getappmsgext'])
 
 def find_a_http_in_mongodb(httpid):
     http_obj_id = ObjectId(httpid)
