@@ -95,25 +95,16 @@ var inter_getmsg_request = async function (requestDetail) {
         let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
         await redisClient.del('__running_http_')
     }
-
 }
 
-function doPublish() {
-    client.on("error", function (err) {
-        console.log(err)
-        console.log("NODE_INFO: 有可能是redis尚未启动...")
-    });
-    client.publish('there_is_a_http', '2222222xxxxxxxxx22222222')
-}
-
-function sendToRedis(key, value) {
-    redisClient.on("error", function (err) {
-        console.log(err)
-        console.log("NODE_INFO: 有可能是redis尚未启动...")
-    });
-    // 设置十分钟的有效期 因为geticon有效期差不多就这么多
-    redisClient.set(key, value, 'EX', 60 * 10 * 60);
-};
+// function sendToRedis(key, value) {
+//     redisClient.on("error", function (err) {
+//         console.log(err)
+//         console.log("NODE_INFO: 有可能是redis尚未启动...")
+//     });
+//     // 设置十分钟的有效期 因为geticon有效期差不多就这么多
+//     redisClient.set(key, value, 'EX', 60 * 10 * 60);
+// };
 
 async function insert_or_update_a_http(http_obj_id, value, key) {
     await mongoClient.connect()
@@ -138,20 +129,15 @@ async function insert_or_update_a_http(http_obj_id, value, key) {
 
 };
 
-async function get_biz_by_name(name) {
-
-    console.log("Connected successfully to server");
-    const db = mongoClient.db('weixindb');
-    let biznames = db.collection('biznames')
-
-    biznames.findOne({ 'chname': name }, function (err, res) {
-        console.log(res)
-
-        return res
-    })
-
-
-}
+// async function get_biz_by_name(name) {
+//     console.log("Connected successfully to server");
+//     const db = mongoClient.db('weixindb');
+//     let biznames = db.collection('biznames')
+//     biznames.findOne({ 'chname': name }, function (err, res) {
+//         console.log(res)
+//         return res
+//     })
+// }
 
 module.exports = {
     inter_geticon_request,

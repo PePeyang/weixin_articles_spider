@@ -14,6 +14,10 @@ const normal_url = {
     "article": "https://mp.weixin.qq.com/s?"
 }
 
+function doPublish() {
+    redisClient.publish('there_is_a_http', 'data is in key __running_http_')
+}
+
 const rule = {
     // 模块介绍
     summary: '微信公众号爬虫',
@@ -25,6 +29,8 @@ const rule = {
         } else if (REQUEST_URL.includes(fake_url.getappmsgext)){
             await inter_getmsg_request(requestDetail)
         }
+
+        // 这里有先后顺序不知道什么时候更新了
     },
     // 发送响应前处理
     beforeSendResponse: async function beforeSendResponse(requestDetail, responseDetail) {

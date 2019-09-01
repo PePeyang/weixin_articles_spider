@@ -27,7 +27,7 @@ def entry():
     tasks = build_task(list(bizs), 'new', 30 , 0)
     tasks_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} 构造了tasks'.format(tasks_time))
-    print(tasks)
+    # print(tasks)
 
 def find_bizs():
     return mongo_instance.biznames.find()
