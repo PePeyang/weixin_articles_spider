@@ -19,7 +19,7 @@ var inter_geticon_request = async function (requestDetail) {
     const REQUEST_HEADERS = requestDetail.requestOptions.headers
     const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
 
-    const taskValue = await redisGetAsync('__running_task_') || ''
+    const taskValue = await redisGetAsync('__running_task_')
     if (!taskValue) {
         console.log('- redis中没有进行中的任务')
         return
@@ -45,7 +45,7 @@ var inter_geticon_request = async function (requestDetail) {
         REQUEST_DATA: rd_str
     }
 
-    const httpValue = await redisGetAsync('__running_http_') || ''
+    const httpValue = await redisGetAsync('__running_http_')
     if (!httpValue) {
         let http = await insert_or_update_a_http(null, value, 'geticon')
         console.log(`- httpid: ${http.insertedId}`)
@@ -65,7 +65,8 @@ var inter_getmsg_request = async function (requestDetail) {
     const REQUEST_HEADERS = requestDetail.requestOptions.headers
     const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
 
-    const taskValue = await redisGetAsync('__running_task_') || ''
+    const taskValue = await redisGetAsync('__running_task_')
+    console.log(taskValue)
     if (!taskValue) {
         console.log('- redis中没有进行中的任务')
         return
@@ -90,7 +91,7 @@ var inter_getmsg_request = async function (requestDetail) {
         REQUEST_COOKIE,
         REQUEST_DATA: rd_str,
     }
-    const httpValue = await redisGetAsync('__running_http_') || ''
+    const httpValue = await redisGetAsync('__running_http_')
     if (!httpValue) {
         let http = await insert_or_update_a_http(null, value, 'getappmsgext')
         // console.log(`- http: `)
