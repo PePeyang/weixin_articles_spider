@@ -1,5 +1,3 @@
-const url = require('url')
-const querystring = require('querystring');
 const { inter_geticon_request, inter_getmsg_request } = require('./process_request_intercerptor')
 const { inter_s_response } = require('./process_response_intercerptor')
 
@@ -16,17 +14,6 @@ const normal_url = {
     "article": "https://mp.weixin.qq.com/s?"
 }
 
-function doPublish(){
-    client.on("error", function (err) {
-        console.log(err)
-        console.log("NODE_INFO: 有可能是redis尚未启动...")
-    });
-    client.publish('there_is_a_http', '2222222xxxxxxxxx22222222')
-}
-
-const FAKE_PREFIX = '__fake_'
-const NORMAL_PREFIX = '__normal_'
-
 const rule = {
     // 模块介绍
     summary: '微信公众号爬虫',
@@ -38,7 +25,6 @@ const rule = {
         } else if (REQUEST_URL.includes(fake_url.getappmsgext)){
             await inter_getmsg_request(requestDetail)
         }
-
     },
     // 发送响应前处理
     beforeSendResponse: async function beforeSendResponse(requestDetail, responseDetail) {
@@ -47,9 +33,7 @@ const rule = {
             await inter_s_response(responseDetail)
         }
     },
-    *beforeDealHttpsRequest(requestDetail) {
-        return true
-    },
+    *beforeDealHttpsRequest(requestDetail) { return true },
     *onError(requestDetail, error) { /* ... */ },
     *onConnectError(requestDetail, error) { /* ... */ }
 };
