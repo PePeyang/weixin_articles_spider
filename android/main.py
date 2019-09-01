@@ -7,8 +7,8 @@ from process_suber import suber_entry
 from process_listen import listen_task_entry
 from threading import Thread
 import datetime
-from tools.data_queue import Normal_queue
-android_queue = Normal_queue('ANDROID队列')
+from tools.data_queue import Redis_queue
+android_queue = Redis_queue('ANDROID队列')
 
 class SUBER_THREAD (Thread):
     def __init__(self, queue):
@@ -16,11 +16,7 @@ class SUBER_THREAD (Thread):
         Thread.__init__(self)
 
     def run(self):
-        try:
-            suber_entry(self.queue)
-        except BaseException as be:
-            print(be)
-            # self.run()
+        suber_entry(self.queue)
 
     def join(self):
         Thread.join(self)
@@ -31,11 +27,7 @@ class ADB_THREAD (Thread):
         Thread.__init__(self)
 
     def run(self):
-        try:
-            adb_entry(self.queue)
-        except BaseException as be:
-            print(be)
-            self.run()
+        adb_entry(self.queue)
 
     def join(self):
         Thread.join(self)
@@ -53,6 +45,7 @@ class LITEN_TASK_THREAD (Thread):
 
 def quit(signum, frame):
     print('----手动停止-----')
+    sys.exit()
     sys.exit()
 
 if __name__ == '__main__':

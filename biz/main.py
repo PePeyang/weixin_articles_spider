@@ -22,6 +22,7 @@ class BIZ_THREAD (Thread):
 def quit(signum, frame):
     print('----手动停止-----')
     sys.exit()
+    sys.exit()
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, quit)

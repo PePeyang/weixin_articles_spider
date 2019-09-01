@@ -2,6 +2,7 @@
 import datetime
 import time
 import re
+import json
 import sys
 sys.path.append("../")  # 为了引入instance
 from instance import mongo_instance  # weixindb
@@ -42,6 +43,6 @@ def suber(android_queue):
             # 如果任务是未完成的状态 才加入队列
             if task['task_status'] == 'generate':
                 # ANCHOR 加入队列
-                android_queue.addItem(task)
+                android_queue.addItem(json.dumps(task))
                 print('- {} 任务添加成功!'.format(t))
 
