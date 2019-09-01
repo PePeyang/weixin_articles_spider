@@ -8,7 +8,7 @@ from process_listen import listen_task_entry
 from threading import Thread
 import datetime
 from tools.data_queue import Redis_queue
-android_queue = Redis_queue('ANDROID队列')
+android_queue = Redis_queue('ANDROID_QUEUE')
 
 class SUBER_THREAD (Thread):
     def __init__(self, queue):

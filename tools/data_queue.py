@@ -1,5 +1,6 @@
 import redis
 import json
+from bson.json_util import object_hook
 # 任务的队列
 class Normal_queue():
     """
@@ -71,7 +72,8 @@ class Redis_queue():
         :param q_name:创建一个队列
         """
         self.q_name = 'redis_queue__'+q_name
-        self.redis = redis.Redis()
+        self.redis = redis.Redis(
+            host='localhost', port=6379, decode_responses=True)
 
     def isEmpty(self):
         """
@@ -88,7 +90,8 @@ class Redis_queue():
         rq_j_data_list = []
         for rq_b_data in rq_b_data_list:
             try:
-                rq_j_data = json.loads(rq_b_data)
+                rq_j_data = json.loads(
+                    rq_b_data, object_hook=object_hook)
             except:
                 rq_j_data = rq_b_data.decode('utf8')
             rq_j_data_list.append(rq_j_data)
@@ -114,7 +117,7 @@ class Redis_queue():
         rq_j_data = None
         if len(rq_b_data_list) > 0:
             try:
-                rq_j_data = json.loads(rq_b_data_list[-1])
+                rq_j_data = json.loads(rq_b_data_list[-1], object_hook=object_hook)
             except:
                 rq_j_data = rq_b_data_list[-1].decode('utf8')
 
@@ -126,7 +129,7 @@ class Redis_queue():
         """
         data = self.redis.rpop(self.q_name)
         try:
-            rq_j_data = json.loads(data)
+            rq_j_data = json.loads(data, object_hook=object_hook)
         except:
             if data:
                 rq_j_data = data.decode('utf8')

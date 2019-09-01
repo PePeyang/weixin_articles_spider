@@ -7,6 +7,7 @@ import sys
 sys.path.append("../")  # 为了引入instance
 from instance import mongo_instance  # weixindb
 from bson.objectid import ObjectId
+from bson import json_util
 import redis
 r = redis.Redis()
 
@@ -31,6 +32,7 @@ def suber(android_queue):
             print('- {} 根据 {} 查询到了该任务: '.format(t, str_id))
             print(task)
             tasks = android_queue.pickAll()
+            print(tasks)
             # ANCHOR 检测重复
             # 如果公众号没有被添加过才需要添加
             for task_item in tasks:
@@ -43,6 +45,7 @@ def suber(android_queue):
             # 如果任务是未完成的状态 才加入队列
             if task['task_status'] == 'generate':
                 # ANCHOR 加入队列
-                android_queue.addItem(json.dumps(task))
+                android_queue.addItem(json.dumps(
+                    task, default=json_util.default))
                 print('- {} 任务添加成功!'.format(t))
 
