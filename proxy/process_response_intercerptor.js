@@ -9,7 +9,13 @@ const mogoUrl = 'mongodb://localhost:27017'
 const mongoClient = new MongoClient(mogoUrl)
 
 var inter_home_response = async function (responseDetail) {
-    const taskValue = await redisGetAsync('__running_task_') || ''
+
+    const taskValue = await redisGetAsync('__running_task_')
+    if (!taskValue) {
+        console.log('- redis中没有进行中的任务')
+        return
+    }
+
     let taskid = taskValue.split('_between_')[0]
     let enname = taskValue.split('_between_')[1]
     console.log(`- taskid: ${taskid} enname: ${enname}`)
@@ -18,10 +24,22 @@ var inter_home_response = async function (responseDetail) {
     let body_html = responseDetail.response.body.toString('utf8')
     // console.log(body_html)
     appmsg_token = body_html.match(/window.appmsg_token = "(.*)"/)[1]
+    nickname = body_html.match(/var nickname = "(.*)"/)[1].split('"')[0]
+    biz = body_html.match(/var __biz = "(.*)"/)[1]
+    pass_ticket = body_html.match(/var pass_ticket = "(.*)"/)[1]
+
     console.log('- msgToken ' + appmsg_token)
     const httpid = await redisGetAsync('__running_http_')
     console.log('- httpid ' + httpid)
-    await insert_or_update_a_http(httpid, appmsg_token, 'appmsg_token')
+    await insert_or_update_a_http(httpid, {
+        response: body_html,
+        appmsg_token,
+        nickname,
+        taskid: ObjectId(taskid),
+        enname,
+        biz,
+        pass_ticket
+    })
 }
 
 var inter_s_response = async function (responseDetail) {
@@ -42,11 +60,10 @@ var inter_s_response = async function (responseDetail) {
 }
 
 
-async function insert_or_update_a_http(http_obj_id, value, key) {
+async function insert_or_update_a_http(http_obj_id, datas) {
     http_obj_id = ObjectId(http_obj_id)
     await mongoClient.connect()
     const weixindb = mongoClient.db('weixindb');
-
     let https = weixindb.collection('https')
     if (!http_obj_id) {
         console.log(' - 无法操作')
@@ -55,10 +72,10 @@ async function insert_or_update_a_http(http_obj_id, value, key) {
             '_id': http_obj_id
         }, {
                 '$set': {
-                    [key]: value
+                    ...datas
                 }
             }, {
-                upsert: true
+                upsert: false
             })
     }
 

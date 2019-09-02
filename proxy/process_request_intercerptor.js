@@ -40,7 +40,7 @@ var inter_gethome_request = async function (requestDetail) {
     }
 
     let http = await insert_or_update_a_http(null, value, 'actionhome')
-    await redisClient.set('__running_http_', http.insertedId)
+    await redisClient.set('__running_http_', http.insertedId.toString())
 }
 
 var inter_geticon_request = async function (requestDetail) {
