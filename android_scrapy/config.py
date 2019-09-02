@@ -1,3 +1,9 @@
+class NORMAL_URLS:
+    home = "https://mp.weixin.qq.com/mp/profile_ext"
+    load = "https://mp.weixin.qq.com/mp/profile_ext"
+    article = "https://mp.weixin.qq.com/s"
+
+
 class FakeHomeParams:
     cookies = {
         'rewardsn': '',
@@ -23,7 +29,20 @@ class FakeHomeParams:
         'X-Requested-With': 'com.tencent.mm',
     }
 
-    params = (
+    params = {
+        'action': 'home',
+        '__biz': '',
+        'devicetype': 'android-23',
+        'version': '27000634',
+        'lang': 'zh_CN',
+        'nettype': 'WIFI',
+        'a8scene': '7',
+        'session_us': 'gh_9e26999263b5',
+        'pass_ticket': '',
+        'wx_header': '1'
+    }
+
+    paramsTuple = (
         ('action', 'home'),
         ('__biz', ''),  # cover
         ('devicetype', 'android-23'),
@@ -60,7 +79,23 @@ class FakeLoadParams:
         'Accept-Language': 'zh-CN,en-US;q=0.8',
     }
 
-    params = (
+    params = {
+        'action': 'getmsg',
+        '__biz': 'MzUyMzkwNTQzNQ==',  # cover
+        'f': 'json',
+        'offset': '0',  # cover
+        'count': '10',  # cover
+        'is_ok': '1',
+        'scene': '',
+        'uin': '777',
+        'key': '777',
+        'pass_ticket': '',  # cover
+        'wxtoken': '',  # cover
+        'appmsg_token': '',  # cover
+        'x5': '0',
+    }
+
+    paramsTuple = (
         ('action', 'getmsg'),
         ('__biz', 'MzUyMzkwNTQzNQ=='),  # cover
         ('f', 'json'),

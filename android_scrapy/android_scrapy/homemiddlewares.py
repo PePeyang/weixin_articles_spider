@@ -4,11 +4,11 @@
 #
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-
+from scrapy.http.request import Request
 from scrapy import signals
+import datetime
 
-
-class AndroidScrapySpiderMiddleware(object):
+class HomeSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
@@ -41,6 +41,7 @@ class AndroidScrapySpiderMiddleware(object):
 
         # Should return either None or an iterable of Response, dict
         # or Item objects.
+        print(exception)
         pass
 
     def process_start_requests(self, start_requests, spider):
@@ -50,13 +51,34 @@ class AndroidScrapySpiderMiddleware(object):
 
         # Must return only requests (not items).
         for r in start_requests:
+            # r <class 'scrapy.http.request.Request'>
+            t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+            print(' - in start_requests: {} '.format(t))
+            print(r)
+            # response = requests.get(
+            #     NORMAL_URLS.home,
+            #     headers=FakeHomeParams.headers,
+            #     params=FakeHomeParams.params,
+            #     cookies=FakeHomeParams.cookies,
+            #     verify=False
+            # )
+            # if response.content.decode().find('失效的验证页面') > 0:
+            #     print('失效的验证页面')
+            #     return
+
+            # if response.content.decode().find('操作频繁') > 0:
+            #     print('操作频繁 限制24小时 请更换微信')
+            #     return
+
             yield r
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
+        spider.logger.info(
+            'HomeSpiderMiddleware: Spider opened: %s' % spider.name)
 
 
-class AndroidScrapyDownloaderMiddleware(object):
+
+class HomeDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
@@ -97,7 +119,9 @@ class AndroidScrapyDownloaderMiddleware(object):
         # - return None: continue processing this exception
         # - return a Response object: stops process_exception() chain
         # - return a Request object: stops process_exception() chain
+        print(exception)
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
+        spider.logger.info(
+            'HomeDownloaderMiddleware: Spider opened: %s' % spider.name)
