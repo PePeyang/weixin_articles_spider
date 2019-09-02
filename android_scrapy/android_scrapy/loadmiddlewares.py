@@ -10,6 +10,7 @@ import datetime
 from instance import mongo_instance, redis_instance
 from bson.objectid import ObjectId
 
+
 class LoadSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
@@ -52,22 +53,28 @@ class LoadSpiderMiddleware(object):
         # that it doesn’t have a response associated.
 
         # Must return only requests (not items).
-        httpid = redis_instance.get('__running_http_').decode()
-        print('httpid' + httpid)
-        http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
-        # biz = http['actionhome']
-        # print(http)
-
         for r in start_requests:
             # r <class 'scrapy.http.request.Request'>
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             print(' - in start_requests: {} '.format(t))
-            print(r)
+            # print(r)
             yield r
 
     def spider_opened(self, spider):
         spider.logger.info(
             'LoadSpiderMiddleware: Spider opened: %s' % spider.name)
+
+        httpid = redis_instance.get('__running_http_').decode()
+        print('httpid %s' % httpid)
+        http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
+        task_obj_id = http['taskid']
+        print('taskid %s' % str(task_obj_id))
+        task = mongo_instance.tasks.find_one(
+            filter={'_id': task_obj_id})
+        print('- task finded')
+        print(task)
+        spider.task = task
+        spider.http = http
 
 
 
