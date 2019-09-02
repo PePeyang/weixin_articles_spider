@@ -34,6 +34,9 @@ class LoadSpider(scrapy.Spider):
         'SPIDER_MIDDLEWARES': {
             # 'android_scrapy.loadmiddlewares.LoadSpiderMiddleware': 543,
         },
+        # 设置请求间隔
+        "DOWNLOAD_DELAY": 10,
+        "COOKIES_ENABLED": True
     }
 
 
@@ -52,8 +55,7 @@ class LoadSpider(scrapy.Spider):
         cookie_arr = cookie_str.split(';')
         cookies = {item.split('=')[0]: item.split('=')[1]
                    for item in cookie_arr}
-        # cookies = {}
-        # cookies = {i.key: i.value for i in cookie.values()}
+
         print('- cookies')
         print(cookies)
         print(task)
@@ -69,21 +71,26 @@ class LoadSpider(scrapy.Spider):
         print('- FakeLoadParams')
         print(FakeLoadParams)
 
-        url = NORMAL_URLS.load
-        arr = []
-        for key, val in FakeLoadParams.params.items():
-            print(key + '=' + val)
-            arr.append(key + '=' + val)
-        queryString = '?' + '&'.join(arr)
-        print('- start_requests')
-        # print(queryString)
-        # print(headers)
-        # print(cookies)
+        offset = 0
+        for i in range(int(task['task_crawlcount'] / 10)):
+            print(' - i %s' % i)
+            print(' - offset %s' % offset)
+            FakeLoadParams.params['offset'] = str(offset)
+            url = NORMAL_URLS.load
+            arr = []
+            for key, val in FakeLoadParams.params.items():
+                print(key + '=' + val)
+                arr.append(key + '=' + val)
+            queryString = '?' + '&'.join(arr)
+            print('- start_requests')
+            offset += 10
+            yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
 
-        return [scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, callback=self.next_request, method='GET')]
 
-    def next_request(self, response):
+
+
+    def parse(self, response):
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         print(' - in next_request: {} '.format(t))
-        print(response.body.decode())
+        print(response.body.decode()[0::100])
 
