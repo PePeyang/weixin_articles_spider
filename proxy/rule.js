@@ -1,5 +1,5 @@
-const { inter_geticon_request, inter_getmsg_request } = require('./process_request_intercerptor')
-const { inter_s_response } = require('./process_response_intercerptor')
+const { inter_gethome_request } = require('./process_request_intercerptor')
+const { inter_home_response, inter_s_response } = require('./process_response_intercerptor')
 
 const fake_url = {
     "geticon": "https://mp.weixin.qq.com/mp/geticon?",
@@ -24,19 +24,17 @@ const rule = {
     // 发送请求前拦截处理
     beforeSendRequest: async function beforeSendRequest(requestDetail) {
         const REQUEST_URL = requestDetail.url
-        if (REQUEST_URL.includes(fake_url.geticon)) {
-            await inter_geticon_request(requestDetail)
-        } else if (REQUEST_URL.includes(fake_url.getappmsgext)){
-            await inter_getmsg_request(requestDetail)
+        if (REQUEST_URL.includes(normal_url.home)) {
+            await inter_gethome_request(requestDetail)
         }
-
-        // 这里有先后顺序不知道什么时候更新了
     },
     // 发送响应前处理
     beforeSendResponse: async function beforeSendResponse(requestDetail, responseDetail) {
         const REQUEST_URL = requestDetail.url
         if (REQUEST_URL.includes(normal_url.article)) {
             await inter_s_response(responseDetail)
+        } else if (REQUEST_URL.includes(normal_url.home)) {
+            await inter_home_response(responseDetail)
         }
     },
     *beforeDealHttpsRequest(requestDetail) { return true },

@@ -14,6 +14,35 @@ const redisGetAsync = promisify(redisClient.get).bind(redisClient);
 const FAKE_PREFIX = '__fake_'
 const NORMAL_PREFIX = '__normal_'
 
+var inter_gethome_request = async function (requestDetail) {
+    const REQUEST_URL = requestDetail.url
+    const REQUEST_HEADERS = requestDetail.requestOptions.headers
+    const REQUEST_COOKIE = REQUEST_HEADERS.Cookie
+    const rd_buf = Buffer(requestDetail.requestData)
+    const rd_str = rd_buf.toString('utf8')
+
+    let temp_url = url.parse(REQUEST_URL);
+    let params = querystring.parse(temp_url.query)
+    let biz = params.__biz;
+
+    const taskValue = await redisGetAsync('__running_task_')
+    if (!taskValue) {
+        console.log('- redis中没有进行中的任务')
+        return
+    }
+
+    let value = {
+        biz,
+        REQUEST_URL,
+        REQUEST_COOKIE,
+        REQUEST_HEADERS,
+        REQUEST_DATA: rd_str
+    }
+
+    let http = await insert_or_update_a_http(null, value, 'actionhome')
+    await redisClient.set('__running_http_', http.insertedId)
+}
+
 var inter_geticon_request = async function (requestDetail) {
     const REQUEST_URL = requestDetail.url
     const REQUEST_HEADERS = requestDetail.requestOptions.headers
@@ -120,14 +149,7 @@ var inter_getmsg_request = async function (requestDetail) {
     // }
 }
 
-// function sendToRedis(key, value) {
-//     redisClient.on("error", function (err) {
-//         console.log(err)
-//         console.log("NODE_INFO: 有可能是redis尚未启动...")
-//     });
-//     // 设置十分钟的有效期 因为geticon有效期差不多就这么多
-//     redisClient.set(key, value, 'EX', 60 * 10 * 60);
-// };
+
 
 async function insert_or_update_a_http(http_obj_id, value, key) {
     await mongoClient.connect()
@@ -164,5 +186,6 @@ async function insert_or_update_a_http(http_obj_id, value, key) {
 
 module.exports = {
     inter_geticon_request,
-    inter_getmsg_request
+    inter_getmsg_request,
+    inter_gethome_request
 }
