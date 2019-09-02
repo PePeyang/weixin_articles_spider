@@ -15,26 +15,25 @@ import re
 from bson.objectid import ObjectId
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
+# def listen_http_entryDUP():
+#     t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+#     print(' {} 开始了对__keyspace@0__:__running_http_的订阅...'.format(t))
+#     suber = r.pubsub()
+#     suber.subscribe('__keyspace@0__:__running_http_')
 
-def listen_http_entryDUP():
-    t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-    print(' {} 开始了对__keyspace@0__:__running_http_的订阅...'.format(t))
-    suber = r.pubsub()
-    suber.subscribe('__keyspace@0__:__running_http_')
-
-    for item in suber.listen():
-        # print(' 监听到了事件')
-        # print(item)
-        if item['type'] == 'message' and item['data'] == 'set':
-            # __running_http_
-            t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-            httpid = r.get('__running_http_')
-            print(' {} 发现http数据 {}'.format(t, httpid))
-            r.delete('__running_http_')
-            http = find_a_http_in_mongodb(httpid)
-            print(http)
-            set_home_params_config_N1(http['geticon'])
-            set_home_params_config_N2(http['getappmsgext'])
+#     for item in suber.listen():
+#         # print(' 监听到了事件')
+#         # print(item)
+#         if item['type'] == 'message' and item['data'] == 'set':
+#             # __running_http_
+#             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+#             httpid = r.get('__running_http_')
+#             print(' {} 发现http数据 {}'.format(t, httpid))
+#             r.delete('__running_http_')
+#             http = find_a_http_in_mongodb(httpid)
+#             print(http)
+#             set_home_params_config_N1(http['geticon'])
+#             set_home_params_config_N2(http['getappmsgext'])
 
 
 def listen_http_entry():
@@ -62,8 +61,7 @@ def set_home_params_config_N1(data):
     # FakeHomeParams.cookies['version'] = cookies['version'] # version 应该有但是cookie转换后就是没有
     FakeHomeParams.cookies['pass_ticket'] = cookies['pass_ticket'] or ''
     FakeHomeParams.cookies['wap_sid2'] = cookies['wap_sid2']
-    FakeHomeParams.params = replace_at_index(
-        FakeHomeParams.params, 8, ('pass_ticket', cookies['pass_ticket']))
+    FakeHomeParams.params['pass_ticket'] = cookies['pass_ticket']
 
 
 def set_home_params_config_N2(data):
@@ -76,18 +74,14 @@ def set_home_params_config_N2(data):
         print(err)
 
     req_data = urlparse.parse_qs(data['REQUEST_DATA'])
-    biz = req_data['__biz'][0]
-    FakeHomeParams.params = replace_at_index(
-        FakeHomeParams.params, 1, ('__biz', biz))
-
+    FakeHomeParams.params['__biz'] = req_data['__biz'][0]
     # 不放心 再弄一次
     if req_data['pass_ticket']:
         print('这里果然有！')
         print(req_data['pass_ticket'])
         FakeHomeParams.cookies['pass_ticket'] = req_data['pass_ticket'][0]
         FakeLoadParams.cookies['pass_ticket'] = req_data['pass_ticket'][0]
-        FakeLoadParams.params = replace_at_index(
-            FakeLoadParams.params, 9, ('pass_ticket', req_data['pass_ticket'][0]))
+        FakeLoadParams.params['pass_ticket'] = req_data['pass_ticket'][0]
 
     cookie = SimpleCookie()
     cookie.load(data['REQUEST_COOKIE'])
@@ -101,16 +95,9 @@ def set_home_params_config_N2(data):
         cookies['pass_ticket']
         FakeLoadParams.cookies['wap_sid2'] = cookies['wap_sid2']
         FakeLoadParams.cookies['pass_ticket'] = cookies['pass_ticket']
-        FakeLoadParams.params = replace_at_index(
-            FakeLoadParams.params, 9, ('pass_ticket', cookies['pass_ticket']))
+        FakeLoadParams.params['pass_ticket'] = cookies['pass_ticket']
+
     except Exception as err:
         pass
-
-
-# def set_task_in_mongodb(task_obj_id):
-#     t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-#     mongo_instance.tasks.find_and_modify(
-#         query={'_id': task_obj_id}, update={'$set': {'task_status': 'end_timeout', 'task_updatetime': t}})
-
 
 
