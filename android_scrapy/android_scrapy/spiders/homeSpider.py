@@ -61,7 +61,10 @@ class HomeSpider(scrapy.Spider):
             print(key + '=' + val)
             arr.append(key + '=' + val)
         queryString = '?' + '&'.join(arr)
-
+        print('- start_requests')
+        print(queryString)
+        print(headers)
+        print(cookies)
         return [scrapy.Request(url=url+queryString, headers=headers, cookies=cookies, callback=self.next_request, method='GET')]
 
     def next_request(self, response):
@@ -85,4 +88,4 @@ class HomeSpider(scrapy.Spider):
         FakeLoadParams.params['__biz'] = FakeHomeParams.params['__biz']
         FakeLoadParams.params['appmsg_token'] = FakeHomeParams.params['appmsg_token']
         print('- build_load_request 成功替换了__biz 和 appmsg_token：')
-        print(FakeLoadParams.params)
+        # print(FakeLoadParams.params)
