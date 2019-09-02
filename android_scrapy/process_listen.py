@@ -15,28 +15,13 @@ import re
 from bson.objectid import ObjectId
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
-# def listen_http_entryDUP():
-#     t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-#     print(' {} 开始了对__keyspace@0__:__running_http_的订阅...'.format(t))
-#     suber = r.pubsub()
-#     suber.subscribe('__keyspace@0__:__running_http_')
-
-#     for item in suber.listen():
-#         # print(' 监听到了事件')
-#         # print(item)
-#         if item['type'] == 'message' and item['data'] == 'set':
-#             # __running_http_
-#             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-#             httpid = r.get('__running_http_')
-#             print(' {} 发现http数据 {}'.format(t, httpid))
-#             r.delete('__running_http_')
-#             http = find_a_http_in_mongodb(httpid)
-#             print(http)
-#             set_home_params_config_N1(http['geticon'])
-#             set_home_params_config_N2(http['getappmsgext'])
-
-
 def listen_http_entry():
+    t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+    print(' {} 开始 listen_http_entry...'.format(t))
+
+
+
+def listen_http_entryDUP():
     t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     http = find_a_http_in_mongodb('313131313131313131313131')
     print(http)

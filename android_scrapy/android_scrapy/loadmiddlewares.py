@@ -26,11 +26,6 @@ class LoadSpiderMiddleware(object):
         # Called for each response that goes through the spider
         # middleware and into the spider.
 
-        httpid = redis_instance.get('__running_http_')
-        http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
-        # biz = http['actionhome']
-        print(http)
-
         # Should return None or raise an exception.
         return None
 
@@ -57,6 +52,12 @@ class LoadSpiderMiddleware(object):
         # that it doesn’t have a response associated.
 
         # Must return only requests (not items).
+        httpid = redis_instance.get('__running_http_').decode()
+        print('httpid' + httpid)
+        http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
+        # biz = http['actionhome']
+        # print(http)
+
         for r in start_requests:
             # r <class 'scrapy.http.request.Request'>
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")

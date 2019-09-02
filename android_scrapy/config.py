@@ -81,7 +81,7 @@ class FakeLoadParams:
 
     params = {
         'action': 'getmsg',
-        '__biz': 'MzUyMzkwNTQzNQ==',  # cover
+        '__biz': '',  # cover
         'f': 'json',
         'offset': '0',  # cover
         'count': '10',  # cover

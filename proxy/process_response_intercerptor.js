@@ -26,7 +26,7 @@ var inter_home_response = async function (responseDetail) {
     appmsg_token = body_html.match(/window.appmsg_token = "(.*)"/)[1]
     nickname = body_html.match(/var nickname = "(.*)"/)[1].split('"')[0]
     biz = body_html.match(/var __biz = "(.*)"/)[1]
-    pass_ticket = body_html.match(/var pass_ticket = "(.*)"/)[1]
+    pass_ticket = body_html.match(/var pass_ticket = "(.*)"/)[1].split('"')[0]
 
     console.log('- msgToken ' + appmsg_token)
     const httpid = await redisGetAsync('__running_http_')
