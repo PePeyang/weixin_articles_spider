@@ -5,6 +5,7 @@ import datetime
 import time
 import sys
 import re
+from phone.GZHCrawler import GZHCrawler
 sys.path.append("../")  # 为了引入instance
 from instance import mongo_instance  # weixindb
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
@@ -50,6 +51,8 @@ def adb_entry(android_queue):
                     print('- {} 即将开始做adb操作'.format(t))
 
                     # TODO adb操作
+                    gc = GZHCrawler(str(new_task['task_biz_enname']))
+                    gc.run()
 
                 except Exception as e:
                     print(' - 31行 这里出错了')
