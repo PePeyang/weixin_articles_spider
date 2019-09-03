@@ -23,6 +23,13 @@ var inter_home_response = async function (responseDetail) {
     if (responseDetail.response.statusCode != 200) return
     let body_html = responseDetail.response.body.toString('utf8')
     // console.log(body_html)
+
+    // 被ban
+    if (body_html.indexOf('操作频繁') > 0) {
+        console.log('操作频繁 限制24小时 请更换微信')
+        // return
+    }
+
     appmsg_token = body_html.match(/window.appmsg_token = "(.*)"/)[1]
     nickname = body_html.match(/var nickname = "(.*)"/)[1].split('"')[0]
     biz = body_html.match(/var __biz = "(.*)"/)[1]

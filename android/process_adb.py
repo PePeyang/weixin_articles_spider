@@ -10,7 +10,7 @@ from instance import mongo_instance  # weixindb
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 def adb_entry(android_queue):
-    # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成runnning
+    # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成running
 
     while True:
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
@@ -22,14 +22,14 @@ def adb_entry(android_queue):
         else:
             for key in r.scan_iter("__running_task_"):
                 value = r.get('__running_task_')
-                runnning_taskid = value.split(
+                running_taskid = value.split(
                     '_between_')[0]
-                runnning_bizenname = value.split(
+                running_bizenname = value.split(
                     '_between_')[1]
                 # 从数据库取得任务
-                # runnning_task = get_task_in_mongodb(ObjectId(runnning_taskid))
+                # running_task = get_task_in_mongodb(ObjectId(running_taskid))
                 print('- {} 已经有运行中的任务了哦 _id是 {} bizename是 {} '.format(t,
-                    runnning_taskid, runnning_bizenname))
+                    running_taskid, running_bizenname))
                 break # NOTE 我曹!
             else:
                 print('- {} 即将添加任务至安卓运行队列'.format(t))
@@ -59,13 +59,13 @@ def adb_entry(android_queue):
 
 
 # def pick_running(android_queue, tasks):
-#     runnning_tasks = []
+#     running_tasks = []
 #     for task in tasks:
 #         # 同一时间只能有一个running的
 #         if task['task_status'] == 'running':
-#             runnning_tasks.append(task)
+#             running_tasks.append(task)
 #             break
-#     return runnning_tasks
+#     return running_tasks
 
 
 def get_task_in_mongodb(task_obj_id):
@@ -78,7 +78,7 @@ def set_task_in_mongo(taskid):
     task_obj_id = ObjectId(taskid)
     t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     mongo_instance.tasks.find_and_modify(
-        query={'_id': task_obj_id}, update={'$set': {'task_status': 'runnning', 'task_updatetime': t}})
+        query={'_id': task_obj_id}, update={'$set': {'task_status': 'running', 'task_updatetime': t}})
 
 def set_task_in_redis(taskid, enname):
     # redis的key过期事件在获返回结果时是 key的值，所以在做相关任务时，可以把key名写成需要执行的函数名等等

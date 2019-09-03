@@ -24,7 +24,7 @@ def entry():
     # type(bizs) <class 'pymongo.cursor.Cursor'>
     print('- {} 找到了bizs'.format(bizs_time))
     # ANCHOR
-    tasks = build_task(list(bizs), 'new', 30 , 0)
+    tasks = build_task(list(bizs), 'new', None, 30 , 0)
     tasks_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} 构造了tasks'.format(tasks_time))
     # print(tasks)
@@ -35,7 +35,7 @@ def find_bizs():
     # Returns an instance of: class: ~pymongo.cursor.Cursor corresponding to this query.
 
 
-def build_task(bizs, task_mode, task_crawlcount, task_depth):
+def build_task(bizs, task_mode, task_crawl_count, task_crawl_min, task_depth):
     tasks = []
     for biz in bizs:
         task = {}
@@ -53,9 +53,10 @@ def build_task(bizs, task_mode, task_crawlcount, task_depth):
         task['task_endtime'] = None
         task['task_weight'] = 1
         task['task_mode'] = task_mode
-        task['task_crawlcount'] = task_crawlcount
-        task['task_start_articleid'] = None
-        task['task_end_articleid'] = None
+        task['task_crawl_count'] = task_crawl_count
+        task['task_crawl_min'] = task_crawl_min
+        task['task_start_loadid'] = None
+        task['task_end_loadid'] = None
         task['task_depth'] = task_depth  # html 0 html+imgs 1 html+comment 2
         # ANCHOR
         taskid = insert_task(task).inserted_id

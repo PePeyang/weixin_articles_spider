@@ -65,6 +65,7 @@ class HomeSpider(scrapy.Spider):
             print('失效的验证页面')
             return
 
+        # 被ban
         if response.body.decode().find('操作频繁') > 0:
             print('操作频繁 限制24小时 请更换微信')
             return
