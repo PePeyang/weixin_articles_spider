@@ -97,9 +97,6 @@ class LoadSpider(scrapy.Spider):
         }
         method = switches.get(self.task['task_mode'])
         return method(response)
-        # self.run_crawl_new(response)
-
-
 
     def run_crawl_new(self, response):
         next_offset = int(url_query_parameter(response.url, 'offset')) + 10
@@ -187,8 +184,9 @@ class LoadSpider(scrapy.Spider):
             print('要出去了')
         else:
             res = mongo_instance.loads.insert_many(list_db_data)
-            print(' 插入的第一个id是: %s' % res.inserted_ids[0])
-            self.task['task_start_loadid'] = res.inserted_ids[0]
+            if self.crawled_times == 1:
+                print(' 插入的第一个id是: %s' % res.inserted_ids[0])
+                self.task['task_start_loadid'] = res.inserted_ids[0]
 
         self.task['task_updatetime'] = t
         self.task['task_endtime'] = t
@@ -206,10 +204,31 @@ class LoadSpider(scrapy.Spider):
 
     def run_crawl_all(self, response):
         next_offset = int(url_query_parameter(response.url, 'offset')) + 10
+        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         print(' --- run_crawl_all --- ')
         list_parse_res = list_parse(eval(response.body.decode()))
-        data = list_into_dbdata(list_parse_res)
-        if not data:
+        list_db_data = list_into_dbdata(
+            list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'])
+
+        # 到头了或者出错了
+        if not list_db_data:
+            self.task['task_status'] = 'end_success'
+            print('要出去了')
+            return
+        else:
+            res = mongo_instance.loads.insert_many(list_db_data)
+            if self.crawled_times == 1:
+                print(' 插入的第一个id是: %s' % res.inserted_ids[0])
+                self.task['task_start_loadid'] = res.inserted_ids[0]
+
+        self.task['task_updatetime'] = t
+        self.task['task_endtime'] = t
+        mongo_instance.tasks.find_one_and_update(
+            filter={'_id': self.task['_id']}, update={
+                '$set': self.task
+            })
+
+        if self.task['task_status'] != 'running':
             return
         else:
             yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, method='GET')
