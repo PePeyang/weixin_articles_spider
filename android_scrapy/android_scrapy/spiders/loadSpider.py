@@ -114,34 +114,40 @@ class LoadSpider(scrapy.Spider):
         load_obj_id = self.task['task_start_loadid']
         print(load_obj_id)
         stop_idx = None
+
         # 不是公众号第一次的话，就要找到一个位置停下
-        if load_obj_id:
+        if load_obj_id == None:
+            pass
+        else:
             load = mongo_instance.loads.find_one(
                 filter={"_id": load_obj_id})
             title = load['title']
             print(title)
-            for idx, load in enumerate(list_db_data):
-                if load['is_multi_app_msg_item_list'] == 'NO' and title == load['title']:
+            for idx, item in enumerate(list_db_data):
+                if item['is_multi_app_msg_item_list'] == 'NO' and title == item['title']:
                     stop_idx = idx
                     print('找到了:  stop_idx {}'.format(idx))
                     self.task['task_status'] = 'end_success'
                     break
                 else:
                     pass
-        # 是这个公众号第一次
-        elif self.crawled_times == self.task['task_crawl_min'] / 10:
+
+
+        if self.crawled_times == self.task['task_crawl_min'] / 10:
             self.task['task_status'] = 'end_success'
             print(' 进来了 ')
         else:
             pass
 
         res = None
-        if stop_idx and stop_idx != 0:
-            res = mongo_instance.loads.insert_many(list_db_data[0::stop_idx])
-        else:
+        if stop_idx == None:
             res = mongo_instance.loads.insert_many(list_db_data)
+        elif stop_idx == 0:
+            pass
+        elif stop_idx != 0:
+            res = mongo_instance.loads.insert_many(list_db_data[0::stop_idx])
 
-        if self.crawled_times == 1:
+        if self.crawled_times == 1 and res != None:
             print(' 插入的第一个id是: %s' % res.inserted_ids[0])
             self.task['task_start_loadid'] = res.inserted_ids[0]
         else:
@@ -154,10 +160,11 @@ class LoadSpider(scrapy.Spider):
                 '$set': self.task
             })
 
-        self.crawled_times += 1
+
         if self.task['task_status'] != 'running':
             return
         else:
+            self.crawled_times += 1
             yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, method='GET')
 
     def run_crawl_count(self, response):
