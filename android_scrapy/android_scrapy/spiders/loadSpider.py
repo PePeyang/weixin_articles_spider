@@ -47,6 +47,7 @@ class LoadSpider(scrapy.Spider):
         cookie_str = http['actionhome']['REQUEST_HEADERS']['Cookie'].replace(
             ' ', '')
         cookie_arr = cookie_str.split(';')
+        # NOTE 我曹！
         cookies = {item.split('=', 1)[0]: item.split('=', 1)[1]
                    for item in cookie_arr}
         print('- cookies')
@@ -71,8 +72,10 @@ class LoadSpider(scrapy.Spider):
         print('- FakeLoadParams cookies')
         print(FakeLoadParams.cookies)
         self.crawled_times = 1
-        yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
-
+        if self.task['task_status'] == 'running':
+            yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
+        else:
+            return
 
     def parse(self, response):
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
