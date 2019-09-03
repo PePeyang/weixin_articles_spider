@@ -1,6 +1,4 @@
-# from tools.data_queue import RQ
-# from tools.data_queue import DBQ
-from WeixinOperate import WeixinOperate
+from phone.WeixinOperate import WeixinOperate
 
 class GZHCrawler():
     """

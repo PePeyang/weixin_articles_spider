@@ -2,7 +2,7 @@
 from aip import AipOcr
 # from phone_operate.config import OCR_NO_WORDS
 from PIL import Image
-APP_ID = 17171552
+APP_ID = '17171552'
 API_KEY = 'iGWQqS5v37dWtLnuAoTSFWiz'
 SECRET_KEY = 'gkl2qDHVX5XjZBfAaTDDNYRPGF2pfe7y'
 

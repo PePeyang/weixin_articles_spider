@@ -1,10 +1,10 @@
 import sys
-from PhoneControl import OperateAllPhone
-from config import BTN
-from config import KEY
+from phone.PhoneControl import OperateAllPhone
+from phone.config import BTN
+from phone.config import KEY
 import time
 from random import randint
-from VC import VC
+from phone.VC import VC
 
 class WeixinOperate():
     """
@@ -47,13 +47,13 @@ class WeixinOperate():
         time.sleep(2)
         # 进入账号
         self.oap.tap(BTN['SOU_YI_SOU'])
-        time.sleep(1)
+        time.sleep(5)
         #键入主界面
         self.oap.tap(BTN['GZH_ENTRY'])
-        time.sleep(2)
+        time.sleep(5)
         # 上拉
         self.oap.roll(0,500)
-        time.sleep(1)
+        time.sleep(3)
         return 0
 
     def all_message(self):

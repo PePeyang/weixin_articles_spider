@@ -30,7 +30,7 @@ class PhoneControl():
     @connect_phone
     def get_screen_cap(self, file_name='screen_cap'):
         """
-        获取截图
+        获取截图 overwrite 掉了
         """
         system('adb -s '+str(self.phone)+' shell screencap -p /sdcard/'+file_name+'.png')
         system('adb -s '+str(self.phone)+' pull /sdcard/'+file_name+'.png'+' ./'+file_name+'.png')
