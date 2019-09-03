@@ -86,8 +86,9 @@ def set_task_in_redis(taskid, enname):
     for key in r.scan_iter("__running_task_"):
         r.delete(key)
 
-    r.set('__running_task_', '{}_between_{}'.format(
-        taskid, enname), ex=60*10)  # TODO 重新整理下 那些redis的发布订阅监听
+    # r.set('__running_task_', '{}_between_{}'.format(
+    #     taskid, enname), ex=60*10)  # TODO 重新整理下 那些redis的发布订阅监听
+    r.set('__running_task_', '{}_between_{}'.format(taskid, enname))
     # NOTE  !!! 我曹
     r.set('which_task_should_be_timeout', taskid)
 

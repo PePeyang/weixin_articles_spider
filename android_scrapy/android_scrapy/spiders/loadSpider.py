@@ -99,12 +99,11 @@ class LoadSpider(scrapy.Spider):
 
 
     def run_crawl_new(self, response):
-
         next_offset = int(url_query_parameter(response.url, 'offset')) + 10
         print(' --- run_crawl_new --- ')
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         list_parse_res = list_parse(eval(response.body.decode()))
-        list_db_data = list_into_dbdata(list_parse_res)
+        list_db_data = list_into_dbdata(list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'])
 
         # 到头了或者出错了
         if not list_db_data:
