@@ -6,4 +6,4 @@ def start_scrapy_home():
 
 
 def start_scrapy_loads():
-    cmdline.execute('scrapy crawl LoadsSpider'.split())
+    cmdline.execute('scrapy crawl LoadSpider'.split())

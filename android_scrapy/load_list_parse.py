@@ -10,11 +10,8 @@ def list_parse(load_res_dict):
     load_list = {
         'list': []
     }
-    if not load_res_dict['ret'] == 0:
+    if load_res_dict['ret'] != 0:
         print('- 访问出错了，应该是cookie过期')
-        return load_list
-    elif load_res_dict['can_msg_continue'] != 1:
-        print('- 不能再获取了，应该是后面没有了')
         return load_list
     else:
         load_list = eval(load_res_dict['general_msg_list'])

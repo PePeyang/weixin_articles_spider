@@ -47,7 +47,7 @@ class LoadSpider(scrapy.Spider):
         cookie_str = http['actionhome']['REQUEST_HEADERS']['Cookie'].replace(
             ' ', '')
         cookie_arr = cookie_str.split(';')
-        cookies = {item.split('=')[0]: item.split('=')[1]
+        cookies = {item.split('=', 1)[0]: item.split('=', 1)[1]
                    for item in cookie_arr}
         print('- cookies')
         print(cookies)
@@ -55,7 +55,7 @@ class LoadSpider(scrapy.Spider):
         FakeLoadParams.cookies['pass_ticket'] = http['pass_ticket']
         FakeLoadParams.cookies['wap_sid2'] = cookies['wap_sid2']
         FakeLoadParams.cookies['wxuin'] = cookies['wxuin']
-        # FakeLoadParams.cookies['version'] = cookies['version']
+        FakeLoadParams.cookies['version'] = cookies['version']
 
         FakeLoadParams.params['__biz'] = http['biz']
         FakeLoadParams.params['pass_ticket'] = http['pass_ticket']
@@ -64,7 +64,7 @@ class LoadSpider(scrapy.Spider):
         url = NORMAL_URLS.load
         arr = []
         for key, val in FakeLoadParams.params.items():
-            print(val)
+            # print(val)
             arr.append(key + '=' + val)
         queryString = '?' + '&'.join(arr)
         print(queryString)
@@ -134,7 +134,7 @@ class LoadSpider(scrapy.Spider):
 
         if self.crawled_times == self.task['task_crawl_min'] / 10:
             self.task['task_status'] = 'end_success'
-            print(' 进来了 ')
+            print('要出去了')
         else:
             pass
 
@@ -164,12 +164,42 @@ class LoadSpider(scrapy.Spider):
             return
         else:
             self.crawled_times += 1
-            yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, method='GET')
+            yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
 
     def run_crawl_count(self, response):
         next_offset = int(url_query_parameter(response.url, 'offset')) + 10
+        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         print(' --- run_crawl_count --- ')
-        yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, method='GET')
+        list_parse_res = list_parse(eval(response.body.decode()))
+        list_db_data = list_into_dbdata(
+            list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'])
+
+        # 到头了或者出错了
+        if not list_db_data:
+            self.task['task_status'] = 'end_success'
+            return
+
+        if self.crawled_times == self.task['task_crawl_count'] / 10:
+            self.task['task_status'] = 'end_success'
+            print('要出去了')
+        else:
+            res = mongo_instance.loads.insert_many(list_db_data)
+            print(' 插入的第一个id是: %s' % res.inserted_ids[0])
+            self.task['task_start_loadid'] = res.inserted_ids[0]
+
+        self.task['task_updatetime'] = t
+        self.task['task_endtime'] = t
+        mongo_instance.tasks.find_one_and_update(
+            filter={'_id': self.task['_id']}, update={
+                '$set': self.task
+            })
+
+
+        if self.task['task_status'] != 'running':
+            return
+        else:
+            self.crawled_times += 1
+            yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
 
     def run_crawl_all(self, response):
         next_offset = int(url_query_parameter(response.url, 'offset')) + 10
