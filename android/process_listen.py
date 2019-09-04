@@ -31,7 +31,7 @@ def listen_task_entry():
                 # ANCHOR redis中没有运行中的任务
                 # 拿出一条任务来执行
                 print('- {} 添加任务至安卓运行队列'.format(t))
-                running_taskid = tasks_queue.popItem()
+                running_taskid = tasks_queue.popItem()  # tasks_queue 不为空
                 set_task_in_redis(running_taskid)
                 set_task_mongodb_status(running_taskid, 'actived')
 

@@ -11,11 +11,11 @@ MONGODB_HOST = 'localhost'
 MONGODB_NAME = 'weixindb'
 
 # redis
-redis_instance = redis.StrictRedis(
-    host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+redis_instance = redis.StrictRedis(host=REDIS_HOST,
+                                   port=REDIS_PORT,
+                                   db=REDIS_DB,
+                                   decode_responses=True)
 
 # mongodb
 mongo_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
 mongo_instance = mongo_client[MONGODB_NAME]
-
-

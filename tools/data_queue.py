@@ -1,6 +1,9 @@
 import redis
 import json
 from bson.json_util import object_hook
+from instance import mongo_instance, redis_instance  # weixindb
+
+
 # 任务的队列
 class Normal_queue():
     """
@@ -72,8 +75,7 @@ class Redis_queue():
         :param q_name:创建一个队列
         """
         self.q_name = 'redis_queue__'+q_name
-        self.redis = redis.Redis(
-            host='localhost', port=6379, decode_responses=True)
+        self.redis = redis_instance
 
     def isEmpty(self):
         """
@@ -86,16 +88,8 @@ class Redis_queue():
         """
         :return:返回插入的数据
         """
-        rq_b_data_list = self.redis.lrange(self.q_name, 0, -1)
-        rq_j_data_list = []
-        for rq_b_data in rq_b_data_list:
-            try:
-                rq_j_data = json.loads(
-                    rq_b_data, object_hook=object_hook)
-            except:
-                rq_j_data = rq_b_data.decode('utf8')
-            rq_j_data_list.append(rq_j_data)
-        return rq_j_data_list
+        rq_data_list = self.redis.lrange(self.q_name, 0, -1)
+        return rq_data_list
 
     def addItem(self, data):
         """
@@ -113,13 +107,10 @@ class Redis_queue():
         查看队首的对象，但不移除
         :return:
         """
-        rq_b_data_list = self.redis.lrange(self.q_name, 0, -1)
+        rq_data_list = self.redis.lrange(self.q_name, 0, -1)
         rq_j_data = None
-        if len(rq_b_data_list) > 0:
-            try:
-                rq_j_data = json.loads(rq_b_data_list[-1], object_hook=object_hook)
-            except:
-                rq_j_data = rq_b_data_list[-1].decode('utf8')
+        if len(rq_data_list) > 0:
+            rq_j_data = rq_data_list[-1]
 
         return rq_j_data
 
@@ -128,19 +119,10 @@ class Redis_queue():
         :return:[]表示队列已经空了
         """
         data = self.redis.rpop(self.q_name)
-        try:
-            rq_j_data = json.loads(data, object_hook=object_hook)
-        except:
-            if data:
-                rq_j_data = data.decode('utf8')
-            else:
-                rq_j_data = []
-        return rq_j_data
+        return data
 
     def deleteQueue(self):
         """
         删除队列
         """
         return self.redis.delete(self.q_name)
-
-

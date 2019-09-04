@@ -6,9 +6,7 @@ import time
 import sys
 import re
 from phone.GZHCrawler import GZHCrawler
-sys.path.append("../")  # 为了引入instance
-from instance import mongo_instance  # weixindb
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+from instance import mongo_instance, redis_instance  # weixindb
 
 def adb_entry(android_queue):
     # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成running
@@ -21,8 +19,8 @@ def adb_entry(android_queue):
         if is_empty_tasks:
             print('- {} 没有任何可用任务'.format(t))
         else:
-            for key in r.scan_iter("__running_task_"):
-                value = r.get('__running_task_')
+            for key in redis_instance.scan_iter("__running_task_"):
+                value = redis_instance.get('__running_task_')
                 running_taskid = value.split(
                     '_between_')[0]
                 running_bizenname = value.split(
@@ -30,7 +28,7 @@ def adb_entry(android_queue):
                 # 从数据库取得任务
                 running_task = get_task_in_mongodb(ObjectId(running_taskid))
                 if 'end_' in running_task['task_status']:
-                    r.delete('__running_task_')
+                    redis_instance.delete('__running_task_')
                 elif 'running' in running_task['task_status']:
                     print('- {} 已经有运行中的任务了哦 _id是 {} bizename是 {} '.format(t,
                                                                           running_taskid, running_bizenname))
@@ -90,17 +88,17 @@ def set_task_in_mongo(taskid):
 def set_task_in_redis(taskid, enname):
     # redis的key过期事件在获返回结果时是 key的值，所以在做相关任务时，可以把key名写成需要执行的函数名等等
     # 先清空
-    for key in r.scan_iter("__running_task_"):
-        r.delete(key)
+    for key in redis_instance.scan_iter("__running_task_"):
+        redis_instance.delete(key)
 
-    # r.set('__running_task_', '{}_between_{}'.format(
+    # redis_instance.set('__running_task_', '{}_between_{}'.format(
     #     taskid, enname), ex=60*10)  # TODO 重新整理下 那些redis的发布订阅监听
-    r.set('__running_task_', '{}_between_{}'.format(taskid, enname))
+    redis_instance.set('__running_task_', '{}_between_{}'.format(taskid, enname))
     # NOTE  !!! 我曹
-    r.set('which_task_should_be_timeout', taskid)
+    redis_instance.set('which_task_should_be_timeout', taskid)
 
 # def notify_http_proxy(taskid):
-#     r.publish('there_is_a_adb', '__taskid_' + str(taskid))
+#     redis_instance.publish('there_is_a_adb', '__taskid_' + str(taskid))
 
 
 
