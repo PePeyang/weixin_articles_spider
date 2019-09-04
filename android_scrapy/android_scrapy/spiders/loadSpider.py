@@ -2,10 +2,7 @@ import datetime
 import scrapy
 import re
 from ..items import HomeItem
-from config import FakeLoadParams
-from config import FakeHomeParams
-from config import NORMAL_URLS
-from scrapy.http import TextResponse
+from spider_config import FakeLoadParams, NORMAL_URLS
 from bson.objectid import ObjectId
 from instance import redis_instance, mongo_instance
 from http.cookies import SimpleCookie

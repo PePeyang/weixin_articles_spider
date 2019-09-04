@@ -25,8 +25,9 @@ def _crawl(result, spider):
 
 
 while True:
-    httpid_b = redis_instance.get('__running_http_')
-    if httpid_b:
+    httpid = redis_instance.get('__running_http_')
+    if httpid:
+        # redis_instance.delete('__running_http_')
         print('检测到了新的的http')
         _crawl(None, LoadSpider)
         process.start()
