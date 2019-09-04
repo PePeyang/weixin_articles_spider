@@ -43,7 +43,7 @@ def suber(android_queue):
 
             # ANCHOR 检测未完成
             # 如果任务是未完成的状态 才加入队列
-            if task['task_status'] == 'generate':
+            if task['task_status'] == 'generated':
                 # ANCHOR 加入队列
                 android_queue.addItem(json.dumps(
                     task, default=json_util.default))

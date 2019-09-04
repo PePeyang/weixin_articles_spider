@@ -50,8 +50,11 @@ def build_task(bizs, task_mode, task_crawl_count, task_crawl_min, task_depth):
         task['task_biz_chname'] = biz['chname']
         task['task_createtime'] = t
         task['task_updatetime'] = t
-        # generate running end_success end_fail end_timeout null
-        task['task_status'] = 'generate'
+        # generated running end_success end_fail end_timeout null
+        # generated 任务生成
+        # actived 加入running
+        # running_in_adb 在手机上运行中
+        task['task_status'] = 'generated'
         task['task_starttime'] = None
         task['task_endtime'] = None
         task['task_weight'] = 1
