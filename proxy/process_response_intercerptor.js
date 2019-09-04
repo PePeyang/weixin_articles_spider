@@ -10,14 +10,15 @@ const mongoClient = new MongoClient(mogoUrl)
 
 var inter_home_response = async function (responseDetail) {
 
-    const taskValue = await redisGetAsync('__running_task_')
-    if (!taskValue) {
+    const taskid = await redisGetAsync('__running_task_')
+    if (!taskid) {
         console.log('- redis中没有进行中的任务')
         return
     }
 
-    let taskid = taskValue.split('_between_')[0]
-    let enname = taskValue.split('_between_')[1]
+    let running_task = await mongoClient.tasks.findOne({ '_id': ObjectId(taskid)})
+    let enname = running_task.task_biz_enname
+
     console.log(`- taskid: ${taskid} enname: ${enname}`)
     console.log('- responseDetail： ')
     if (responseDetail.response.statusCode != 200) return
@@ -73,7 +74,9 @@ async function insert_or_update_a_http(http_obj_id, datas) {
     const weixindb = mongoClient.db('weixindb');
     let https = weixindb.collection('https')
     if (!http_obj_id) {
-        console.log(' - 无法操作')
+        return await https.insertOne({
+            ...datas
+        })
     } else {
         return await https.findOneAndUpdate({
             '_id': http_obj_id

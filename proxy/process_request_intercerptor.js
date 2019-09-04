@@ -153,6 +153,7 @@ var inter_getmsg_request = async function (requestDetail) {
 
 async function insert_or_update_a_http(http_obj_id, value, key) {
     await mongoClient.connect()
+    // TODO config
     const weixindb = mongoClient.db('weixindb');
 
     let https = weixindb.collection('https')
