@@ -1,4 +1,5 @@
 from WeixinOperate import WeixinOperate
+from auth import ADB_PORT
 
 class GZHCrawler():
     """
@@ -16,7 +17,7 @@ class GZHCrawler():
         run需要在一个进程中不停执行
         """
         print('gc running')
-        # TODO config
-        wo = WeixinOperate(['192.168.58.108:5555'])
+
+        wo = WeixinOperate([ADB_PORT])
         wo.get_all_req_data(self.enname, hand=False)
 
