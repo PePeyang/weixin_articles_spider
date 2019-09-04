@@ -14,18 +14,18 @@ class LoadSpider(scrapy.Spider):
     allowed_domains = ['mp.weixin.qq.com']
     custom_settings = {
         # midlewares
-        'ITEM_PIPELINES': {
-            #
+        'ITEM_PIPELINES': {},
+        'SPIDER_MIDDLEWARES': {
+            'android_scrapy.loadmiddlewares.LoadSpiderMiddleware': 543
         },
         'DOWNLOADER_MIDDLEWARES': {
-            # 'android_scrapy.homemiddlewares.HomeDownloaderMiddleware': 543,
-        },
-        'SPIDER_MIDDLEWARES': {
-            'android_scrapy.loadmiddlewares.LoadSpiderMiddleware': 543,
+            'scrapy.downloadermiddleware.httpproxy.HttpProxyMiddleware': None,
+            'android_scrapy.proxymiddleware.ProxyMiddleware': 543,
+            'scrapy.downloadermiddlewares.retry.RetryMiddleware': None
         },
         # 设置请求间隔
         "DOWNLOAD_DELAY": round(5, 10),
-        "COOKIES_ENABLED": True
+        "COOKIES_ENABLED": True,
     }
 
 
@@ -61,10 +61,15 @@ class LoadSpider(scrapy.Spider):
         print('- FakeLoadParams cookies')
         print(FakeLoadParams.cookies)
         self.crawled_times = 1
-        if 'running' in self.task['task_status']:
-            yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
-        else:
-            return
+
+        yield scrapy.Request(url=url + queryString,
+                             headers=FakeLoadParams.headers,
+                             cookies=FakeLoadParams.cookies,
+                             method='GET')
+        # if 'running' in self.task['task_status']:
+        #     yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
+        # else:
+        #     return
 
     def parse(self, response):
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")

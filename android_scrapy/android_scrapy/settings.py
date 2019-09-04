@@ -14,13 +14,14 @@ BOT_NAME = 'android_scrapy'
 SPIDER_MODULES = ['android_scrapy.spiders']
 NEWSPIDER_MODULE = 'android_scrapy.spiders'
 
-
+RETRY_ENABLED = False
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'android_scrapy (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
+PROXY_URL = 'http://piping.mogumiao.com/proxy/api/get_ip_al?appKey=1e8ff615b1d54a6abbc5cae9f3016264&count=1&expiryDate=0&format=2&newLine=2'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
