@@ -2,9 +2,8 @@
 from aip import AipOcr
 # from phone_operate.config import OCR_NO_WORDS
 from PIL import Image
-APP_ID = '17171552'
-API_KEY = 'iGWQqS5v37dWtLnuAoTSFWiz'
-SECRET_KEY = 'gkl2qDHVX5XjZBfAaTDDNYRPGF2pfe7y'
+from auth import APP_ID, API_KEY, SECRET_KEY
+
 
 client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 class OCR():
@@ -76,4 +75,3 @@ class OCR():
             return result['words_result']
         else:
             print('没有words')
-

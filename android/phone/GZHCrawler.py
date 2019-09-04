@@ -1,4 +1,4 @@
-from phone.WeixinOperate import WeixinOperate
+from WeixinOperate import WeixinOperate
 
 class GZHCrawler():
     """

@@ -1,10 +1,9 @@
 import sys
-from phone.PhoneControl import OperateAllPhone
-from phone.config import BTN
-from phone.config import KEY
 import time
 from random import randint
-from phone.VC import VC
+from PhoneControl import OperateAllPhone
+from config import BTN, KEY
+from VC import VC
 
 class WeixinOperate():
     """
@@ -86,4 +85,3 @@ class WeixinOperate():
             input("请一一手动或取参数 回车退出")
 
         self.home()
-
