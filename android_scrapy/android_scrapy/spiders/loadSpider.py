@@ -103,7 +103,8 @@ class LoadSpider(scrapy.Spider):
         print(' --- run_crawl_new --- ')
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         list_parse_res = list_parse(eval(response.body.decode()))
-        list_db_data = list_into_dbdata(list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'])
+        list_db_data = list_into_dbdata(
+            list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'], self.task['_id'])
 
         # 到头了或者出错了
         if not list_db_data:
@@ -172,7 +173,7 @@ class LoadSpider(scrapy.Spider):
         print(' --- run_crawl_count --- ')
         list_parse_res = list_parse(eval(response.body.decode()))
         list_db_data = list_into_dbdata(
-            list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'])
+            list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'], self.task['_id'])
 
         # 到头了或者出错了
         if not list_db_data:
@@ -208,7 +209,7 @@ class LoadSpider(scrapy.Spider):
         print(' --- run_crawl_all --- ')
         list_parse_res = list_parse(eval(response.body.decode()))
         list_db_data = list_into_dbdata(
-            list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'])
+            list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'], self.task['_id'])
 
         # 到头了或者出错了
         if not list_db_data:

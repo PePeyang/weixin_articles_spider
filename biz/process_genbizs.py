@@ -25,7 +25,8 @@ def entry():
     print('- {} 找到了bizs'.format(bizs_time))
     # ANCHOR
     # tasks = build_task(list(bizs), 'new', None, 30 , 0)
-    tasks = build_task(list(bizs), 'count', 30, None, 0)
+    # tasks = build_task(list(bizs), 'count', 30, None, 0)
+    tasks = build_task(list(bizs), 'all', None, None, 0)
 
     tasks_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} 构造了tasks'.format(tasks_time))

@@ -65,6 +65,7 @@ class LoadSpiderMiddleware(object):
             'LoadSpiderMiddleware: Spider opened: %s' % spider.name)
 
         httpid = redis_instance.get('__running_http_').decode()
+        redis_instance.delete('__running_http_')
         print('httpid %s' % httpid)
         http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
         task_obj_id = http['taskid']

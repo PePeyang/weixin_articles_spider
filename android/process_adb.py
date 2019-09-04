@@ -28,9 +28,13 @@ def adb_entry(android_queue):
                 running_bizenname = value.split(
                     '_between_')[1]
                 # 从数据库取得任务
-                # running_task = get_task_in_mongodb(ObjectId(running_taskid))
-                print('- {} 已经有运行中的任务了哦 _id是 {} bizename是 {} '.format(t,
-                    running_taskid, running_bizenname))
+                running_task = get_task_in_mongodb(ObjectId(running_taskid))
+                if 'end_' in running_task['task_status']:
+                    r.delete('__running_task_')
+                elif 'running' in running_task['task_status']:
+                    print('- {} 已经有运行中的任务了哦 _id是 {} bizename是 {} '.format(t,
+                                                                          running_taskid, running_bizenname))
+
                 break # NOTE 我曹!
             else:
                 print('- {} 即将添加任务至安卓运行队列'.format(t))
