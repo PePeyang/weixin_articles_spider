@@ -56,8 +56,7 @@ class LoadSpiderMiddleware(object):
         for r in start_requests:
             # r <class 'scrapy.http.request.Request'>
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-            print(' - in start_requests: {} '.format(t))
-            # print(r)
+
             yield r
 
     def spider_opened(self, spider):
@@ -65,7 +64,7 @@ class LoadSpiderMiddleware(object):
             'LoadSpiderMiddleware: Spider opened: %s' % spider.name)
 
         httpid = redis_instance.get('__running_http_')
-        # redis_instance.delete('__running_http_')
+        redis_instance.delete('__running_http_')
         print('httpid %s' % httpid)
         http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
         task_obj_id = http['taskid']

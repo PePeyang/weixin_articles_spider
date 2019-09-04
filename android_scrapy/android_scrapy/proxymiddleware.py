@@ -4,13 +4,6 @@ import logging
 import os
 import re
 import time
-# with open(self.ippath, 'r+') as f:  # 打开文件
-#     oldip = f.readline()
-
-# with open(self.ippath, 'w') as f:  # 打开文件
-#     f.write(ip)
-
-
 class ProxyMiddleware(object):
     def __init__(self, proxy_url):
         self.logger = logging.getLogger(__name__)

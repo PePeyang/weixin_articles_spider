@@ -32,5 +32,5 @@ while True:
         _crawl(None, LoadSpider)
         process.start()
     else:
-        print('没有成功捕获到的http')
+        print('没有成功捕获到新的http')
     time.sleep(30)

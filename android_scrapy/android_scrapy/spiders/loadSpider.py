@@ -62,14 +62,10 @@ class LoadSpider(scrapy.Spider):
         print(FakeLoadParams.cookies)
         self.crawled_times = 1
 
-        yield scrapy.Request(url=url + queryString,
-                             headers=FakeLoadParams.headers,
-                             cookies=FakeLoadParams.cookies,
-                             method='GET')
-        # if 'running' in self.task['task_status']:
-        #     yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
-        # else:
-        #     return
+        if 'running_http' in self.task['task_status']:
+            yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
+        else:
+            return
 
     def parse(self, response):
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")

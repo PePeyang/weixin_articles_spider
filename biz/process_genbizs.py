@@ -24,8 +24,8 @@ def entry():
     # type(bizs) <class 'pymongo.cursor.Cursor'>
     print('- {} 找到了bizs'.format(bizs_time))
     # tasks = build_task(list(bizs), 'new', None, 30 , 0)
-    # tasks = build_task(list(bizs), 'count', 30, None, 0)
-    tasks = build_task(list(bizs), 'all', None, None, 0)
+    tasks = build_task(list(bizs[16::]), 'count', 10, None, 0)
+    # tasks = build_task(list(bizs), 'all', None, None, 0)
 
     tasks_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} 构造了tasks'.format(tasks_time))
