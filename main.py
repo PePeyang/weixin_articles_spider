@@ -1,10 +1,20 @@
 # -*- coding:utf-8 -*-
+import time
 import signal
 import sys
 from threading import Thread
 import datetime
+import scrapy
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+from twisted.internet import reactor
+from twisted.internet.task import deferLater
+
 from android.process_adb import adb_entry
 from android.process_listen import listen_task_entry
+
+# from android_scrapy.android_scrapy.spiders.loadSpider import LoadSpider
+from instance.main_instance import mongo_instance, redis_instance
 
 
 class ADB_THREAD (Thread):
@@ -33,10 +43,12 @@ def quit(signum, frame):
     sys.exit()
     sys.exit()
 
-if __name__ == '__main__':
 
-    signal.signal(signal.SIGINT, quit)
-    signal.signal(signal.SIGTERM, quit)
+def sleep(self, *args, seconds):
+    """Non blocking sleep callback"""
+    return deferLater(reactor, seconds, lambda: None)
+
+if __name__ == '__main__':
 
     # 启动 LITEN_TASK_THREAD
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
@@ -53,3 +65,24 @@ if __name__ == '__main__':
     t2.start()
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 已启动'.format(aftime))
+
+    # process = CrawlerProcess(get_project_settings())
+
+    # def _crawl(result, spider):
+    #     deferred = process.crawl(spider)
+    #     deferred.addCallback(lambda results: print(
+    #         '稍等。1秒后会自动重启...'))
+    #     deferred.addCallback(sleep, seconds=1)
+    #     deferred.addCallback(_crawl, spider)
+    #     return deferred
+
+
+    # while True:
+    #     httpid = redis_instance.get('__running_http_')
+    #     if httpid:
+    #         print('检测到了新的的http')
+    #         _crawl(None, LoadSpider)
+    #         process.start()
+    #     else:
+    #         print('没有成功捕获到的http')
+    #     time.sleep(30)

@@ -40,7 +40,7 @@ def adb_entry():
             pass
 
 
-        time.sleep(62)
+        time.sleep(5)
 
 def get_task_in_mongodb(taskid):
     task_obj_id = ObjectId(taskid)

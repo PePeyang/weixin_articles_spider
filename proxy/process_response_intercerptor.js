@@ -57,8 +57,8 @@ var inter_home_response = async function (responseDetail) {
             biz,
             pass_ticket
         })
-
-        await redisClient.set('__running_http_', http.insertedId)
+        console.log(http)
+        await redisClient.set('__running_http_', http.lastErrorObject && http.lastErrorObject.upserted.toString())
     }
 
 }
@@ -79,7 +79,8 @@ async function insert_or_update_a_http(http_obj_id, datas) {
             }
         },
         {
-            upsert: true
+            upsert: true,
+            returnNewDocument: true
         }
     )
 };
