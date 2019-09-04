@@ -7,7 +7,7 @@ from tools.data_queue import Redis_queue
 tasks_queue = Redis_queue('TASKS_QUEUE')
 
 def listen_task_entry():
-    # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成running
+    # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成actived
 
     while True:
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
