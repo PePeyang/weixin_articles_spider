@@ -21,19 +21,19 @@ var inter_home_response = async function (responseDetail) {
     const weixindb = mongoClient.db('weixindb');
     let tasks = weixindb.collection('tasks')
     let running_task = await tasks.findOne({ '_id': ObjectId(taskid)})
-    console.log(running_task)
+    // console.log(running_task)
     let enname = running_task.task_biz_enname
     // mongoClient.quit()
     console.log(`- taskid: ${taskid} enname: ${enname}`)
-    console.log('- responseDetail： ')
+    // console.log('- responseDetail： ')
     if (responseDetail.response.statusCode != 200) return
     let body_html = responseDetail.response.body.toString('utf8')
     // console.log(body_html)
 
     // 被ban
-    if (body_html.indexOf('操作频繁') > 0) {
+    if (body_html.indexOf('操作频繁') > 0 || body_html.indexOf('Too many attempts') > 0) {
         console.log('操作频繁 限制24小时 请更换微信')
-        // return
+        return body_html
     }
 
     let appmsg_token = body_html.match(/window.appmsg_token = "(.*)"/)[1]

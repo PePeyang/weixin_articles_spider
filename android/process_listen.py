@@ -36,7 +36,7 @@ def listen_task_entry():
                 set_task_in_redis(running_taskid)
                 set_task_mongodb_status(running_taskid, 'actived')
 
-        time.sleep(5)
+        time.sleep(25)
 
 
 def get_task_in_mongodb(taskid):
