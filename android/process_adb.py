@@ -47,6 +47,6 @@ def set_task_mongodb_status(taskid, status):
     mongo_instance.tasks.find_and_modify(
         query={'_id': task_obj_id},
         update={'$set': {
-            'task_status': 'actived',
+            'task_status': status,
             'task_updatetime': t
         }})
