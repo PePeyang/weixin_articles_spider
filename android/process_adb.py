@@ -34,7 +34,7 @@ def adb_entry():
                 redis_instance.delete('__running_task_')
             else:
                 pass
-                print('- 您的当前运行中的任务状态为 %s' % running_status)
+                # print('- 您的当前运行中的任务状态为 %s' % running_status)
 
         else:
             pass

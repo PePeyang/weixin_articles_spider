@@ -62,12 +62,16 @@ class WeixinOperate():
         :return:
         """
         message_pos = self.vc.click_by_words("Messages", tap=False)
-        self.oap.tap(message_pos)
+        # print(message_pos)
+        # 位置 y 轴 加120
+        click_pos = [
+            message_pos[0], message_pos[1] + 120, message_pos[2], message_pos
+        [3] + 120]
+        self.oap.tap(click_pos)
         time.sleep(5)
         self.oap.key(KEY['BACK_KEYEVENT'])
-        time.sleep(1)
-        self.oap.key(KEY['BACK_KEYEVENT'])
-        time.sleep(1)
+        time.sleep(1.5)
+
         return 0
 
     def all_message(self):
@@ -93,6 +97,7 @@ class WeixinOperate():
         self.home_to_gzh_search()
         # 搜索公众号
         self.search_gzh(nickname)
+        self.click_an_article()
 
         if hand==False:
             self.all_message()
