@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 import time
-import signal
+# import signal
 import sys
 from threading import Thread
 import datetime
@@ -38,12 +38,6 @@ class LITEN_TASK_THREAD (Thread):
         Thread.join(self)
 
 
-def quit(signum, frame):
-    print('----手动停止-----')
-    sys.exit()
-    sys.exit()
-
-
 def sleep(self, *args, seconds):
     """Non blocking sleep callback"""
     return deferLater(reactor, seconds, lambda: None)
@@ -66,23 +60,23 @@ if __name__ == '__main__':
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 已启动'.format(aftime))
 
-    # process = CrawlerProcess(get_project_settings())
+# process = CrawlerProcess(get_project_settings())
 
-    # def _crawl(result, spider):
-    #     deferred = process.crawl(spider)
-    #     deferred.addCallback(lambda results: print(
-    #         '稍等。1秒后会自动重启...'))
-    #     deferred.addCallback(sleep, seconds=1)
-    #     deferred.addCallback(_crawl, spider)
-    #     return deferred
+# def _crawl(result, spider):
+#     deferred = process.crawl(spider)
+#     deferred.addCallback(lambda results: print(
+#         '稍等。1秒后会自动重启...'))
+#     deferred.addCallback(sleep, seconds=1)
+#     deferred.addCallback(_crawl, spider)
+#     return deferred
 
 
-    # while True:
-    #     httpid = redis_instance.get('__running_http_')
-    #     if httpid:
-    #         print('检测到了新的的http')
-    #         _crawl(None, LoadSpider)
-    #         process.start()
-    #     else:
-    #         print('没有成功捕获到的http')
-    #     time.sleep(30)
+# while True:
+#     httpid = redis_instance.get('__running_http_')
+#     if httpid:
+#         print('检测到了新的的http')
+#         _crawl(None, LoadSpider)
+#         process.start()
+#     else:
+#         print('没有成功捕获到的http')
+#     time.sleep(30)

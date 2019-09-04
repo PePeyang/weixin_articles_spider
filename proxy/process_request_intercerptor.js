@@ -25,8 +25,8 @@ var inter_gethome_request = async function (requestDetail) {
     let params = querystring.parse(temp_url.query)
     let biz = params.__biz;
 
-    const taskValue = await redisGetAsync('__running_task_')
-    if (!taskValue) {
+    const taskid = await redisGetAsync('__running_task_')
+    if (!taskid) {
         console.log('- redis中没有进行中的任务')
         return
     }
@@ -41,6 +41,7 @@ var inter_gethome_request = async function (requestDetail) {
 
     let http = await insert_or_update_a_http(null, value, 'actionhome')
     await redisClient.set('__running_http_', http.insertedId.toString())
+    await set_task_mongodb_status(taskid, 'running_in_http')
 }
 
 var inter_geticon_request = async function (requestDetail) {
@@ -84,18 +85,18 @@ var inter_geticon_request = async function (requestDetail) {
 
     let http = await insert_or_update_a_http(ObjectId('111111111111'), value, 'geticon')
 
-    // const httpValue = await redisGetAsync('__running_http_')
-    // if (!httpValue) {
-    //     let http = await insert_or_update_a_http(null, value, 'geticon')
-    //     console.log(`- httpid: ${http.insertedId}`)
-    //     if (!ObjectId.isValid(httpValue)) {
-    //         await redisClient.set('__running_http_', http.insertedId)
-    //     }
-    // } else {
-    //     console.log(`- httpValue ${httpValue}`)
-    //     let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
-    //     await redisClient.del('__running_http_')
-    // }
+    const httpValue = await redisGetAsync('__running_http_')
+    if (!httpValue) {
+        let http = await insert_or_update_a_http(null, value, 'geticon')
+        console.log(`- httpid: ${http.insertedId}`)
+        if (!ObjectId.isValid(httpValue)) {
+            await redisClient.set('__running_http_', http.insertedId)
+        }
+    } else {
+        console.log(`- httpValue ${httpValue}`)
+        let http = insert_or_update_a_http(ObjectId(httpValue), value, 'geticon')
+        await redisClient.del('__running_http_')
+    }
 
 }
 
@@ -165,25 +166,32 @@ async function insert_or_update_a_http(http_obj_id, value, key) {
         return await https.findOneAndUpdate({
             '_id': http_obj_id
         }, {
-            '$set': {
-                [key]: value
-            }
-        }, {
-            upsert: true
-        })
+                '$set': {
+                    [key]: value
+                }
+            }, {
+                upsert: true
+            })
     }
 
 };
 
-// async function get_biz_by_name(name) {
-//     console.log("Connected successfully to server");
-//     const db = mongoClient.db('weixindb');
-//     let biznames = db.collection('biznames')
-//     biznames.findOne({ 'chname': name }, function (err, res) {
-//         console.log(res)
-//         return res
-//     })
-// }
+async function set_task_mongodb_status(taskid, status) {
+    let task_obj_id = ObjectId(taskid)
+    await mongoClient.connect()
+    // TODO config
+    const weixindb = mongoClient.db('weixindb');
+    let tasks = await weixindb.collection('tasks')
+    await tasks.findOneAndUpdate(
+        { '_id': task_obj_id },
+        {
+            '$set': {
+                'task_status': status,
+                'task_updatetime': Date.now().toLocaleString()
+            }
+        })
+}
+
 
 module.exports = {
     inter_geticon_request,

@@ -1,10 +1,9 @@
 import datetime
 import scrapy
 import re
-from ..items import HomeItem
 from spider_config import FakeLoadParams, NORMAL_URLS
 from bson.objectid import ObjectId
-from instance.main_instance import mongo_instance, redis_instance
+from instance import mongo_instance, redis_instance
 from http.cookies import SimpleCookie
 from w3lib.url import add_or_replace_parameter
 from w3lib.url import url_query_parameter
@@ -14,13 +13,6 @@ class LoadSpider(scrapy.Spider):
     name = 'LoadSpider'
     allowed_domains = ['mp.weixin.qq.com']
     custom_settings = {
-        # redis
-        'REDIS_HOST': '127.0.0.1',
-        'REDIS_PORT': '6379',
-        'REDIS_DB': '0',
-        # mongodb
-        'MONGO_URL': 'mongodb://127.0.0.1:27017',
-        'MONGO_DB': 'weixindb',
         # midlewares
         'ITEM_PIPELINES': {
             #
@@ -69,7 +61,7 @@ class LoadSpider(scrapy.Spider):
         print('- FakeLoadParams cookies')
         print(FakeLoadParams.cookies)
         self.crawled_times = 1
-        if self.task['task_status'] == 'running':
+        if 'running' in self.task['task_status']:
             yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
         else:
             return
@@ -158,7 +150,7 @@ class LoadSpider(scrapy.Spider):
             })
 
 
-        if self.task['task_status'] != 'running':
+        if not 'running' in self.task['task_status']:
             return
         else:
             self.crawled_times += 1
@@ -194,7 +186,7 @@ class LoadSpider(scrapy.Spider):
             })
 
 
-        if self.task['task_status'] != 'running':
+        if not 'running' in self.task['task_status']:
             return
         else:
             self.crawled_times += 1
@@ -226,7 +218,7 @@ class LoadSpider(scrapy.Spider):
                 '$set': self.task
             })
 
-        if self.task['task_status'] != 'running':
+        if not 'running' in self.task['task_status']:
             return
         else:
             yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, method='GET')

@@ -1,10 +1,10 @@
 import scrapy
-from android_scrapy.spiders.loadSpider import LoadSpider
+from .android_scrapy.spiders.loadSpider import LoadSpider
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from twisted.internet import reactor
 from twisted.internet.task import deferLater
-from instance.main_instance import mongo_instance, redis_instance
+from .instance import mongo_instance, redis_instance
 import time
 
 def sleep(self, *args, seconds):

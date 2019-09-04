@@ -45,21 +45,15 @@ var inter_home_response = async function (responseDetail) {
     const httpid = await redisGetAsync('__running_http_')
     console.log('- httpid ' + httpid)
 
-    if (httpid) {
-        console.log('已经有httpid了')
-    } else {
-        let http = await insert_or_update_a_http(httpid, {
-            response: body_html,
-            appmsg_token,
-            nickname,
-            taskid: ObjectId(taskid),
-            enname,
-            biz,
-            pass_ticket
-        })
-        console.log(http)
-        await redisClient.set('__running_http_', http.lastErrorObject && http.lastErrorObject.upserted.toString())
-    }
+    await insert_or_update_a_http(httpid, {
+        response: body_html,
+        appmsg_token,
+        nickname,
+        taskid: ObjectId(taskid),
+        enname,
+        biz,
+        pass_ticket
+    })
 
 }
 

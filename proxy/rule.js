@@ -23,10 +23,10 @@ const rule = {
     summary: '微信公众号爬虫',
     // 发送请求前拦截处理
     beforeSendRequest: async function beforeSendRequest(requestDetail) {
-        // const REQUEST_URL = requestDetail.url
-        // if (REQUEST_URL.includes(normal_url.home)) {
-        //     await inter_gethome_request(requestDetail)
-        // }
+        const REQUEST_URL = requestDetail.url
+        if (REQUEST_URL.includes(normal_url.home)) {
+            await inter_gethome_request(requestDetail)
+        }
     },
     // 发送响应前处理
     beforeSendResponse: async function beforeSendResponse(requestDetail, responseDetail) {
