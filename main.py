@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 import signal
 import sys
-from process_adb import adb_entry
-from process_suber import suber_entry
-from process_listen import listen_task_entry
 from threading import Thread
 import datetime
+from android.process_adb import adb_entry
+from android.process_listen import listen_task_entry
+
 
 class ADB_THREAD (Thread):
     def __init__(self):
@@ -53,5 +53,3 @@ if __name__ == '__main__':
     t2.start()
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 已启动'.format(aftime))
-
-

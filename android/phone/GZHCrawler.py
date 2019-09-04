@@ -1,5 +1,7 @@
-from WeixinOperate import WeixinOperate
-from auth import ADB_PORT
+from .WeixinOperate import WeixinOperate
+# from auth import ADB_PORT
+ADB_PORT = '192.168.58.108:5555'
+
 
 class GZHCrawler():
     """
@@ -20,4 +22,3 @@ class GZHCrawler():
 
         wo = WeixinOperate([ADB_PORT])
         wo.get_all_req_data(self.enname, hand=False)
-

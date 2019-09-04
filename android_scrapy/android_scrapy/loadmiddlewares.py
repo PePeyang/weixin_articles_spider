@@ -7,7 +7,9 @@
 from scrapy.http.request import Request
 from scrapy import signals
 import datetime
-from instance import mongo_instance, redis_instance
+import sys
+sys.path.append("../")
+from instance.main_instance import mongo_instance, redis_instance
 from bson.objectid import ObjectId
 
 

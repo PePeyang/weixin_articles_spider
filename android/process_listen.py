@@ -1,4 +1,6 @@
-from instance import mongo_instance, redis_instance  # weixindb
+import sys
+sys.path.append("...")
+from instance.main_instance import mongo_instance, redis_instance  # weixindb
 import datetime
 import re
 import time
@@ -24,7 +26,7 @@ def listen_task_entry():
                 # ANCHOR redis中已有运行中的任务
                 # 从数据库取得任务
                 running_task = get_task_in_mongodb(running_taskid)
-                running_bizenname = running_task['task_bizenname']
+                running_bizenname = running_task['task_biz_enname']
                 print('- {} 已经有运行中的任务了哦 _id是 {} bizename是 {} '.format(t,
                                                                         running_taskid, running_bizenname))
             else:

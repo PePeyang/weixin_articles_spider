@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import time
 import datetime
+import sys
+sys.path.append("../")
 from bson.objectid import ObjectId
-from instance import mongo_instance, redis_instance  # weixindb
+from instance.main_instance import mongo_instance, redis_instance  # weixindb
 from tools.data_queue import Redis_queue
 
 tasks_queue = Redis_queue('TASKS_QUEUE')

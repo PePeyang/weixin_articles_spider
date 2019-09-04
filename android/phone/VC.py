@@ -1,5 +1,5 @@
-from OCR import OCR
-from PhoneControl import PhoneControl
+from .OCR import OCR
+from .PhoneControl import PhoneControl
 import numpy as np
 
 

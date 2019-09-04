@@ -1,7 +1,7 @@
 import redis
 import json
 from bson.json_util import object_hook
-from instance import mongo_instance, redis_instance  # weixindb
+from instance.main_instance import mongo_instance, redis_instance  # weixindb
 
 
 # 任务的队列

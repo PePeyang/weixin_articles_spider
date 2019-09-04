@@ -4,9 +4,11 @@ import redis
 import datetime
 import time
 import sys
+sys.path.append("...")
 import re
-from phone.GZHCrawler import GZHCrawler
-from instance import mongo_instance, redis_instance  # weixindb
+from .phone.GZHCrawler import GZHCrawler
+from instance.main_instance import mongo_instance, redis_instance  # weixindb
+
 
 def adb_entry():
     # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成running
@@ -16,7 +18,7 @@ def adb_entry():
         running_taskid = redis_instance.get('__running_task_')
         if running_taskid:
             running_task = get_task_in_mongodb(running_taskid)
-            running_bizenname = running_task['task_bizenname']
+            running_bizenname = running_task['task_biz_enname']
             running_status = running_task['task_status']
 
             if running_status == 'actived':

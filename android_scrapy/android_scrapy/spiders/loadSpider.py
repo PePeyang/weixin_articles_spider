@@ -4,7 +4,7 @@ import re
 from ..items import HomeItem
 from spider_config import FakeLoadParams, NORMAL_URLS
 from bson.objectid import ObjectId
-from instance import redis_instance, mongo_instance
+from instance.main_instance import mongo_instance, redis_instance
 from http.cookies import SimpleCookie
 from w3lib.url import add_or_replace_parameter
 from w3lib.url import url_query_parameter

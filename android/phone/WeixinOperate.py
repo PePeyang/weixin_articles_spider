@@ -1,9 +1,10 @@
 import sys
 import time
 from random import randint
-from PhoneControl import OperateAllPhone
-from config import BTN, KEY
-from VC import VC
+from .PhoneControl import OperateAllPhone
+from .config import BTN, KEY
+from .VC import VC
+
 
 class WeixinOperate():
     """
