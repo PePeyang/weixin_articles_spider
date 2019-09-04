@@ -56,6 +56,20 @@ class WeixinOperate():
         time.sleep(3)
         return 0
 
+    def click_an_article(self):
+        """
+        :param
+        :return:
+        """
+        message_pos = self.vc.click_by_words("Messages", tap=False)
+        self.oap.tap(message_pos)
+        time.sleep(5)
+        self.oap.key(KEY['BACK_KEYEVENT'])
+        time.sleep(1)
+        self.oap.key(KEY['BACK_KEYEVENT'])
+        time.sleep(1)
+        return 0
+
     def all_message(self):
         """
         :return:从公众号主页下拉点击全部消息消息

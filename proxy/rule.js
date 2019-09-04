@@ -1,5 +1,5 @@
 const { inter_gethome_request } = require('./process_request_intercerptor')
-const { inter_home_response, inter_s_response } = require('./process_response_intercerptor')
+const { inter_home_response } = require('./process_response_intercerptor')
 
 const fake_url = {
     "geticon": "https://mp.weixin.qq.com/mp/geticon?",
@@ -31,9 +31,7 @@ const rule = {
     // 发送响应前处理
     beforeSendResponse: async function beforeSendResponse(requestDetail, responseDetail) {
         const REQUEST_URL = requestDetail.url
-        if (REQUEST_URL.includes(normal_url.article)) {
-            // await inter_s_response(responseDetail)
-        } else if (REQUEST_URL.includes(normal_url.home)) {
+        if (REQUEST_URL.includes(normal_url.home)) {
             await inter_home_response(responseDetail)
         }
     },

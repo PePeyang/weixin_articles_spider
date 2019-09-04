@@ -32,7 +32,7 @@ class LoadSpider(scrapy.Spider):
             'android_scrapy.loadmiddlewares.LoadSpiderMiddleware': 543,
         },
         # 设置请求间隔
-        "DOWNLOAD_DELAY": 3,
+        "DOWNLOAD_DELAY": 6,
         "COOKIES_ENABLED": True
     }
 

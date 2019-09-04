@@ -13,7 +13,6 @@ def listen_task_entry():
 
     while True:
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-        # TODO 这里貌似有点问题 但又不是逻辑问题 tasks
         is_empty_tasks = tasks_queue.isEmpty()
         # ANCHOR 判断task队列是否有内容
         if is_empty_tasks:

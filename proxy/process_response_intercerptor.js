@@ -8,6 +8,7 @@ const MongoClient = require("mongodb").MongoClient
 const mogoUrl = 'mongodb://localhost:27017'
 const mongoClient = new MongoClient(mogoUrl)
 
+
 var inter_home_response = async function (responseDetail) {
 
     const taskid = await redisGetAsync('__running_task_')
@@ -16,9 +17,13 @@ var inter_home_response = async function (responseDetail) {
         return
     }
 
-    let running_task = await mongoClient.tasks.findOne({ '_id': ObjectId(taskid)})
+    await mongoClient.connect()
+    const weixindb = mongoClient.db('weixindb');
+    let tasks = weixindb.collection('tasks')
+    let running_task = await tasks.findOne({ '_id': ObjectId(taskid)})
+    console.log(running_task)
     let enname = running_task.task_biz_enname
-
+    // mongoClient.quit()
     console.log(`- taskid: ${taskid} enname: ${enname}`)
     console.log('- responseDetail： ')
     if (responseDetail.response.statusCode != 200) return
@@ -31,39 +36,30 @@ var inter_home_response = async function (responseDetail) {
         // return
     }
 
-    appmsg_token = body_html.match(/window.appmsg_token = "(.*)"/)[1]
-    nickname = body_html.match(/var nickname = "(.*)"/)[1].split('"')[0]
-    biz = body_html.match(/var __biz = "(.*)"/)[1]
-    pass_ticket = body_html.match(/var pass_ticket = "(.*)"/)[1].split('"')[0]
+    let appmsg_token = body_html.match(/window.appmsg_token = "(.*)"/)[1]
+    let nickname = body_html.match(/var nickname = "(.*)"/)[1].split('"')[0]
+    let biz = body_html.match(/var __biz = "(.*)"/)[1]
+    let pass_ticket = body_html.match(/var pass_ticket = "(.*)"/)[1].split('"')[0]
 
     console.log('- msgToken ' + appmsg_token)
     const httpid = await redisGetAsync('__running_http_')
     console.log('- httpid ' + httpid)
-    await insert_or_update_a_http(httpid, {
-        response: body_html,
-        appmsg_token,
-        nickname,
-        taskid: ObjectId(taskid),
-        enname,
-        biz,
-        pass_ticket
-    })
-}
 
-var inter_s_response = async function (responseDetail) {
+    if (httpid) {
+        console.log('已经有httpid了')
+    } else {
+        let http = await insert_or_update_a_http(httpid, {
+            response: body_html,
+            appmsg_token,
+            nickname,
+            taskid: ObjectId(taskid),
+            enname,
+            biz,
+            pass_ticket
+        })
 
-    const taskValue = await redisGetAsync('__running_task_') || ''
-    let taskid = taskValue.split('_between_')[0]
-    let enname = taskValue.split('_between_')[1]
-    console.log(`- taskid: ${taskid} enname: ${enname}`)
-
-    console.log('- responseDetail： ')
-    if (responseDetail.response.statusCode != 200) return
-    let body_html = responseDetail.response.body.toString('utf8')
-    // console.log(body_html)
-    const $ = cheerio.load(body_html)
-    nickname = $('#js_name').text().trim()
-    console.log('- nickname' + nickname)
+        await redisClient.set('__running_http_', http.insertedId)
+    }
 
 }
 
@@ -73,25 +69,21 @@ async function insert_or_update_a_http(http_obj_id, datas) {
     await mongoClient.connect()
     const weixindb = mongoClient.db('weixindb');
     let https = weixindb.collection('https')
-    if (!http_obj_id) {
-        return await https.insertOne({
-            ...datas
-        })
-    } else {
-        return await https.findOneAndUpdate({
-            '_id': http_obj_id
-        }, {
-                '$set': {
-                    ...datas
-                }
-            }, {
-                upsert: false
-            })
-    }
-
+    return await https.findOneAndUpdate(
+        {
+        '_id': http_obj_id
+        },
+        {
+            '$set': {
+                ...datas
+            }
+        },
+        {
+            upsert: true
+        }
+    )
 };
 
 module.exports = {
-    inter_home_response,
-    inter_s_response
+    inter_home_response
 }
