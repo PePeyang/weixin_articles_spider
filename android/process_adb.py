@@ -11,9 +11,11 @@ from instance.main_instance import mongo_instance, redis_instance  # weixindb
 
 
 def adb_entry():
-    # 每隔一分钟去队列检查下是否有任务在running 没有的话就搞一个变成running
 
+    suber = redis_instance.pubsub()
+    suber.subscribe('there_is_a_task')
     while True:
+        res = suber.parse_response()
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         running_taskid = redis_instance.get('__running_task_')
         if running_taskid:
@@ -39,8 +41,6 @@ def adb_entry():
         else:
             pass
 
-
-        time.sleep(round(30,50))
 
 def get_task_in_mongodb(taskid):
     task_obj_id = ObjectId(taskid)
