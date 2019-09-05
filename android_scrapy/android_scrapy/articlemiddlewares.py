@@ -132,7 +132,7 @@ class ArticleSpiderMiddleware(object):
         spider.logger.info(
             'ArticleSpiderMiddleware: Spider opened: %s' % spider.name)
 
-        loads = mongo_instance.loads.find().limit(1).skip(200)
+        loads = mongo_instance.loads.find()
 
         spider.logger.info(loads)
         spider.loads = loads
