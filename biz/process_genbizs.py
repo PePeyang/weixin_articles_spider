@@ -2,6 +2,7 @@
 import time
 import datetime
 import sys
+import os
 sys.path.append("../")
 from bson.objectid import ObjectId
 from instance.main_instance import mongo_instance, redis_instance  # weixindb
@@ -19,19 +20,21 @@ tasks_queue = Redis_queue('TASKS_QUEUE')
 
 
 def entry():
+    initBizs()
     bizs = find_bizs()
     bizs_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     # type(bizs) <class 'pymongo.cursor.Cursor'>
     print('- {} 找到了bizs'.format(bizs_time))
     # tasks = build_task(list(bizs), 'new', None, 30 , 0)
-    tasks = build_task(list(bizs[::]), 'count', 10, None, 0)
+    tasks = build_task(list(bizs[::]), 'count', 50, None, 0)
     # tasks = build_task(list(bizs), 'all', None, None, 0)
-
+    mongo_instance.biznames.remove()
     tasks_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} 构造了tasks'.format(tasks_time))
 
 def find_bizs():
-    return mongo_instance.biznames.find()
+    biznames = mongo_instance.biznames.find()
+    return biznames
     # Raises: class: TypeError if any of the arguments are of improper type.
     # Returns an instance of: class: ~pymongo.cursor.Cursor corresponding to this query.
 
@@ -73,9 +76,27 @@ def build_task(bizs, task_mode, task_crawl_count, task_crawl_min, task_depth):
 
         # notify_android(taskid)
         tasks.append(taskid)
-
-
     return tasks
+
+def initBizs():
+    fakenames = mongo_instance.biznames
+    base_dir = os.path.dirname(__file__)
+    ac = os.path.join(base_dir, '../', 'assets/fakenames.conf')
+    print(ac)
+    idx = 0
+    if os.path.isfile(ac):
+        with open(ac, 'rt', encoding='utf-8-sig') as fi:
+            line = fi.readline()
+            while line:
+                idx += 1
+                arr = line.strip().split(' ')
+                print(arr)
+                fakename = {
+                    'fakename': arr[0],
+                    'chname': arr[1]
+                }
+                fakenames.insert_one(fakename)
+                line = fi.readline()
 
 def insert_task(task):
     return mongo_instance.tasks.insert_one(task)
