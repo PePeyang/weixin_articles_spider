@@ -11,6 +11,10 @@ import scrapy
 from spider_config import FakeLoadParams
 from instance import mongo_instance, redis_instance
 from bson.objectid import ObjectId
+from bs4 import BeautifulSoup
+import re
+import os
+import requests
 
 
 class ArticleSpiderMiddleware(object):
@@ -30,13 +34,69 @@ class ArticleSpiderMiddleware(object):
         # middleware and into the spider.
         print(' - 2、 process_spider_input')
         # Should return None or raise an exception.
+        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+        # print(' - 3、 parse')
+        body_html = response.body.decode()
+        bf_html = BeautifulSoup(body_html, 'html.parser')
+        # print(body_html)
+        pat_get_meta_url = re.compile(r'data-src="(https://.*?)"')
+        pat_get_meta_type = re.compile(r'wx_fmt=(.*)')
+
+        chname = bf_html.find(id="js_name").get_text().strip()
+
+        title = spider.title
+        # print(title)
+
+        sdir = os.path.join(os.path.abspath(''), "output", chname, title)
+        mats = pat_get_meta_url.findall(body_html, pos=0)
+        idx = 0
+
+        with open(os.path.join(sdir, 'index.html'), 'wb') as f:
+            f.write(response.body)
+
+        if not os.path.exists(sdir):
+            os.mkdir(sdir)
+
+        for m in mats:
+            idx += 1
+            pps = pat_get_meta_type.findall(m)
+            if pps:
+                postfix = pps[0]
+            else:
+                postfix = 'jpg'
+            # 这里是给图片命名的地方
+
+            print(os.path.join(sdir, "{}.{}".format(idx, postfix)))
+            self.download(m, os.path.join(sdir, "{}.{}".format(idx, postfix)))
         return None
+
+    def download(self, url, sname):
+        for i in range(0, 3):
+            result = requests.get(
+                url,
+                headers={
+                    'User-Agent':
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
+                },
+                stream=True)
+            if result.status_code == 200:
+                with open(sname, 'wb') as f:
+                    for chunk in result.iter_content(1024):
+                        f.write(chunk)
+                return True
+            else:
+                continue
+        print("Error download")
+        return False
 
     def process_spider_output(self, response, result, spider):
         # Called with the results returned from the Spider, after
         # it has processed the response.
         print(' - 4、 process_spider_output')
+
         # Must return an iterable of Request, dict or Item objects.
+
+        # print(response)
         for i in result:
             yield i
 
@@ -60,9 +120,11 @@ class ArticleSpiderMiddleware(object):
         print(' - 1、 process_start_requests')
         for load in spider.loads:
             print(load)
+            spider.title = load['title']
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
             yield scrapy.Request(url=load['content_url'],
                                  headers=FakeLoadParams.headers,
+                                 cookies={'title': load['title']},
                                  method='GET')
 
 
@@ -70,10 +132,11 @@ class ArticleSpiderMiddleware(object):
         spider.logger.info(
             'ArticleSpiderMiddleware: Spider opened: %s' % spider.name)
 
-        loads = mongo_instance.loads.find().limit(1)
+        loads = mongo_instance.loads.find().limit(1).skip(200)
 
         spider.logger.info(loads)
         spider.loads = loads
+
 
 
 
