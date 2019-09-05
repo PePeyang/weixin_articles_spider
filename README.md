@@ -28,7 +28,8 @@
 - scrapy 1.7.3
 - baidu-aip
     `pip install baidu-aip`
-
+- Pillow 6.1.x
+- numpy 1.17.x
 
 > mongodb 4.0.12
 

@@ -6,13 +6,16 @@ from twisted.internet import reactor
 from twisted.internet.task import deferLater
 from instance import mongo_instance, redis_instance
 import time
+import sys, os
+
 
 def sleep(self, *args, seconds):
     """Non blocking sleep callback"""
     return deferLater(reactor, seconds, lambda: None)
 
-process = CrawlerProcess(get_project_settings())
 
+
+process = CrawlerProcess(get_project_settings())
 
 def _crawl(result, spider):
     deferred = process.crawl(spider)

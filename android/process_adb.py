@@ -16,6 +16,7 @@ def adb_entry():
     suber.subscribe('there_is_a_task')
     while True:
         res = suber.parse_response()
+        # time.sleep(120)
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         running_taskid = redis_instance.get('__running_task_')
         if running_taskid:
