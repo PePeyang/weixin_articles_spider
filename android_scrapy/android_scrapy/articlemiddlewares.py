@@ -47,15 +47,21 @@ class ArticleSpiderMiddleware(object):
         title = spider.title
         # print(title)
 
-        sdir = os.path.join(os.path.abspath(''), "output", chname, title)
+        sdir1 = os.path.join(os.path.abspath(''), "output", chname)
+        sdir2 = os.path.join(sdir1, title)
+
         mats = pat_get_meta_url.findall(body_html, pos=0)
         idx = 0
 
-        with open(os.path.join(sdir, 'index.html'), 'wb') as f:
-            f.write(response.body)
+        if not os.path.exists(sdir1):
+            os.mkdir(sdir1)
+            os.mkdir(sdir2)
+        elif not os.path.exists(sdir2):
+            os.mkdir(sdir2)
 
-        if not os.path.exists(sdir):
-            os.mkdir(sdir)
+        with open(os.path.join(sdir2, 'index.html').replace("\\", "/"),
+                  'wb') as f:
+            f.write(response.body)
 
         for m in mats:
             idx += 1
@@ -66,8 +72,11 @@ class ArticleSpiderMiddleware(object):
                 postfix = 'jpg'
             # 这里是给图片命名的地方
 
-            print(os.path.join(sdir, "{}.{}".format(idx, postfix)))
-            self.download(m, os.path.join(sdir, "{}.{}".format(idx, postfix)))
+            # print(os.path.join(sdir2, "{}.{}".format(idx, postfix)))
+            self.download(
+                m,
+                os.path.join(sdir2,
+                             "{}.{}".format(idx, postfix)).replace("\\", "/"))
         return None
 
     def download(self, url, sname):
