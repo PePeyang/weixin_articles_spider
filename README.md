@@ -22,9 +22,13 @@
 
 ```
 > python 3.6.8
+
 - pymongo 3.9.0
 - redis 3.3.8
 - scrapy 1.7.3
+- baidu-aip
+    `pip install baidu-aip`
+
 
 > mongodb 4.0.12
 

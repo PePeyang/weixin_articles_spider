@@ -61,6 +61,6 @@ def set_task_in_redis(taskid):
     for key in redis_instance.scan_iter("__running_task_"):
         redis_instance.delete(key)
 
-    redis_instance.set('__running_task_', '{}'.format(taskid), ex=80)
+    redis_instance.set('__running_task_', '{}'.format(taskid), ex=60)
     # NOTE  !!! 我曹
     redis_instance.set('which_task_should_be_timeout', taskid)
