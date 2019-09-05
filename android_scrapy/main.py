@@ -11,20 +11,21 @@ def sleep(self, *args, seconds):
     """Non blocking sleep callback"""
     return deferLater(reactor, seconds, lambda: None)
 
-
 process = CrawlerProcess(get_project_settings())
 
 
 def _crawl(result, spider):
     deferred = process.crawl(spider)
     deferred.addCallback(lambda results: print(
-        '稍等。20秒后会自动重启...'))
-    deferred.addCallback(sleep, seconds=20)
+        '稍等。6秒后会自动重启...'))
+    deferred.addCallback(sleep, seconds=6)
     deferred.addCallback(_crawl, spider)
     return deferred
 
-
+suber = redis_instance.pubsub()
+suber.subscribe('there_is_a_http')
 while True:
+    res = suber.parse_response()
     httpid = redis_instance.get('__running_http_')
     if httpid:
         # redis_instance.delete('__running_http_')
@@ -33,4 +34,3 @@ while True:
         process.start()
     else:
         print('没有成功捕获到新的http')
-    time.sleep(30)

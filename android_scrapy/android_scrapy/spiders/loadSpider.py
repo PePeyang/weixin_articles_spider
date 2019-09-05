@@ -60,7 +60,7 @@ class LoadSpider(scrapy.Spider):
         print(queryString)
         print('- FakeLoadParams cookies')
         print(FakeLoadParams.cookies)
-        self.crawled_times = 1
+        self.crawled_times = 0
 
         if 'running_in_http' in self.task['task_status']:
             yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
@@ -137,7 +137,7 @@ class LoadSpider(scrapy.Spider):
             elif stop_idx != 0:
                 res = mongo_instance.loads.insert_many(list_db_data[0::stop_idx])
 
-            if self.crawled_times == 1 and res != None:
+            if self.crawled_times == 0 and res != None:
                 print(' 插入的第一个id是: %s' % res.inserted_ids[0])
                 self.task['task_start_loadid'] = res.inserted_ids[0]
             else:
@@ -175,7 +175,7 @@ class LoadSpider(scrapy.Spider):
                 print('要出去了')
             else:
                 res = mongo_instance.loads.insert_many(list_db_data)
-                if self.crawled_times == 1:
+                if self.crawled_times == 0:
                     print(' 插入的第一个id是: %s' % res.inserted_ids[0])
                     self.task['task_start_loadid'] = res.inserted_ids[0]
 
@@ -208,7 +208,7 @@ class LoadSpider(scrapy.Spider):
             print('要出去了')
         else:
             res = mongo_instance.loads.insert_many(list_db_data)
-            if self.crawled_times == 1:
+            if self.crawled_times == 0:
                 print(' 插入的第一个id是: %s' % res.inserted_ids[0])
                 self.task['task_start_loadid'] = res.inserted_ids[0]
 

@@ -24,7 +24,7 @@ def entry():
     # type(bizs) <class 'pymongo.cursor.Cursor'>
     print('- {} 找到了bizs'.format(bizs_time))
     # tasks = build_task(list(bizs), 'new', None, 30 , 0)
-    tasks = build_task(list(bizs[16::]), 'count', 10, None, 0)
+    tasks = build_task(list(bizs[::]), 'count', 10, None, 0)
     # tasks = build_task(list(bizs), 'all', None, None, 0)
 
     tasks_time = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
@@ -73,7 +73,7 @@ def build_task(bizs, task_mode, task_crawl_count, task_crawl_min, task_depth):
 
         # notify_android(taskid)
         tasks.append(taskid)
-        time.sleep(2)
+
 
     return tasks
 

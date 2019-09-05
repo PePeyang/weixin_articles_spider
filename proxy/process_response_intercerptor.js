@@ -54,6 +54,8 @@ var inter_home_response = async function (responseDetail) {
         biz,
         pass_ticket
     })
+    // 发布消息
+    await redisClient.publish('there_is_a_http', httpid)
 
 }
 
