@@ -1,5 +1,6 @@
 import scrapy
 from android_scrapy.spiders.loadSpider import LoadSpider
+from android_scrapy.spiders.articleSpider import ArticleSpider
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from twisted.internet import reactor
@@ -34,6 +35,8 @@ while True:
         # redis_instance.delete('__running_http_')
         print('检测到了新的的http')
         _crawl(None, LoadSpider)
+
         process.start()
     else:
         print('没有成功捕获到新的http')
+        # _crawl(None, ArticleSpider)
