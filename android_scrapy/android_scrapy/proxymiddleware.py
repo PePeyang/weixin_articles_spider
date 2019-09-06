@@ -8,12 +8,12 @@ class ProxyMiddleware(object):
     def __init__(self, proxy_url):
         self.logger = logging.getLogger(__name__)
         self.proxy_url = proxy_url
-        rp = os.path.abspath('.')
-        self.ippath = os.path.join(rp, 'ip.txt')
+        rp = os.path.abspath('..')
+        self.ippath = os.path.join(rp, 'ip.txt').replace('\\', '/')
 
     def get_random_proxy(self):
         oldproxy = None
-        with open(self.ippath, 'r+') as f:  # 打开文件
+        with open(self.ippath, 'r+', encoding='utf-8-sig') as f:  # 打开文件
             oldproxy = f.readline()
 
         try:
@@ -29,19 +29,25 @@ class ProxyMiddleware(object):
                     proxy = self.check_proxy(proxy)
                 except:
                     self.logger.debug('这次白白获取了')
-                    return
+                    # return self.get_random_proxy()
 
                 if proxy:
-                    with open(self.ippath, 'w') as f:  # 打开文件
+                    with open(self.ippath, 'w',
+                              encoding='utf-8-sig') as f:  # 打开文件
                         f.write(proxy)
                     return proxy
+
 
     def check_proxy(self, proxy):
         if not proxy:
             return
 
-        ip = {"http": "http://" + proxy}
-        r = requests.get("http://www.baidu.com", proxies=ip, timeout=4)
+        ip = {"https": "https://" + proxy}
+        r = requests.get("https://www.baidu.com",
+                         proxies=ip,
+                         timeout=4,
+                         allow_redirects=True,
+                         verify=False)
         if r.status_code == 200:
             return proxy
 
@@ -49,12 +55,12 @@ class ProxyMiddleware(object):
         proxy = self.get_random_proxy()
         if proxy:
             self.logger.debug('======' + '使用代理 ' + str(proxy) + "======")
-            request.meta['proxy'] = 'https://{proxy}'.format(proxy=proxy)
+            request.meta['proxy'] = 'http://{proxy}'.format(proxy=proxy)
 
     def process_response(self, request, response, spider):
         if response.status != 200:
             print("again response ip:")
-            request.meta['proxy'] = 'https://{proxy}'.format(
+            request.meta['proxy'] = 'http://{proxy}'.format(
                 proxy=self.get_random_proxy())
             return request
         return response

@@ -32,18 +32,19 @@ class ArticleSpiderMiddleware(object):
     def process_spider_input(self, response, spider):
         # Called for each response that goes through the spider
         # middleware and into the spider.
+
         print(' - 2、 process_spider_input')
         # Should return None or raise an exception.
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         # print(' - 3、 parse')
         body_html = response.body.decode()
-        bf_html = BeautifulSoup(body_html, 'html.parser')
+        # bf_html = BeautifulSoup(body_html, 'html.parser')
         # print(body_html)
         pat_get_meta_url = re.compile(r'data-src="(https://.*?)"')
         pat_get_meta_type = re.compile(r'wx_fmt=(.*)')
 
-        chname = bf_html.find(id="js_name").get_text().strip()
 
+        chname = spider.chname
         title = spider.title
         # print(title)
 
@@ -62,6 +63,8 @@ class ArticleSpiderMiddleware(object):
         with open(os.path.join(sdir2, 'index.html').replace("\\", "/"),
                   'wb') as f:
             f.write(response.body)
+
+
 
         for m in mats:
             idx += 1
@@ -109,7 +112,6 @@ class ArticleSpiderMiddleware(object):
         for i in result:
             yield i
 
-
     def process_spider_exception(self, response, exception, spider):
         # Called when a spider or process_spider_input() method
         # (from other spider middleware) raises an exception.
@@ -130,23 +132,22 @@ class ArticleSpiderMiddleware(object):
         for load in spider.loads:
             print(load)
             spider.title = load['title']
+            spider._id = load['_id']
+            spider.url = load['content_url']
+            spider.chname = load['chname']
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-            yield scrapy.Request(url=load['content_url'],
+            mongo_instance.loads.delete_one({"_id": spider._id})
+            yield scrapy.Request(url=spider.url,
                                  headers=FakeLoadParams.headers,
-                                 cookies={'title': load['title']},
                                  method='GET')
 
-
     def spider_opened(self, spider):
-        spider.logger.info(
-            'ArticleSpiderMiddleware: Spider opened: %s' % spider.name)
+        spider.logger.info('ArticleSpiderMiddleware: Spider opened: %s' %
+                           spider.name)
 
-        loads = mongo_instance.loads.find()
-
+        loads = mongo_instance.loads.find().limit(1)
         spider.logger.info(loads)
         spider.loads = loads
-
-
 
 
 class LoadDownloaderMiddleware(object):
@@ -194,5 +195,5 @@ class LoadDownloaderMiddleware(object):
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info(
-            'LoadDownloaderMiddleware: Spider opened: %s' % spider.name)
+        spider.logger.info('LoadDownloaderMiddleware: Spider opened: %s' %
+                           spider.name)

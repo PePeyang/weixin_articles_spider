@@ -37,7 +37,7 @@ def listen_task_entry():
                 set_task_mongodb_status(running_taskid, 'actived')
                 redis_instance.publish('there_is_a_task', running_taskid)
 
-        time.sleep(10)
+        time.sleep(5)
 
 
 def get_task_in_mongodb(taskid):
@@ -61,6 +61,6 @@ def set_task_in_redis(taskid):
     for key in redis_instance.scan_iter("__running_task_"):
         redis_instance.delete(key)
 
-    redis_instance.set('__running_task_', '{}'.format(taskid), ex=round(100,140))
+    redis_instance.set('__running_task_', '{}'.format(taskid), ex=round(160,240))
     # NOTE  !!! 我曹
     redis_instance.set('which_task_should_be_timeout', taskid)

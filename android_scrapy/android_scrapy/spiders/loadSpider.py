@@ -10,13 +10,6 @@ from w3lib.url import url_query_parameter
 from load_list_parse import list_parse, list_into_dbdata
 
 
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
-
-
-blockPrint()
-
-
 
 class LoadSpider(scrapy.Spider):
     name = 'LoadSpider'
