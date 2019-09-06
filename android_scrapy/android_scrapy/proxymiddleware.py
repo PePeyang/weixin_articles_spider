@@ -40,13 +40,15 @@ class ProxyMiddleware(object):
                 self.logger.debug('拉取到的东西 %s' % proxy)
             except:
                 self.logger.debug('拉到的代理错误')
-                return self.get_a_proxy()
+                # time.sleep(5.2)
+                # return self.get_a_proxy()
 
             try:
                 proxy = self.check_proxy(proxy)
             except:
                 self.logger.debug('这次白白获取了')
-                return self.get_a_proxy()
+                # time.sleep(5.2)
+                # return self.get_a_proxy()
 
             if proxy:
                 with open(self.ippath, 'w', encoding='utf-8-sig') as f:  # 打开文件
@@ -56,9 +58,9 @@ class ProxyMiddleware(object):
             return proxy
 
         else:
-            time.sleep(1)
+            # time.sleep(5.2)
             self.logger.debug('code不为两百')
-            return self.get_a_proxy()
+            # return self.get_a_proxy()
 
     def check_proxy(self, proxy):
         if not proxy:

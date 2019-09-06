@@ -32,9 +32,6 @@ def adb_entry():
                 gc = GZHCrawler(str(running_bizenname))
                 gc.run()
 
-            elif 'end_' in running_status:
-                print('- {} 任务已经完成。删除中'.format(t))
-                redis_instance.delete('__running_task_')
             else:
                 pass
                 # print('- 您的当前运行中的任务状态为 %s' % running_status)
