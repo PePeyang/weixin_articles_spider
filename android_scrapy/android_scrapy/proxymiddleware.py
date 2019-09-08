@@ -44,12 +44,12 @@ class ProxyMiddleware(object):
         else:
             print('旧的代理不可使用，请求新代理...')
             proxy = self.get_a_proxy(proxy_url)
-
+            print(proxy)
             while not proxy:
                 print('重复获取可用的代理中')
                 proxy = self.get_a_proxy(proxy_url)
 
-            proxy_str = proxy['ip'] + ":" + proxy['proto']
+            proxy_str = proxy['ip'] + ":" + proxy['port']
 
             try:
                 with open(self.ippath, 'w', encoding='utf-8-sig') as f:  # 打开文件
@@ -99,16 +99,16 @@ class ProxyMiddleware(object):
             return False
 
     def process_request(self, request, spider):
-        proxy = self.get_random_proxy('https', self.proxy_url)
+        proxy = self.get_random_proxy('http', self.proxy_url)
         if proxy:
             self.logger.debug('======' + '最终使用代理 ' + str(proxy) + "======")
-            request.meta['proxy'] = 'https://{proxy}'.format(proxy=proxy)
+            request.meta['proxy'] = proxy
 
     def process_response(self, request, response, spider):
         if response.status != 200:
             print("使用代理请求真实地址未能成功")
-            proxy = self.get_random_proxy('https', self.proxy_url)
-            request.meta['proxy'] = 'https://{proxy}'.format(proxy=proxy)
+            proxy = self.get_random_proxy('http', self.proxy_url)
+            request.meta['proxy'] = proxy
             return request
         return response
 
