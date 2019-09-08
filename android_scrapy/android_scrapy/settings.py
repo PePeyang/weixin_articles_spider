@@ -21,7 +21,7 @@ RETRY_ENABLED = False
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
-PROXY_URL = 'http://piping.mogumiao.com/proxy/api/get_ip_al?appKey=1e8ff615b1d54a6abbc5cae9f3016264&count=1&expiryDate=0&format=2&newLine=2'
+PROXY_URL = 'http://piping.mogumiao.com/proxy/api/get_ip_al?appKey=1e8ff615b1d54a6abbc5cae9f3016264&count=1&expiryDate=0&format=1&newLine=1'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
