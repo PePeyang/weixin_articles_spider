@@ -122,10 +122,13 @@ class LoadSpider(scrapy.Spider):
             if load_obj_id == None:
                 if self.crawled_times == self.task['task_crawl_min'] / 10:
                     res = mongo_instance.loads.insert_many(list_db_data)
+                    self.task['task_start_loadid'] = res.inserted_ids[0]
                     self.task['task_status'] = 'end_success'
                     print('要出去了')
                 else:
                     res = mongo_instance.loads.insert_many(list_db_data)
+                    if self.crawled_times == 1:
+                        self.task['task_start_loadid'] = res.inserted_ids[0]
                     self.crawled_times += 1
                     print('还有请求呢别着急出去')
             else:
