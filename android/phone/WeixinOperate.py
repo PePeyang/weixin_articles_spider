@@ -1,10 +1,10 @@
 import sys
-from phone.PhoneControl import OperateAllPhone
-from phone.config import BTN
-from phone.config import KEY
 import time
 from random import randint
-from phone.VC import VC
+from .PhoneControl import OperateAllPhone
+from .config import BTN, KEY
+from .VC import VC
+
 
 class WeixinOperate():
     """
@@ -56,6 +56,24 @@ class WeixinOperate():
         time.sleep(3)
         return 0
 
+    def click_an_article(self):
+        """
+        :param
+        :return:
+        """
+        message_pos = self.vc.click_by_words("Messages", tap=False)
+        # print(message_pos)
+        # 位置 y 轴 加120
+        click_pos = [
+            message_pos[0], message_pos[1] + 120, message_pos[2], message_pos
+        [3] + 120]
+        self.oap.tap(click_pos)
+        time.sleep(5)
+        self.oap.key(KEY['BACK_KEYEVENT'])
+        time.sleep(1.5)
+
+        return 0
+
     def all_message(self):
         """
         :return:从公众号主页下拉点击全部消息消息
@@ -79,6 +97,7 @@ class WeixinOperate():
         self.home_to_gzh_search()
         # 搜索公众号
         self.search_gzh(nickname)
+        self.click_an_article()
 
         if hand==False:
             self.all_message()
@@ -86,4 +105,3 @@ class WeixinOperate():
             input("请一一手动或取参数 回车退出")
 
         self.home()
-

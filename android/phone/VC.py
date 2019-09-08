@@ -1,5 +1,5 @@
-from phone.OCR import OCR
-from phone.PhoneControl import PhoneControl
+from .OCR import OCR
+from .PhoneControl import PhoneControl
 import numpy as np
 
 
@@ -29,6 +29,7 @@ class VC(PhoneControl, OCR):
         # 执行点击
         loc = loc_words['location']
         pos = [loc['left'],loc['top'],loc['left']+loc['width'],loc['top']+loc['height']]
+        print(pos)
         if tap is True:
             self.input_tap(pos)
         return pos

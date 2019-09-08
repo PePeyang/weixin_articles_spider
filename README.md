@@ -1,19 +1,48 @@
 ## 微信公众号爬虫项目
 ### 运行环境
+
+> gemymotion(3.0.2)
+- Custom Phone Api 8.0
+- ARM_Translation_Oreo
+- wechat 6.7.3
+
+> virtualbox(6.0.x) gemymotion自带
+
+> jdk 1.6+
+
+> platform-tools
+- adb 1.0.26
+
+> nodejs 8.16.1+
+- anyproxy
+
+```javascript
+
+    # anyproxy-ca 生成certi
+
+```
+> python 3.6.8
+
+- pymongo 3.9.0
+- redis 3.3.8
+- scrapy 1.7.3
+- baidu-aip
+    `pip install baidu-aip`
+- Pillow 6.1.x
+- numpy 1.17.x
+
+> mongodb 4.0.12
+
+> redis 3
+
 ### 技术支持
+> scrapy
+![scrapy](./assets/scrapy_architecture.png)
+
 ### 运行原理
+> 执行机制
+![执行机制](./assets/project_process.png)
 
-![运行原理](./assets/运行机制.png)
-
-1. proxy.js监控api信息，抓取两条api的数据进入redis
-2. run main 守护进程，
-> 当redis内数据有变化时候 先拿出来与数据库现有数据比对，
-- 如果找到一致的，那就把类cookie信息覆盖进去 然后取出来使用
-- 如果没找到，drop出来 存入数据库。加上公众号的一些信息存进去，设置offset为0
-3. 拿到当前的信息后，可以执行伪造请求，
-> 伪造的home请求内容可以暂存入redis
-> 抓取到的最终清洗过得数据存入mongodb
-4.
 ### QUICK START
 
 1. 先运行proxy线程
@@ -36,8 +65,8 @@
 > 为什么要使用redis做消息队列
 - 首先是因为有生产者消费者设计模式的必要，其次是因为js线程和python线程之间，python线程和python线程之间需要通信，所以依赖了redis
 
-> 为什么要用wechat 6.6.7
+> 为什么要用wechat 6.7.3
 - 7.0+ 官方对反爬虫做了一些应对措施，操作起来比较困难
-- 6.7.3 这个因人而异可能 我用的genymotion模拟器 ROM6 下打开微信操作的时候会一直有莫名的报错
+- 6.7.3 这个因人而异 需要使用高版本ROM
 - 6.5.8 有个查看历史按钮 位置不固定 其他都很固定
-- 6.6.7 不错，基本满足我的要求
+- 6.6.7 不错，基本满足我的要求 但是后来发现这个也会被提示强制升级

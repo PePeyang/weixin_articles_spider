@@ -1,14 +1,7 @@
 import redis
 from pymongo import MongoClient
-
-REDIS_HOST = '127.0.0.1'
-REDIS_PORT = 6379
-REDIS_DB = 0 # 第一个db
-# REDIS_DB = 0  # 第一个db
-
-MONGODB_PORT = 27017
-MONGODB_HOST = 'localhost'
-MONGODB_NAME = 'weixindb'
+from configs.auth import REDIS_HOST, REDIS_PORT, REDIS_DB
+from configs.auth import MONGODB_HOST, MONGODB_PORT, MONGODB_NAME
 
 # redis
 redis_instance = redis.StrictRedis(host=REDIS_HOST,

@@ -7,11 +7,17 @@
 from scrapy.http.request import Request
 from scrapy import signals
 import datetime
+import scrapy
+from .spider_config import FakeLoadParams
 from instance import mongo_instance, redis_instance
 from bson.objectid import ObjectId
+from bs4 import BeautifulSoup
+import re
+import os
+import requests
 
 
-class LoadSpiderMiddleware(object):
+class ArticleSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
@@ -27,14 +33,80 @@ class LoadSpiderMiddleware(object):
         # Called for each response that goes through the spider
         # middleware and into the spider.
 
+        print(' - 2、 process_spider_input')
         # Should return None or raise an exception.
+        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+        # print(' - 3、 parse')
+        body_html = response.body.decode()
+        # bf_html = BeautifulSoup(body_html, 'html.parser')
+        # print(body_html)
+        pat_get_meta_url = re.compile(r'data-src="(https://.*?)"')
+        pat_get_meta_type = re.compile(r'wx_fmt=(.*)')
+
+
+        chname = spider.chname
+        title = spider.title
+        # print(title)
+
+        sdir1 = os.path.join(os.path.abspath(''), "output", chname)
+        sdir2 = os.path.join(sdir1, title)
+
+        mats = pat_get_meta_url.findall(body_html, pos=0)
+        idx = 0
+
+        if not os.path.exists(sdir1):
+            os.mkdir(sdir1)
+            os.mkdir(sdir2)
+        elif not os.path.exists(sdir2):
+            os.mkdir(sdir2)
+
+        with open(os.path.join(sdir2, 'index.html').replace("\\", "/"),
+                  'wb') as f:
+            f.write(response.body)
+
+        for m in mats:
+            idx += 1
+            pps = pat_get_meta_type.findall(m)
+            if pps:
+                postfix = pps[0]
+            else:
+                postfix = 'jpg'
+            # 这里是给图片命名的地方
+
+            # print(os.path.join(sdir2, "{}.{}".format(idx, postfix)))
+            self.download(
+                m,
+                os.path.join(sdir2,
+                             "{}.{}".format(idx, postfix)).replace("\\", "/"))
         return None
+
+    def download(self, url, sname):
+        for i in range(0, 3):
+            result = requests.get(
+                url,
+                headers={
+                    'User-Agent':
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
+                },
+                stream=True)
+            if result.status_code == 200:
+                with open(sname, 'wb') as f:
+                    for chunk in result.iter_content(1024):
+                        f.write(chunk)
+                return True
+            else:
+                continue
+        print("Error download")
+        return False
 
     def process_spider_output(self, response, result, spider):
         # Called with the results returned from the Spider, after
         # it has processed the response.
+        print(' - 4、 process_spider_output')
 
         # Must return an iterable of Request, dict or Item objects.
+
+        # print(response)
         for i in result:
             yield i
 
@@ -53,29 +125,31 @@ class LoadSpiderMiddleware(object):
         # that it doesn’t have a response associated.
 
         # Must return only requests (not items).
-        for r in start_requests:
-            # r <class 'scrapy.http.request.Request'>
+
+        print(' - 1、 process_start_requests')
+        for load in spider.loads:
+            print(load)
+            spider.title = load['title']
+            spider._id = load['_id']
+            spider.url = load['content_url']
+            spider.chname = load['chname']
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-            print(' - in start_requests: {} '.format(t))
-            # print(r)
-            yield r
+            # mongo_instance.loads.delete_one({"_id": spider._id})
+            mongo_instance.loads.find_one_and_update(
+                filter={'_id': spider._id}, update={'$set': {
+                    'deleted': 1
+                }})
+            yield scrapy.Request(url=spider.url,
+                                 headers=FakeLoadParams.headers,
+                                 method='GET')
 
     def spider_opened(self, spider):
-        spider.logger.info(
-            'LoadSpiderMiddleware: Spider opened: %s' % spider.name)
+        spider.logger.info('ArticleSpiderMiddleware: Spider opened: %s' %
+                           spider.name)
 
-        httpid = redis_instance.get('__running_http_').decode()
-        print('httpid %s' % httpid)
-        http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
-        task_obj_id = http['taskid']
-        print('taskid %s' % str(task_obj_id))
-        task = mongo_instance.tasks.find_one(
-            filter={'_id': task_obj_id})
-        print('- task finded')
-        print(task)
-        spider.task = task
-        spider.http = http
-
+        loads = mongo_instance.loads.find(filter={'deleted': { '$exists': False}})
+        spider.logger.info(loads)
+        spider.loads = loads
 
 
 class LoadDownloaderMiddleware(object):
@@ -123,5 +197,5 @@ class LoadDownloaderMiddleware(object):
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info(
-            'LoadDownloaderMiddleware: Spider opened: %s' % spider.name)
+        spider.logger.info('LoadDownloaderMiddleware: Spider opened: %s' %
+                           spider.name)

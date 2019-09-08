@@ -32,41 +32,5 @@ BTN = {
     'TOP_BACK_BUTTON_POS': (10, 60, 60, 130)
 }
 
-HOME_SEARCH_BUTTON = {
-    'x': [545, 620],
-    'y': [60, 130]
-}
-
-# FIXED
-TOP_BACK_BUTTON_POS = {
-    'x': [10, 60],
-    'y': [60, 130]
-}
-
-# FIXED
-TOP_DEL_BUTTON_POS = {
-    'x': [690, 740],
-    'y': [80, 110]
-}
-
-# FIXED
-SOU_YI_SOU = {
-    'x': [50, 600],
-    'y': [340, 400]
-}
-
-# FIXED
-GZH_ENTRY = {
-    'x': [50, 600],
-    'y': [450, 480]
-}
-
-# FIXED
-ENTER_INTO_ARTICLE = {
-    'x': [50, 600],
-    'y': [1150, 1160]
-}
-
-
 
 

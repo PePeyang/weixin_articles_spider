@@ -23,7 +23,8 @@ return list
 
 TODO 存入biz 公众号名字 发表时间
 """
-def list_into_dbdata(obj, enname, chname):
+def list_into_dbdata(obj, enname, chname, task_obj_id):
+    taskid = str(task_obj_id)
     list_lo = obj['list']
     list_db = list()
     if not isinstance(list_lo, list):
@@ -42,6 +43,7 @@ def list_into_dbdata(obj, enname, chname):
                 print('有app_msg_ext_info')
                 big_item['enname'] = enname
                 big_item['chname'] = chname
+                big_item['taskid'] = task_obj_id
                 for b_key, b_value in big_li['app_msg_ext_info'].items():
 
                     if b_key == 'content_url' or b_key == 'cover' or b_key == 'source_url':

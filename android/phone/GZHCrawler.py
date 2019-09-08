@@ -1,4 +1,6 @@
-from phone.WeixinOperate import WeixinOperate
+from .WeixinOperate import WeixinOperate
+import os
+
 
 class GZHCrawler():
     """
@@ -16,7 +18,27 @@ class GZHCrawler():
         run需要在一个进程中不停执行
         """
         print('gc running')
-        # TODO config
-        wo = WeixinOperate(['192.168.58.108:5555'])
-        wo.get_all_req_data(self.enname, hand=False)
+        deviceInfo = self.connectDevcie()
 
+        if deviceInfo:
+            ADB_PORT = deviceInfo
+            wo = WeixinOperate([ADB_PORT])
+            wo.get_all_req_data(self.enname, hand=False)
+        else:
+            print('无连接设备！')
+
+    def connectDevcie(self):
+        '''检查设备是否连接成功，如果成功返回True，否则返回False'''
+        '''获取设备列表信息，并用"\r\n"拆分'''
+        result = os.popen('adb devices')
+        res = result.read()
+        deviceInfo = ''
+        for line in res.splitlines():
+            print(line)
+            if '5555' in line:
+                deviceInfo = line.split('\t')[0]
+        '''如果没有链接设备或者设备读取失败，第二个元素为空'''
+        if deviceInfo == '':
+            return False
+        else:
+            return deviceInfo

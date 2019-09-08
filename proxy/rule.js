@@ -1,10 +1,5 @@
 const { inter_gethome_request } = require('./process_request_intercerptor')
-const { inter_home_response, inter_s_response } = require('./process_response_intercerptor')
-
-const fake_url = {
-    "geticon": "https://mp.weixin.qq.com/mp/geticon?",
-    "getappmsgext": "https://mp.weixin.qq.com/mp/getappmsgext?"
-}
+const { inter_home_response } = require('./process_response_intercerptor')
 
 const normal_url = {
     "home": "https://mp.weixin.qq.com/mp/profile_ext?action=home",
@@ -12,10 +7,6 @@ const normal_url = {
     "getmsg": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",
     // "comment": "https://mp.weixin.qq.com/mp/appmsg_comment?action=getcomment", //评论信息
     "article": "https://mp.weixin.qq.com/s?"
-}
-
-function doPublish() {
-    redisClient.publish('there_is_a_http', 'data is in key __running_http_')
 }
 
 const rule = {
@@ -31,9 +22,7 @@ const rule = {
     // 发送响应前处理
     beforeSendResponse: async function beforeSendResponse(requestDetail, responseDetail) {
         const REQUEST_URL = requestDetail.url
-        if (REQUEST_URL.includes(normal_url.article)) {
-            await inter_s_response(responseDetail)
-        } else if (REQUEST_URL.includes(normal_url.home)) {
+        if (REQUEST_URL.includes(normal_url.home)) {
             await inter_home_response(responseDetail)
         }
     },

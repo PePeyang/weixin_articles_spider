@@ -9,5 +9,8 @@
   // When opening a file, `editor.tabSize` and `editor.insertSpaces`
   // will be detected based on the file contents. Set to false to keep
   // the values you've explicitly set, above.
-  "editor.detectIndentation": false
+"editor.detectIndentation": false,
+"python.linting.pylintEnabled": true,
+"python.linting.pep8Enabled": false,
+"python.linting.enabled": true
 }

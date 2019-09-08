@@ -7,5 +7,7 @@
 *.html
 *.list
 *.pyc
+output
+dump.rdb
 node_modules
 package-lock.json
