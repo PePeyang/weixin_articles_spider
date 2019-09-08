@@ -1,14 +1,13 @@
 import datetime
 import scrapy
 import re
-from spider_config import FakeLoadParams, NORMAL_URLS
+from ..spider_config import FakeLoadParams, NORMAL_URLS
 from bson.objectid import ObjectId
-from instance import mongo_instance, redis_instance
+from instance.main_instance import mongo_instance, redis_instance
 from http.cookies import SimpleCookie
 from w3lib.url import add_or_replace_parameter
 from w3lib.url import url_query_parameter
-from load_list_parse import list_parse, list_into_dbdata
-
+from ..load_list_parse import list_parse, list_into_dbdata
 
 
 class LoadSpider(scrapy.Spider):
