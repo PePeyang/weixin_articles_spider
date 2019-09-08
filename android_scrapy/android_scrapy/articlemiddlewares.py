@@ -8,7 +8,7 @@ from scrapy.http.request import Request
 from scrapy import signals
 import datetime
 import scrapy
-from spider_config import FakeLoadParams
+from .spider_config import FakeLoadParams
 from instance import mongo_instance, redis_instance
 from bson.objectid import ObjectId
 from bs4 import BeautifulSoup

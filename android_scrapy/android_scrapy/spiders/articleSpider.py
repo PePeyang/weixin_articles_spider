@@ -6,7 +6,7 @@ import os
 import requests
 from bson.objectid import ObjectId
 from ..spider_config import FakeLoadParams
-from instance.main_instance import mongo_instance, redis_instance
+from instance import mongo_instance, redis_instance
 from http.cookies import SimpleCookie
 from w3lib.url import add_or_replace_parameter
 from w3lib.url import url_query_parameter
