@@ -125,7 +125,7 @@ $ python main.py
 项目的配置文件主要在 /weixin_articles_spider/configs/auth.py，但是由于本人技术问题，遗留了一些数据库配置在别处😅，不过问题不大，，一般不用改。
 
 值得一提的是，
-- 用到了百度API的图像文字识别，这部分配置在auth.py可修改，我暂时不把我自己申请的移除，有需要的同学请去(百度ai)[https://ai.baidu.com/tech/ocr/general]自取。
+- 用到了百度API的图像文字识别，这部分配置在auth.py可修改，我暂时不把我自己申请的移除，有需要的同学请去(百度ai)[https://ai.baidu.com/tech/ocr/general] 自取。
 
 - 用到了蘑菇代理...这个是收费的，别想了，我一会就把它重置掉😒。。。配置文件在 `/weixin_articles_spider/android_scrapy/android_scrapy/settings.py` 这里面
 
