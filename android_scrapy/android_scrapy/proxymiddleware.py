@@ -99,6 +99,9 @@ class ProxyMiddleware(object):
             return False
 
     def process_request(self, request, spider):
+        """
+        FIXME 这里 request.meta['proxy'] = proxy 如果使用https代理会报错，不知道什么原因
+        """
         proxy = self.get_random_proxy('http', self.proxy_url)
         if proxy:
             self.logger.debug('======' + '最终使用代理 ' + str(proxy) + "======")

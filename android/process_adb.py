@@ -6,7 +6,7 @@ import time
 import sys
 sys.path.append("...")
 import re
-from .phone.GZHCrawler import GZHCrawler
+from phone.GZHCrawler import GZHCrawler
 from instance.main_instance import mongo_instance, redis_instance  # weixindb
 
 
