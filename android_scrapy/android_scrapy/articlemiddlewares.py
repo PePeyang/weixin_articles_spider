@@ -134,7 +134,7 @@ class ArticleSpiderMiddleware(object):
             spider.url = load['content_url']
             spider.chname = load['chname']
             t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
-            # mongo_instance.loads.delete_one({"_id": spider._id})
+            mongo_instance.loads.delete_one({"_id": spider._id})
             yield scrapy.Request(url=spider.url,
                                  headers=FakeLoadParams.headers,
                                  method='GET')
@@ -143,7 +143,7 @@ class ArticleSpiderMiddleware(object):
         spider.logger.info('ArticleSpiderMiddleware: Spider opened: %s' %
                            spider.name)
 
-        loads = mongo_instance.loads.find().limit(1)
+        loads = mongo_instance.loads.find()
         spider.logger.info(loads)
         spider.loads = loads
 

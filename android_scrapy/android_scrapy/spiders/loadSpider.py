@@ -17,7 +17,7 @@ class LoadSpider(scrapy.Spider):
         # midlewares
         'ITEM_PIPELINES': {},
         'SPIDER_MIDDLEWARES': {
-            'android_scrapy.loadmiddlewares.LoadSpiderMiddleware': 543
+            # 'android_scrapy.loadmiddlewares.LoadSpiderMiddleware': 543
         },
         'DOWNLOADER_MIDDLEWARES': {
             'scrapy.downloadermiddleware.httpproxy.HttpProxyMiddleware': None,
@@ -31,8 +31,20 @@ class LoadSpider(scrapy.Spider):
 
 
     def start_requests(self):
-        http = self.http
-        task = self.task
+
+        httpid = redis_instance.get('__running_http_')
+        redis_instance.delete('__running_http_')
+        print('httpid %s' % httpid)
+        http = mongo_instance.https.find_one(filter={'_id': ObjectId(httpid)})
+
+        task_obj_id = http['taskid']
+        print('taskid %s' % str(task_obj_id))
+        task = mongo_instance.tasks.find_one(filter={'_id': task_obj_id})
+        print('- task finded')
+        print(task)
+        self.http = http
+        self.task = task
+
 
         cookie_str = http['actionhome']['REQUEST_HEADERS']['Cookie'].replace(
             ' ', '')
@@ -140,7 +152,7 @@ class LoadSpider(scrapy.Spider):
                 elif stop_idx != 0:
                     res = mongo_instance.loads.insert_many(list_db_data[0::stop_idx])
                     self.task['task_start_loadid'] = res.inserted_ids[0]
-                    elf.task['task_status'] = 'end_success'
+                    self.task['task_status'] = 'end_success'
                     print('要出去了')
 
 
