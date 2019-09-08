@@ -76,7 +76,7 @@ def build_task(bizs, task_mode, task_crawl_count, task_crawl_min, task_depth):
     return tasks
 
 def initBizs():
-    fakenames = mongo_instance.biznames
+    biznames = mongo_instance.biznames
     base_dir = os.path.dirname(__file__)
     ac = os.path.join(base_dir, '../', 'assets/fakenames.conf')
     print(ac)
@@ -92,7 +92,7 @@ def initBizs():
                     'fakename': arr[0],
                     'chname': arr[1]
                 }
-                fakenames.insert_one(fakename)
+                biznames.insert_one(fakename)
                 line = fi.readline()
 
 def insert_task(task):
