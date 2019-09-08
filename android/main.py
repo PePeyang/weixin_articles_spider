@@ -29,19 +29,12 @@ class LITEN_TASK_THREAD(Thread):
     def join(self):
         Thread.join(self)
 
-def quit(signum, frame):
-    print('----手动停止-----')
-    sys.exit()
-    sys.exit()
-
 if __name__ == '__main__':
-
-    signal.signal(signal.SIGINT, quit)
-
     # 启动 LITEN_TASK_THREAD
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} LITEN_TASK_THREAD 启动中...'.format(bftime))
     t_listen = LITEN_TASK_THREAD()
+    t_listen.daemon = True
     t_listen.start()
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} LITEN_TASK_THREAD 已启动'.format(aftime))
@@ -49,7 +42,11 @@ if __name__ == '__main__':
     # 启动 ADB_THREAD
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 启动中...'.format(bftime))
-    t2 = ADB_THREAD()
-    t2.start()
+    t_adb = ADB_THREAD()
+    t_adb.daemon = True
+    t_adb.start()
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 已启动'.format(aftime))
+
+    while True:
+        time.sleep(2)

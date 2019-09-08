@@ -48,6 +48,7 @@ if __name__ == '__main__':
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} LITEN_TASK_THREAD 启动中...'.format(bftime))
     t_listen = LITEN_TASK_THREAD()
+    t_listen.daemon = True
     t_listen.start()
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} LITEN_TASK_THREAD 已启动'.format(aftime))
@@ -55,11 +56,20 @@ if __name__ == '__main__':
     # 启动 ADB_THREAD
     bftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 启动中...'.format(bftime))
-    t2 = ADB_THREAD()
-    t2.start()
+    t_adb = ADB_THREAD()
+    t_adb.daemon = True
+    t_adb.start()
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 已启动'.format(aftime))
 
+    try:
+        while True:
+            time.sleep(2)
+    except KeyboardInterrupt:
+        print('t_listen正在停止中。。。')
+        t_listen.join()
+        print('t_adb正在停止中。。。')
+        t_adb.join()
 # process = CrawlerProcess(get_project_settings())
 
 # def _crawl(result, spider):
