@@ -16,7 +16,8 @@
 - Custom Phone Api 8.0
 - ARM_Translation_Oreo
 - wechat 6.7.3
-
+- ARM_Translation_Oreo和wechat 6.7.3下载地址：
+链接: https://pan.baidu.com/s/1iPoWR9QH-LBL2tX2Gp5Mug 提取码: t6wg
 > virtualbox(6.0.x) gemymotion自带
 
 > jdk 1.6+
