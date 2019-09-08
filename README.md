@@ -57,7 +57,7 @@ scrapy
 2. 打开模拟器，设置adb路径为自己安装的adb路径，将ARM_Translation_Oreo拖入其中，点OK，再点OK (adb怎么安装的google一下)
 3. 使用adb重启模拟器 `adb shell reboot`
 4. 等待机器完全重启，使用adb安装weixin.6.7.3 `adb install ~/Downloads/weixin6.7.3.apk` (路径自己根据系统微调)
-5. 全局安装一下anyproxy, 然后根据官网指[http://anyproxy.io]示把ssl证书装好，模拟器上的证书别忘记装（先设置pin密码，再通过anyproxy代理，然后下载root.crt安装）
+5. 全局安装一下anyproxy, 然后根据官网指示[http://anyproxy.io] 把ssl证书装好，模拟器上的证书别忘记装（先设置pin密码，再通过anyproxy代理，然后下载root.crt安装）
 PS：比较难操作，过几天放操作的gif吧
 6. 搞定了以后把微信打开，把待测试的微信登录上去，然后点下面的返回按钮一层一层返回到桌面（重要，不是废操作不然我也不会写这么多字）
 #### 启动redis （这个我不需要写了吧😉）-何况写起来还挺麻烦的
