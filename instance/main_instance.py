@@ -1,7 +1,7 @@
 import redis
 from pymongo import MongoClient
-from .auth import REDIS_HOST, REDIS_PORT, REDIS_DB
-from .auth import MONGODB_HOST, MONGODB_PORT, MONGODB_NAME
+from configs.auth import REDIS_HOST, REDIS_PORT, REDIS_DB
+from configs.auth import MONGODB_HOST, MONGODB_PORT, MONGODB_NAME
 
 # redis
 redis_instance = redis.StrictRedis(host=REDIS_HOST,

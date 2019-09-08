@@ -5,7 +5,7 @@ from PIL import Image
 import sys
 sys.path.append("..")
 # FIXME attempted relative import beyond top-level package
-from instance.auth import APP_ID, API_KEY, SECRET_KEY
+from configs.auth import APP_ID, API_KEY, SECRET_KEY
 
 # APP_ID = '17171552'
 # API_KEY = 'iGWQqS5v37dWtLnuAoTSFWiz'
