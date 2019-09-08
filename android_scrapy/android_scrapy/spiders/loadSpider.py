@@ -61,7 +61,7 @@ class LoadSpider(scrapy.Spider):
         print(queryString)
         print('- FakeLoadParams cookies')
         print(FakeLoadParams.cookies)
-        self.crawled_times = 0
+        self.crawled_times = 1
 
         if 'running_in_http' in self.task['task_status']:
             yield scrapy.Request(url=url+queryString, headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
@@ -76,9 +76,9 @@ class LoadSpider(scrapy.Spider):
 
         """
         可以继续爬取的条件
-        new: ret = 0 and can_msg_continue = 1 and 转换后的list中没有出现start_article中的list
-        按量：ret = 0 and can_msg_continue = 1 and count <= crawl_count
-        all: ret = 0 and can_msg_continue = 1
+        new: 转换后的list中没有出现start_article中的list
+        按量 count <= crawl_count
+        all:
         """
 
         switches = {
@@ -90,9 +90,9 @@ class LoadSpider(scrapy.Spider):
         return method(response)
 
     def run_crawl_new(self, response):
-        next_offset = int(url_query_parameter(response.url, 'offset')) + 10
         print(' --- run_crawl_new --- ')
         t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+        next_offset = int(url_query_parameter(response.url, 'offset')) + 10
         list_parse_res = list_parse(eval(response.body.decode()))
         list_db_data = list_into_dbdata(
             list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'], self.task['_id'])
@@ -108,8 +108,16 @@ class LoadSpider(scrapy.Spider):
 
             # 不是公众号第一次的话，就要找到一个位置停下
             if load_obj_id == None:
-                pass
+                if self.crawled_times == self.task['task_crawl_min'] / 10:
+                    res = mongo_instance.loads.insert_many(list_db_data)
+                    self.task['task_status'] = 'end_success'
+                    print('要出去了')
+                else:
+                    res = mongo_instance.loads.insert_many(list_db_data)
+                    self.crawled_times += 1
+                    print('还有请求呢别着急出去')
             else:
+                # 判断这次的list里面有没有出现上次一样的title
                 load = mongo_instance.loads.find_one(
                     filter={"_id": load_obj_id})
                 title = load['title']
@@ -118,31 +126,23 @@ class LoadSpider(scrapy.Spider):
                     if item['is_multi_app_msg_item_list'] == 'NO' and title == item['title']:
                         stop_idx = idx
                         print('找到了:  stop_idx {}'.format(idx))
-                        self.task['task_status'] = 'end_success'
                         break
                     else:
                         pass
 
+                if stop_idx == None:
+                    res = mongo_instance.loads.insert_many(list_db_data)
+                    self.task['task_start_loadid'] = res.inserted_ids[0]
+                    self.crawled_times += 1
+                elif stop_idx == 0:
+                    self.task['task_status'] = 'end_success'
+                    print('要出去了')
+                elif stop_idx != 0:
+                    res = mongo_instance.loads.insert_many(list_db_data[0::stop_idx])
+                    self.task['task_start_loadid'] = res.inserted_ids[0]
+                    elf.task['task_status'] = 'end_success'
+                    print('要出去了')
 
-            if self.crawled_times == self.task['task_crawl_min'] / 10:
-                self.task['task_status'] = 'end_success'
-                print('要出去了')
-            else:
-                pass
-
-            res = None
-            if stop_idx == None:
-                res = mongo_instance.loads.insert_many(list_db_data)
-            elif stop_idx == 0:
-                pass
-            elif stop_idx != 0:
-                res = mongo_instance.loads.insert_many(list_db_data[0::stop_idx])
-
-            if self.crawled_times == 0 and res != None:
-                print(' 插入的第一个id是: %s' % res.inserted_ids[0])
-                self.task['task_start_loadid'] = res.inserted_ids[0]
-            else:
-                pass
 
         self.task['task_updatetime'] = t
         self.task['task_endtime'] = t
@@ -155,13 +155,13 @@ class LoadSpider(scrapy.Spider):
         if not 'running' in self.task['task_status']:
             return
         else:
-            self.crawled_times += 1
             yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
 
     def run_crawl_count(self, response):
-        next_offset = int(url_query_parameter(response.url, 'offset')) + 10
-        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         print(' --- run_crawl_count --- ')
+        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+        next_offset = int(url_query_parameter(response.url, 'offset')) + 10
+
         list_parse_res = list_parse(eval(response.body.decode()))
         list_db_data = list_into_dbdata(
             list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'], self.task['_id'])
@@ -172,13 +172,16 @@ class LoadSpider(scrapy.Spider):
             print('要出去了')
         else:
             if self.crawled_times == self.task['task_crawl_count'] / 10:
+                res = mongo_instance.loads.insert_many(list_db_data)
+                self.task['task_start_loadid'] = res.inserted_ids[0]
                 self.task['task_status'] = 'end_success'
                 print('要出去了')
             else:
                 res = mongo_instance.loads.insert_many(list_db_data)
-                if self.crawled_times == 0:
-                    print(' 插入的第一个id是: %s' % res.inserted_ids[0])
+                if self.crawled_times == 1:
                     self.task['task_start_loadid'] = res.inserted_ids[0]
+                self.crawled_times += 1
+                print('还有请求呢别着急出去')
 
 
         self.task['task_updatetime'] = t
@@ -192,13 +195,13 @@ class LoadSpider(scrapy.Spider):
         if not 'running' in self.task['task_status']:
             return
         else:
-            self.crawled_times += 1
             yield scrapy.Request(url=add_or_replace_parameter(response.url, 'offset', next_offset), headers=FakeLoadParams.headers, cookies=FakeLoadParams.cookies, method='GET')
 
     def run_crawl_all(self, response):
-        next_offset = int(url_query_parameter(response.url, 'offset')) + 10
-        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
         print(' --- run_crawl_all --- ')
+        t = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
+        next_offset = int(url_query_parameter(response.url, 'offset')) + 10
+
         list_parse_res = list_parse(eval(response.body.decode()))
         list_db_data = list_into_dbdata(
             list_parse_res, self.task['task_biz_enname'], self.task['task_biz_chname'], self.task['_id'])
@@ -209,9 +212,11 @@ class LoadSpider(scrapy.Spider):
             print('要出去了')
         else:
             res = mongo_instance.loads.insert_many(list_db_data)
-            if self.crawled_times == 0:
+            if self.crawled_times == 1:
                 print(' 插入的第一个id是: %s' % res.inserted_ids[0])
                 self.task['task_start_loadid'] = res.inserted_ids[0]
+            self.crawled_times += 1
+            print('还有请求呢别着急出去')
 
         self.task['task_updatetime'] = t
         self.task['task_endtime'] = t
