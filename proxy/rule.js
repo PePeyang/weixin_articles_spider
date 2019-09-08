@@ -1,21 +1,12 @@
 const { inter_gethome_request } = require('./process_request_intercerptor')
 const { inter_home_response } = require('./process_response_intercerptor')
 
-const fake_url = {
-    "geticon": "https://mp.weixin.qq.com/mp/geticon?",
-    "getappmsgext": "https://mp.weixin.qq.com/mp/getappmsgext?"
-}
-
 const normal_url = {
     "home": "https://mp.weixin.qq.com/mp/profile_ext?action=home",
     // "load_more": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",      //更多历史消息
     "getmsg": "https://mp.weixin.qq.com/mp/profile_ext?action=getmsg",
     // "comment": "https://mp.weixin.qq.com/mp/appmsg_comment?action=getcomment", //评论信息
     "article": "https://mp.weixin.qq.com/s?"
-}
-
-function doPublish() {
-    redisClient.publish('there_is_a_http', 'data is in key __running_http_')
 }
 
 const rule = {

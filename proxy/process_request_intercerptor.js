@@ -4,8 +4,7 @@ const { ObjectId } = require('mongodb')
 const MongoClient = require("mongodb").MongoClient
 const mogoUrl = 'mongodb://localhost:27017'
 const mongoClient = new MongoClient(mogoUrl)
-
-const assert = require('assert')
+// TODO config
 const redis = require("redis")
 const redisClient = redis.createClient()
 const { promisify } = require('util');
@@ -63,7 +62,6 @@ async function insert_or_update_a_http(http_obj_id, value, key) {
                 upsert: true
             })
     }
-
 };
 
 async function set_task_mongodb_status(taskid, status) {

@@ -1,4 +1,3 @@
-const cheerio = require('cheerio')
 const redis = require("redis")
 const redisClient = redis.createClient()
 const { promisify } = require('util');
