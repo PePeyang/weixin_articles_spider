@@ -13,11 +13,8 @@ tasks_queue = Redis_queue('TASKS_QUEUE')
 # 一次性从fakenames取出所有的biz
 # 构造task数据
 # 存入mongodb 发往android
-
-
 # FIXME 找到bug原因
 # print('- {} 找到了bizs {}'.format(bizs_time, str(list(bizs))))
-
 
 def entry():
     initBizs()
@@ -73,9 +70,9 @@ def build_task(bizs, task_mode, task_crawl_count, task_crawl_min, task_depth):
         # ANCHOR task加入redis queue
         tasks_queue.addItem(taskid)
         # taskid == <class 'bson.objectid.ObjectId'>
-
         # notify_android(taskid)
         tasks.append(taskid)
+        time.sleep(0.5)
     return tasks
 
 def initBizs():
@@ -90,7 +87,7 @@ def initBizs():
             while line:
                 idx += 1
                 arr = line.strip().split(' ')
-                print(arr)
+                # print(arr)
                 fakename = {
                     'fakename': arr[0],
                     'chname': arr[1]

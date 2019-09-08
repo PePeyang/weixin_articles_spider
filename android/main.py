@@ -48,5 +48,9 @@ if __name__ == '__main__':
     aftime = datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")
     print('- {} ADB_THREAD 已启动'.format(aftime))
 
-    while True:
-        time.sleep(2)
+    try:
+        while True:
+            time.sleep(2)
+    except KeyboardInterrupt:
+        print("优雅的手动停止...")
+        sys.exit(1)
