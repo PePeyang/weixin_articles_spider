@@ -101,7 +101,7 @@ $ python main.py
 
 
 ### 联系方式
-> wechat: Sotyoyo  
+> wechat: Sotyoyo
 > issues请直接在github提出，微信只用来交友或者商务、内推我就业（前端开发🥺）
 ### 项目架构TODO
 1. 分布式数据库存储，用来解决大数据量
@@ -127,7 +127,7 @@ $ python main.py
 值得一提的是，
 - 用到了百度API的图像文字识别，这部分配置在auth.py可修改，我暂时不把我自己申请的移除，有需要的同学请去(百度ai)[https://ai.baidu.com/tech/ocr/general] 自取。
 
-- 用到了蘑菇代理...这个是收费的，别想了，我一会就把它重置掉😒。。。配置文件在 `/weixin_articles_spider/android_scrapy/android_scrapy/settings.py` 这里面
+- 用到了蘑菇代理...这个是收费的，别想了，我一会就把它重置掉😒。。。配置文件在 `/weixin_articles_spider/android_scrapy/android_scrapy/settings.py` 这里面，这里不是建议使用蘑菇代理，用别家代理记得改代理中间件的逻辑，希望大家帮我修缮一下也不错，提高代理ip的复用率
 
 - 应该还有许多地方我暂时没想到的，后补
 
