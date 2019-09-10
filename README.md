@@ -12,9 +12,9 @@
 最大的好处，可实现大量的微信公众号之间的切换，且只要你微信足够多，爬多少都不是问题
 ### 运行环境(windows/mac)
 
-> gemymotion(3.0.2)[https://www.genymotion.com/]
-收费软件，但是有试用一个月
-- Custom Phone Api 8.0
+> gemymotion [https://www.genymotion.com/]
+收费软件，但是有试用一个月 [https://www.genymotion.com/fun-zone/] 这个链接进去点下载，然后注册帐号操作
+- Custom Phone Api 8.0 （一定要下载安装 Android Api 为 8.0 的）
 - ARM_Translation_Oreo
 - wechat 6.7.3
 - ARM_Translation_Oreo和wechat 6.7.3下载地址：
