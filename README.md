@@ -52,6 +52,16 @@ scrapy
 执行机制
 ![执行机制](./assets/project_process.png)
 
+语言描述运行逻辑（回复issue）
+
+1. 第一步，是将配置的.conf文件内写入的公众号使用python加入到mongodb数据库bizs中，这一步是即时操作的，也就是一次性完成，基本不存在延迟。然后会再读取一遍数据库中的bizs，生成相应任务模式的对应tasks，并且把这些tasks加入redis中的TASKS_QUEUE中，此时这些task的状态都为generated。（生成任务，可在后续改造成使用web api的方式，这样就具备了很好的拓展性）
+2. 第二步，启动anyproxy的代理，为的是截获当程序真正运行起来时候的几条关键性api，拦截下来的token，appmsgtoken，cookie等信息，会写入数据库，并且将该条http在数据库中的id存入redis，表示正在运行中的任务的http信息，当然，这一步会把第三步描述的taskid也存入，这样他俩就关联起来了。
+3. 第三步，启动一个线程，轮询redis中的__running_task_ 当redis中没有运行中的任务，就在TASKS_QUEUE队列中pop一条出来，状态设为running_in_adb，并且设入__running_task_中，且发布一条消息there_is_a_task，用来通知模拟器有任务进行了。这样就意味着有任务在运行了，注意，一次只能有一个任务在运行。
+4. 第四步，同样启动一个线程，订阅there_is_a_task，如果收到了通知，那么就会执行GZHCrawler这个实例，按照设定好的步骤自动操作安卓机器。且改变redis中任务的状态为running_in_adb。
+5. 回到了第二步，这里在adb操作进行中的时候就会监听到http请求，当有满足符合要求的请求时，改变redis中这条任务的状态为running_in_http。且发布一条消息there_is_a_http。
+6. 第五步，启动scrapy爬虫（其实这一步要在第三步之前启动，只是这里用来描述运行逻辑，所以写在这里了）爬虫订阅到了消息there_is_a_http，就运行 `scrapy crawl LoadSpider`把之前拦截的关键内容构造成请求历史文章接口的api，丢给scrapy去执行，并且将结果存储到数据库loads
+7. 第七步，等到第六步彻底结束，运行另一个scrapy爬虫，`scrapy crawl ArticleSpider` 这一步可以彻底把所有的loads爬取成最后文章的html和图片存入本地文件夹output中
+
 ### QUICK START
 #### genymotion配置
 1. 官网下载，安装，登录自己的帐号，下载对应的模拟器 Custom Phone Api 8.0
